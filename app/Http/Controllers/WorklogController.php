@@ -81,12 +81,12 @@ class WorklogController extends Controller
 
         ActivityLog::log(
             action: 'worklog_created',
-            description: "ওয়ার্কলগ এন্ট্রি: {$employee->user->name} ({$hours} ঘণ্টা)",
+            description: "Worklog entry: {$employee->user->name} ({$hours} hrs)",
             subject: $worklog,
             userId: auth()->id()
         );
 
-        return back()->with('success', 'কাজের লগ সফলভাবে এন্ট্রি হয়েছে।');
+        return back()->with('success', 'Worklog entry added successfully.');
     }
 
     /**
@@ -100,7 +100,7 @@ class WorklogController extends Controller
             'approved_at' => now(),
         ]);
 
-        return back()->with('success', 'ওয়ার্কলগ অনুমোদিত হয়েছে।');
+        return back()->with('success', 'Worklog approved successfully.');
     }
 
     /**
@@ -110,6 +110,6 @@ class WorklogController extends Controller
     {
         $worklog->delete();
 
-        return back()->with('success', 'ওয়ার্কলগ মুছে ফেলা হয়েছে।');
+        return back()->with('success', 'Worklog deleted successfully.');
     }
 }

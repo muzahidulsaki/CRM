@@ -101,7 +101,7 @@ class VideoBillingController extends Controller
         $billing = BillingService::createVideoBilling($request->all(), auth()->id());
 
         return redirect()->route('video-billings.show', $billing)
-            ->with('success', "ভিডিও বিলিং {$billing->billing_code} সফলভাবে তৈরি হয়েছে।");
+            ->with('success', "Video billing {$billing->billing_code} created successfully.");
     }
 
     /**
@@ -155,13 +155,13 @@ class VideoBillingController extends Controller
 
         ActivityLog::log(
             action: 'video_billing_updated',
-            description: "ভিডিও বিলিং {$videoBilling->billing_code} তথ্য আপডেট করা হয়েছে।",
+            description: "Video billing {$videoBilling->billing_code} updated.",
             subject: $videoBilling,
             userId: auth()->id()
         );
 
         return redirect()->route('video-billings.show', $videoBilling)
-            ->with('success', 'ভিডিও বিলিং তথ্য সফলভাবে আপডেট হয়েছে।');
+            ->with('success', 'Video billing updated successfully.');
     }
 
     /**
@@ -171,7 +171,7 @@ class VideoBillingController extends Controller
     {
         BillingService::approveVideoBilling($videoBilling, auth()->id());
 
-        return back()->with('success', "ভিডিও বিলিং {$videoBilling->billing_code} অনুমোদিত হয়েছে!");
+        return back()->with('success', "Video billing {$videoBilling->billing_code} approved!");
     }
 
     /**
@@ -202,12 +202,12 @@ class VideoBillingController extends Controller
 
         ActivityLog::log(
             action: 'video_billing_deleted',
-            description: "ভিডিও বিলিং {$code} মুছে ফেলা হয়েছে।",
+            description: "Video billing {$code} deleted.",
             subject: null,
             userId: auth()->id()
         );
 
         return redirect()->route('video-billings.index')
-            ->with('success', "ভিডিও বিলিং {$code} মুছে ফেলা হয়েছে।");
+            ->with('success', "Video billing {$code} deleted successfully.");
     }
 }

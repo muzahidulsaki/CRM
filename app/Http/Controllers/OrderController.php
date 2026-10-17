@@ -127,7 +127,7 @@ class OrderController extends Controller
 
         ActivityLog::log(
             action: 'order_created',
-            description: "নতুন অর্ডার তৈরি হয়েছে: {$order->order_code} ({$order->title}), মোট: ৳" . number_format($order->total_amount, 2),
+            description: "New order created: {$order->order_code} ({$order->title}), Total: BDT " . number_format($order->total_amount, 2),
             subject: $order,
             userId: auth()->id()
         );
@@ -138,7 +138,7 @@ class OrderController extends Controller
         }
 
         return redirect()->route('orders.show', $order)
-            ->with('success', "অর্ডার {$order->order_code} সফলভাবে তৈরি হয়েছে।");
+            ->with('success', "Order {$order->order_code} created successfully.");
     }
 
     /**
@@ -188,13 +188,13 @@ class OrderController extends Controller
 
         ActivityLog::log(
             action: 'order_updated',
-            description: "অর্ডার {$order->order_code} তথ্য আপডেট করা হয়েছে।",
+            description: "Order {$order->order_code} updated.",
             subject: $order,
             userId: auth()->id()
         );
 
         return redirect()->route('orders.show', $order)
-            ->with('success', "অর্ডার {$order->order_code} সফলভাবে আপডেট হয়েছে।");
+            ->with('success', "Order {$order->order_code} updated successfully.");
     }
 
     /**
@@ -209,7 +209,7 @@ class OrderController extends Controller
         $project = OrderService::createProjectFromOrder($order, $request->input('project_manager_id'));
 
         return redirect()->route('projects.show', $project)
-            ->with('success', "প্রজেক্ট {$project->project_code} সফলভাবে চালু হয়েছে!");
+            ->with('success', "Project {$project->project_code} initialized successfully!");
     }
 
     /**
@@ -227,12 +227,12 @@ class OrderController extends Controller
 
         ActivityLog::log(
             action: 'order_status_updated',
-            description: "অর্ডার {$order->order_code} স্ট্যাটাস: '{$old}' -> '{$order->status}'",
+            description: "Order {$order->order_code} status: '{$old}' -> '{$order->status}'",
             subject: $order,
             userId: auth()->id()
         );
 
-        return back()->with('success', 'অর্ডার স্ট্যাটাস সফলভাবে আপডেট করা হয়েছে।');
+        return back()->with('success', 'Order status updated successfully.');
     }
 
     /**
@@ -245,12 +245,12 @@ class OrderController extends Controller
 
         ActivityLog::log(
             action: 'order_deleted',
-            description: "অর্ডার {$code} মুছে ফেলা হয়েছে।",
+            description: "Order {$code} deleted.",
             subject: null,
             userId: auth()->id()
         );
 
         return redirect()->route('orders.index')
-            ->with('success', "অর্ডার {$code} মুছে ফেলা হয়েছে।");
+            ->with('success', "Order {$code} deleted successfully.");
     }
 }

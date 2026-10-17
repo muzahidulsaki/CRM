@@ -5,7 +5,7 @@
                 <h2 class="font-bold text-2xl text-slate-800 leading-tight">
                     Expenses & Office Costs
                 </h2>
-                <p class="text-xs text-slate-500 mt-1">Track rent, internet, VPS servers, advertising, and operational overheads (SRS 21 & 22).</p>
+                <p class="text-xs text-slate-500 mt-1">Track rent, internet, VPS servers, advertising, and operational overheads.</p>
             </div>
             <div class="flex items-center space-x-3">
                 <a href="{{ route('expenses.create') }}" class="inline-flex items-center px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-lg shadow-sm transition">
@@ -33,7 +33,7 @@
                         <span class="text-xs font-semibold">Total Expenses</span>
                         <svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                     </div>
-                    <div class="text-2xl font-black text-slate-900">৳{{ number_format($metrics['total_expenses'], 2) }}</div>
+                    <div class="text-2xl font-black text-slate-900">{{ __('BDT') }} {{ number_format($metrics['total_expenses'], 2) }}</div>
                     <p class="text-[11px] text-slate-400 mt-1">All-time recorded outflow</p>
                 </div>
 
@@ -42,7 +42,7 @@
                         <span class="text-xs font-semibold">Today's Expenses</span>
                         <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                     </div>
-                    <div class="text-2xl font-black text-amber-600">৳{{ number_format($metrics['today_expenses'], 2) }}</div>
+                    <div class="text-2xl font-black text-amber-600">{{ __('BDT') }} {{ number_format($metrics['today_expenses'], 2) }}</div>
                     <p class="text-[11px] text-slate-400 mt-1">{{ now()->format('d M, Y') }}</p>
                 </div>
 
@@ -51,7 +51,7 @@
                         <span class="text-xs font-semibold">This Month</span>
                         <svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
                     </div>
-                    <div class="text-2xl font-black text-purple-600">৳{{ number_format($metrics['month_expenses'], 2) }}</div>
+                    <div class="text-2xl font-black text-purple-600">{{ __('BDT') }} {{ number_format($metrics['month_expenses'], 2) }}</div>
                     <p class="text-[11px] text-slate-400 mt-1">{{ now()->format('F Y') }}</p>
                 </div>
 
@@ -108,7 +108,7 @@
                                 <th class="px-5 py-3">Date</th>
                                 <th class="px-5 py-3">Paid To / Vendor</th>
                                 <th class="px-5 py-3">Method</th>
-                                <th class="px-5 py-3 text-right">Amount (৳)</th>
+                                <th class="px-5 py-3 text-right">Amount ({{ __('BDT') }})</th>
                                 <th class="px-5 py-3 text-right">Actions</th>
                             </tr>
                         </thead>
@@ -139,7 +139,7 @@
                                         {{ $exp->payment_method }}
                                     </td>
                                     <td class="px-5 py-3.5 whitespace-nowrap text-right font-black text-rose-600 text-sm">
-                                        ৳{{ number_format($exp->amount, 2) }}
+                                        {{ __('BDT') }} {{ number_format($exp->amount, 2) }}
                                     </td>
                                     <td class="px-5 py-3.5 whitespace-nowrap text-right space-x-1.5">
                                         <a href="{{ route('expenses.show', $exp) }}" class="inline-flex items-center px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs rounded transition">

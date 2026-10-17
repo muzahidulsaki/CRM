@@ -69,7 +69,7 @@
                                 <option value="">-- None --</option>
                                 @foreach($orders as $o)
                                     <option value="{{ $o->id }}" {{ (old('order_id', $prefilledOrder?->id) == $o->id) ? 'selected' : '' }}>
-                                        {{ $o->order_code }} (Due: ৳{{ number_format($o->due_amount) }})
+                                        {{ $o->order_code }} (Due: {{ __('BDT') }} {{ number_format($o->due_amount) }})
                                     </option>
                                 @endforeach
                             </select>
@@ -114,8 +114,8 @@
                                         <th class="px-3 py-2 w-1/4">Service Category</th>
                                         <th class="px-3 py-2 w-2/5">Description <span class="text-rose-500">*</span></th>
                                         <th class="px-3 py-2 w-20 text-center">Qty</th>
-                                        <th class="px-3 py-2 w-28 text-right">Unit Price (৳)</th>
-                                        <th class="px-3 py-2 w-28 text-right">Total (৳)</th>
+                                        <th class="px-3 py-2 w-28 text-right">Unit Price ({{ __('BDT') }})</th>
+                                        <th class="px-3 py-2 w-28 text-right">Total ({{ __('BDT') }})</th>
                                         <th class="px-3 py-2 w-12 text-center"></th>
                                     </tr>
                                 </thead>
@@ -138,7 +138,7 @@
                                                 class="item-price w-full text-xs px-2.5 py-1.5 border border-slate-300 rounded text-right focus:ring-1 focus:ring-blue-500 outline-none">
                                         </td>
                                         <td class="p-2 text-right font-bold text-slate-800 item-row-total">
-                                            ৳35,000.00
+                                            {{ __('BDT') }} 35,000.00
                                         </td>
                                         <td class="p-2 text-center">
                                             <button type="button" class="remove-row-btn text-rose-400 hover:text-rose-600 font-bold text-sm">
@@ -170,14 +170,14 @@
                         <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-3 text-xs">
                             <div class="flex justify-between items-center text-slate-600">
                                 <span>Subtotal:</span>
-                                <span class="font-bold text-slate-900" id="subtotalDisplay">৳0.00</span>
+                                <span class="font-bold text-slate-900" id="subtotalDisplay">{{ __('BDT') }} 0.00</span>
                             </div>
 
                             <div class="flex items-center justify-between gap-3 pt-2 border-t border-slate-200">
                                 <span class="text-slate-600">Discount:</span>
                                 <div class="flex items-center space-x-2">
                                     <select name="discount_type" id="discountType" class="text-xs px-2 py-1 border border-slate-300 rounded bg-white">
-                                        <option value="fixed">Fixed (৳)</option>
+                                        <option value="fixed">Fixed ({{ __('BDT') }})</option>
                                         <option value="percentage">Percent (%)</option>
                                     </select>
                                     <input type="number" step="0.01" min="0" name="discount_value" id="discountValue" value="0"
@@ -187,7 +187,7 @@
 
                             <div class="flex justify-between items-center text-rose-600">
                                 <span>Discount Amount:</span>
-                                <span class="font-semibold" id="discountDisplay">-৳0.00</span>
+                                <span class="font-semibold" id="discountDisplay">-{{ __('BDT') }} 0.00</span>
                             </div>
 
                             <div class="flex items-center justify-between gap-3 pt-2 border-t border-slate-200">
@@ -198,12 +198,12 @@
 
                             <div class="flex justify-between items-center text-slate-600">
                                 <span>Tax Amount:</span>
-                                <span class="font-semibold" id="taxDisplay">+৳0.00</span>
+                                <span class="font-semibold" id="taxDisplay">+{{ __('BDT') }} 0.00</span>
                             </div>
 
                             <div class="pt-3 border-t border-slate-300 flex justify-between items-center text-sm font-black text-slate-900">
                                 <span class="uppercase tracking-wider">Net Total Payable:</span>
-                                <span class="text-lg text-blue-600" id="grandTotalDisplay">৳0.00</span>
+                                <span class="text-lg text-blue-600" id="grandTotalDisplay">{{ __('BDT') }} 0.00</span>
                             </div>
                         </div>
                     </div>
@@ -235,11 +235,11 @@
                     const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
                     const price = parseFloat(row.querySelector('.item-price').value) || 0;
                     const rowTotal = qty * price;
-                    row.querySelector('.item-row-total').textContent = '৳' + rowTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    row.querySelector('.item-row-total').textContent = '{{ __('BDT') }} ' + rowTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                     subtotal += rowTotal;
                 });
 
-                document.getElementById('subtotalDisplay').textContent = '৳' + subtotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                document.getElementById('subtotalDisplay').textContent = '{{ __('BDT') }} ' + subtotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
                 const discountType = document.getElementById('discountType').value;
                 const discountVal = parseFloat(document.getElementById('discountValue').value) || 0;
@@ -250,15 +250,15 @@
                     discountAmount = discountVal;
                 }
                 discountAmount = Math.min(subtotal, discountAmount);
-                document.getElementById('discountDisplay').textContent = '-৳' + discountAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                document.getElementById('discountDisplay').textContent = '-{{ __('BDT') }} ' + discountAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
                 const taxable = subtotal - discountAmount;
                 const taxPercent = parseFloat(document.getElementById('taxPercentage').value) || 0;
                 const taxAmount = taxable * (taxPercent / 100);
-                document.getElementById('taxDisplay').textContent = '+৳' + taxAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                document.getElementById('taxDisplay').textContent = '+{{ __('BDT') }} ' + taxAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
                 const grandTotal = taxable + taxAmount;
-                document.getElementById('grandTotalDisplay').textContent = '৳' + grandTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                document.getElementById('grandTotalDisplay').textContent = '{{ __('BDT') }} ' + grandTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
             }
 
             addRowBtn.addEventListener('click', function() {
@@ -282,7 +282,7 @@
                             class="item-price w-full text-xs px-2.5 py-1.5 border border-slate-300 rounded text-right focus:ring-1 focus:ring-blue-500 outline-none">
                     </td>
                     <td class="p-2 text-right font-bold text-slate-800 item-row-total">
-                        ৳10,000.00
+                        {{ __('BDT') }} 10,000.00
                     </td>
                     <td class="p-2 text-center">
                         <button type="button" class="remove-row-btn text-rose-400 hover:text-rose-600 font-bold text-sm">

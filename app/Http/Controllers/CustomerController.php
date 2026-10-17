@@ -93,13 +93,13 @@ class CustomerController extends Controller
 
         ActivityLog::log(
             action: 'customer_created',
-            description: "নতুন কাস্টমার তৈরি করা হয়েছে: {$customer->customer_code} ({$customer->name})",
+            description: "New customer created: {$customer->customer_code} ({$customer->name})",
             subject: $customer,
             userId: auth()->id()
         );
 
         return redirect()->route('customers.show', $customer)
-            ->with('success', "কাস্টমার {$customer->customer_code} সফলভাবে তৈরি হয়েছে।");
+            ->with('success', "Customer {$customer->customer_code} created successfully.");
     }
 
     /**
@@ -142,13 +142,13 @@ class CustomerController extends Controller
 
         ActivityLog::log(
             action: 'customer_updated',
-            description: "কাস্টমার {$customer->customer_code} তথ্য আপডেট করা হয়েছে।",
+            description: "Customer {$customer->customer_code} updated.",
             subject: $customer,
             userId: auth()->id()
         );
 
         return redirect()->route('customers.show', $customer)
-            ->with('success', "কাস্টমার {$customer->customer_code} সফলভাবে আপডেট হয়েছে।");
+            ->with('success', "Customer {$customer->customer_code} updated successfully.");
     }
 
     /**
@@ -161,12 +161,12 @@ class CustomerController extends Controller
 
         ActivityLog::log(
             action: 'customer_deleted',
-            description: "কাস্টমার {$code} মুছে ফেলা হয়েছে।",
+            description: "Customer {$code} deleted.",
             subject: null,
             userId: auth()->id()
         );
 
         return redirect()->route('customers.index')
-            ->with('success', "কাস্টমার {$code} সফলভাবে মুছে ফেলা হয়েছে।");
+            ->with('success', "Customer {$code} deleted successfully.");
     }
 }

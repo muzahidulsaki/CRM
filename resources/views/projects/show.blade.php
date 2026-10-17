@@ -20,26 +20,26 @@
                         };
                     @endphp
                     <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold border {{ $stClass }}">
-                        {{ $project->status }}
+                        {{ __($project->status) }}
                     </span>
                 </div>
                 <div class="flex items-center gap-2 text-xs text-gray-500 mt-1">
-                    <span>ক্লায়েন্ট: <strong class="text-gray-700">{{ $project->customer?->name }}</strong></span>
+                    <span>{{ __('Client') }}: <strong class="text-gray-700">{{ $project->customer?->name }}</strong></span>
                     <span>•</span>
-                    <span>ক্যাটাগরি: <strong class="text-gray-700">{{ $project->category }}</strong></span>
+                    <span>{{ __('Category') }}: <strong class="text-gray-700">{{ __($project->category) }}</strong></span>
                     <span>•</span>
-                    <span>পিএম: <strong class="text-gray-700">{{ $project->projectManager?->name ?? 'অ্যাসাইন হয়নি' }}</strong></span>
+                    <span>{{ __('PM') }}: <strong class="text-gray-700">{{ $project->projectManager?->name ?? __('Unassigned') }}</strong></span>
                 </div>
             </div>
 
             <div class="flex items-center gap-2">
                 <a href="{{ route('tasks.kanban', ['project_id' => $project->id]) }}" class="inline-flex items-center px-4 py-2 bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-lg text-sm font-semibold hover:bg-indigo-100 transition">
                     <svg class="w-4 h-4 me-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"/></svg>
-                    কানবান বোর্ড
+                    {{ __('Kanban Board') }}
                 </a>
                 <a href="{{ route('projects.edit', $project) }}" class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-200 transition">
                     <svg class="w-4 h-4 me-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                    সম্পাদনা
+                    {{ __('Edit') }}
                 </a>
             </div>
         </div>
@@ -48,23 +48,13 @@
     <div class="py-6">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
 
-            <!-- Flash Alert -->
-            @if(session('success'))
-                <div class="p-4 bg-emerald-50 border-l-4 border-emerald-500 text-emerald-800 rounded-r-lg shadow-sm flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <svg class="w-5 h-5 text-emerald-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                        <span class="font-medium text-sm">{{ session('success') }}</span>
-                    </div>
-                </div>
-            @endif
-
             <!-- Overall Progress & Key Stats -->
             <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-4">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
-                        <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider">সামগ্রিক কাজের অগ্রগতি (Project Progress)</div>
-                        <div class="text-3xl font-black text-indigo-600 mt-1">{{ $project->progress_percent }}% সম্পন্ন</div>
-                        <div class="text-xs text-gray-400 mt-0.5">টাস্কের লাইফসাইকেল অনুযায়ী প্রজেক্টের সামগ্রিক শতাংশ স্বয়ংক্রিয়ভাবে হিসাব করা হচ্ছে</div>
+                        <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('Project Progress') }}</div>
+                        <div class="text-3xl font-black text-indigo-600 mt-1">{{ $project->progress_percent }}% {{ __('Completed') }}</div>
+                        <div class="text-xs text-gray-400 mt-0.5">{{ __('Overall progress is automatically calculated based on task lifecycle') }}</div>
                     </div>
 
                     <!-- External links -->
@@ -78,12 +68,12 @@
                         @if($project->live_url)
                             <a href="{{ $project->live_url }}" target="_blank" class="inline-flex items-center px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-semibold hover:bg-emerald-700 transition">
                                 <svg class="w-4 h-4 me-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                                লাইভ প্রিভিউ
+                                {{ __('Live Preview') }}
                             </a>
                         @endif
                         @if($project->order)
                             <a href="{{ route('orders.show', $project->order) }}" class="inline-flex items-center px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-xs font-semibold hover:bg-gray-200 transition">
-                                অর্ডার: {{ $project->order->order_code }}
+                                {{ __('Order') }}: {{ $project->order->order_code }}
                             </a>
                         @endif
                     </div>
@@ -102,31 +92,31 @@
                 <!-- Task Metrics Counter Grid -->
                 <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2 pt-2">
                     <div class="p-3 bg-gray-50 rounded-xl border border-gray-200 text-center">
-                        <div class="text-[11px] font-semibold text-gray-500 uppercase">মোট টাস্ক</div>
+                        <div class="text-[11px] font-semibold text-gray-500 uppercase">{{ __('Total Tasks') }}</div>
                         <div class="text-xl font-bold text-gray-900 mt-0.5">{{ $taskCounts['total'] }}</div>
                     </div>
                     <div class="p-3 bg-gray-50 rounded-xl border border-gray-200 text-center">
-                        <div class="text-[11px] font-semibold text-gray-500 uppercase">পেন্ডিং</div>
+                        <div class="text-[11px] font-semibold text-gray-500 uppercase">{{ __('Pending') }}</div>
                         <div class="text-xl font-bold text-gray-700 mt-0.5">{{ $taskCounts['pending'] }}</div>
                     </div>
                     <div class="p-3 bg-blue-50 rounded-xl border border-blue-200 text-center">
-                        <div class="text-[11px] font-semibold text-blue-600 uppercase">চলমান (Working)</div>
+                        <div class="text-[11px] font-semibold text-blue-600 uppercase">{{ __('Working') }}</div>
                         <div class="text-xl font-bold text-blue-700 mt-0.5">{{ $taskCounts['working'] }}</div>
                     </div>
                     <div class="p-3 bg-rose-50 rounded-xl border border-rose-200 text-center">
-                        <div class="text-[11px] font-semibold text-rose-600 uppercase">রি-ওয়ার্কিং (Bug)</div>
+                        <div class="text-[11px] font-semibold text-rose-600 uppercase">{{ __('Reworking (Bug)') }}</div>
                         <div class="text-xl font-bold text-rose-700 mt-0.5">{{ $taskCounts['reworking'] }}</div>
                     </div>
                     <div class="p-3 bg-amber-50 rounded-xl border border-amber-200 text-center">
-                        <div class="text-[11px] font-semibold text-amber-600 uppercase">ইন রিভিউ (QA)</div>
+                        <div class="text-[11px] font-semibold text-amber-600 uppercase">{{ __('In QA Review') }}</div>
                         <div class="text-xl font-bold text-amber-700 mt-0.5">{{ $taskCounts['completed'] }}</div>
                     </div>
                     <div class="p-3 bg-purple-50 rounded-xl border border-purple-200 text-center">
-                        <div class="text-[11px] font-semibold text-purple-600 uppercase">কিউএ পাস</div>
+                        <div class="text-[11px] font-semibold text-purple-600 uppercase">{{ __('QA Passed') }}</div>
                         <div class="text-xl font-bold text-purple-700 mt-0.5">{{ $taskCounts['checked'] }}</div>
                     </div>
                     <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-center">
-                        <div class="text-[11px] font-semibold text-emerald-600 uppercase">ডেলিভার্ড</div>
+                        <div class="text-[11px] font-semibold text-emerald-600 uppercase">{{ __('Delivered') }}</div>
                         <div class="text-xl font-bold text-emerald-700 mt-0.5">{{ $taskCounts['delivered'] }}</div>
                     </div>
                 </div>
@@ -138,15 +128,15 @@
                     <div>
                         <h3 class="font-bold text-lg text-gray-900 flex items-center gap-2">
                             <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
-                            প্রজেক্ট টাস্ক তালিকা ও অ্যাকশন
+                            {{ __('Project Task List & Actions') }}
                         </h3>
-                        <p class="text-xs text-gray-500 mt-0.5">ডেভেলপার ও ডিজাইনারদের টাস্ক লাইফসাইকেল (Pending &rarr; Working &rarr; QA Checked &rarr; Delivered)</p>
+                        <p class="text-xs text-gray-500 mt-0.5">{{ __('Developer & designer task lifecycle (Pending &rarr; Working &rarr; QA Checked &rarr; Delivered)') }}</p>
                     </div>
 
                     <button type="button" onclick="document.getElementById('taskFormContainer').classList.toggle('hidden')"
                         class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-700 shadow-sm transition">
                         <svg class="w-4 h-4 me-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                        নতুন টাস্ক অ্যাসাইন করুন
+                        {{ __('Assign New Task') }}
                     </button>
                 </div>
 
@@ -158,38 +148,38 @@
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             <div class="sm:col-span-2">
-                                <label class="block text-xs font-semibold text-gray-700 mb-1">টাস্ক টাইটেল <span class="text-rose-500">*</span></label>
-                                <input type="text" name="title" required placeholder="যেমন: ইউজার অথেন্টিকেশন ও রোল পারমিশন সেটআপ"
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">{{ __('Task Title') }} <span class="text-rose-500">*</span></label>
+                                <input type="text" name="title" required placeholder="{{ __('e.g. User Authentication & Role Permissions Setup') }}"
                                     class="w-full text-sm rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
                             </div>
 
                             <div>
-                                <label class="block text-xs font-semibold text-gray-700 mb-1">টাস্ক টাইপ <span class="text-rose-500">*</span></label>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">{{ __('Task Type') }} <span class="text-rose-500">*</span></label>
                                 <select name="task_type" required class="w-full text-sm rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
-                                    <option value="Development">Development (ওয়েব/অ্যাপ ডেভেলপমেন্ট)</option>
-                                    <option value="Graphics Design">UI/UX & Graphics Design</option>
-                                    <option value="Video Editing">Creative & Video Editing</option>
-                                    <option value="Marketing Campaign">Marketing & Ads</option>
-                                    <option value="QA / Testing">QA & Testing</option>
-                                    <option value="Bug Fix">Bug Fix (বাগ ফিক্স)</option>
-                                    <option value="Other">অন্যান্য (Other)</option>
+                                    <option value="Development">{{ __('Development') }}</option>
+                                    <option value="Graphics Design">{{ __('UI/UX & Graphics Design') }}</option>
+                                    <option value="Video Editing">{{ __('Creative & Video Editing') }}</option>
+                                    <option value="Marketing Campaign">{{ __('Marketing & Ads') }}</option>
+                                    <option value="QA / Testing">{{ __('QA & Testing') }}</option>
+                                    <option value="Bug Fix">{{ __('Bug Fix') }}</option>
+                                    <option value="Other">{{ __('Other') }}</option>
                                 </select>
                             </div>
 
                             <div>
-                                <label class="block text-xs font-semibold text-gray-700 mb-1">প্রাধান্য (Priority) <span class="text-rose-500">*</span></label>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">{{ __('Priority') }} <span class="text-rose-500">*</span></label>
                                 <select name="priority" required class="w-full text-sm rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
-                                    <option value="Low">Low (সাধারণ)</option>
-                                    <option value="Medium" selected>Medium (মাঝারি)</option>
-                                    <option value="High">High (জরুরি)</option>
-                                    <option value="Urgent">Urgent (অতি জরুরি)</option>
+                                    <option value="Low">{{ __('Low') }}</option>
+                                    <option value="Medium" selected>{{ __('Medium') }}</option>
+                                    <option value="High">{{ __('High') }}</option>
+                                    <option value="Urgent">{{ __('Urgent') }}</option>
                                 </select>
                             </div>
 
                             <div>
-                                <label class="block text-xs font-semibold text-gray-700 mb-1">টিম মেম্বারকে অ্যাসাইন করুন</label>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">{{ __('Assign Team Member') }}</label>
                                 <select name="assigned_to" class="w-full text-sm rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
-                                    <option value="">নির্বাচন করুন</option>
+                                    <option value="">{{ __('Select') }}</option>
                                     @foreach($teamMembers as $tm)
                                         <option value="{{ $tm->id }}">
                                             {{ $tm->name }} ({{ $tm->role->name ?? 'Staff' }})
@@ -199,20 +189,20 @@
                             </div>
 
                             <div>
-                                <label class="block text-xs font-semibold text-gray-700 mb-1">ডেডলাইন</label>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">{{ __('Deadline') }}</label>
                                 <input type="date" name="deadline" value="{{ $project->deadline?->format('Y-m-d') }}"
                                     class="w-full text-sm rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
                             </div>
 
                             <div>
-                                <label class="block text-xs font-semibold text-gray-700 mb-1">আনুমানিক সময় (ঘণ্টা)</label>
-                                <input type="number" step="0.5" name="estimated_hours" placeholder="যেমন: 8"
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">{{ __('Estimated Hours') }}</label>
+                                <input type="number" step="0.5" name="estimated_hours" placeholder="e.g. 8"
                                     class="w-full text-sm rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
                             </div>
 
                             <div class="sm:col-span-2">
-                                <label class="block text-xs font-semibold text-gray-700 mb-1">কাজের বিস্তারিত বিবরণ ও নির্দেশিকা</label>
-                                <textarea name="description" rows="2" placeholder="কিভাবে কাজটি সম্পন্ন করতে হবে..."
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">{{ __('Task Details & Instructions') }}</label>
+                                <textarea name="description" rows="2" placeholder="{{ __('Details and instructions for completing the task...') }}"
                                     class="w-full text-sm rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"></textarea>
                             </div>
                         </div>
@@ -220,10 +210,10 @@
                         <div class="flex items-center justify-end gap-2 pt-2">
                             <button type="button" onclick="document.getElementById('taskFormContainer').classList.add('hidden')"
                                 class="px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg text-xs font-semibold hover:bg-gray-50 transition">
-                                বাতিল
+                                {{ __('Cancel') }}
                             </button>
                             <button type="submit" class="px-5 py-2 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-700 transition">
-                                টাস্ক সেভ করুন
+                                {{ __('Save Task') }}
                             </button>
                         </div>
                     </form>
@@ -234,14 +224,14 @@
                     <table class="min-w-full divide-y divide-gray-200 text-left text-sm">
                         <thead class="bg-gray-50 text-gray-500 font-semibold uppercase text-xs">
                             <tr>
-                                <th class="py-3.5 px-4">টাস্ক কোড</th>
-                                <th class="py-3.5 px-4">টাইটেল ও টাইপ</th>
-                                <th class="py-3.5 px-4">অ্যাসাইন্ড কর্মী</th>
-                                <th class="py-3.5 px-4">প্রাধান্য</th>
-                                <th class="py-3.5 px-4">স্ট্যাটাস</th>
-                                <th class="py-3.5 px-4">QA স্ট্যাটাস</th>
-                                <th class="py-3.5 px-4">ডেডলাইন</th>
-                                <th class="py-3.5 px-4 text-right">অ্যাকশন</th>
+                                <th class="py-3.5 px-4">{{ __('Task Code') }}</th>
+                                <th class="py-3.5 px-4">{{ __('Title & Type') }}</th>
+                                <th class="py-3.5 px-4">{{ __('Assigned Member') }}</th>
+                                <th class="py-3.5 px-4">{{ __('Priority') }}</th>
+                                <th class="py-3.5 px-4">{{ __('Status') }}</th>
+                                <th class="py-3.5 px-4">{{ __('QA Status') }}</th>
+                                <th class="py-3.5 px-4">{{ __('Deadline') }}</th>
+                                <th class="py-3.5 px-4 text-right">{{ __('Action') }}</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100">
@@ -254,7 +244,7 @@
                                         <a href="{{ route('tasks.show', $task) }}" class="font-bold text-gray-900 hover:text-indigo-600 block">
                                             {{ $task->title }}
                                         </a>
-                                        <span class="text-xs text-gray-500">{{ $task->task_type }}</span>
+                                        <span class="text-xs text-gray-500">{{ __($task->task_type) }}</span>
                                     </td>
                                     <td class="py-3.5 px-4">
                                         @if($task->assignedUser)
@@ -265,7 +255,7 @@
                                                 <span class="text-xs text-gray-800 font-medium">{{ $task->assignedUser->name }}</span>
                                             </div>
                                         @else
-                                            <span class="text-xs text-gray-400">অ্যাসাইন হয়নি</span>
+                                            <span class="text-xs text-gray-400">{{ __('Unassigned') }}</span>
                                         @endif
                                     </td>
                                     <td class="py-3.5 px-4">
@@ -278,7 +268,7 @@
                                             };
                                         @endphp
                                         <span class="px-2 py-0.5 rounded text-[11px] font-semibold {{ $pClass }}">
-                                            {{ $task->priority }}
+                                            {{ __($task->priority) }}
                                         </span>
                                     </td>
                                     <td class="py-3.5 px-4">
@@ -293,22 +283,22 @@
                                             };
                                         @endphp
                                         <span class="px-2 py-0.5 rounded-full text-xs font-semibold border {{ $taskStClass }}">
-                                            {{ $task->status }}
+                                            {{ __($task->status) }}
                                         </span>
                                     </td>
                                     <td class="py-3.5 px-4">
                                         @if($task->qa_status === 'Passed')
                                             <span class="text-xs font-bold text-emerald-600 flex items-center gap-1">
                                                 <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                                                পাস (Passed)
+                                                {{ __('Passed') }}
                                             </span>
                                         @elseif($task->qa_status === 'Failed')
                                             <span class="text-xs font-bold text-rose-600 flex items-center gap-1">
                                                 <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
-                                                ত্রুটি (Failed)
+                                                {{ __('Failed') }}
                                             </span>
                                         @else
-                                            <span class="text-xs text-gray-400">অপেক্ষমাণ</span>
+                                            <span class="text-xs text-gray-400">{{ __('Pending') }}</span>
                                         @endif
                                     </td>
                                     <td class="py-3.5 px-4 text-xs text-gray-500">
@@ -316,16 +306,16 @@
                                     </td>
                                     <td class="py-3.5 px-4 text-right">
                                         <a href="{{ route('tasks.show', $task) }}" class="inline-flex items-center px-2.5 py-1 bg-gray-100 hover:bg-indigo-50 hover:text-indigo-600 text-gray-700 rounded text-xs font-semibold transition">
-                                            বিস্তারিত ও QA &rarr;
+                                            {{ __('Details & QA') }} &rarr;
                                         </a>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
                                     <td colspan="8" class="py-8 text-center text-gray-400">
-                                        <div class="text-sm">এই প্রজেক্টের কোনো টাস্ক এখনও তৈরি করা হয়নি।</div>
+                                        <div class="text-sm">{{ __('No tasks created for this project yet.') }}</div>
                                         <button type="button" onclick="document.getElementById('taskFormContainer').classList.remove('hidden')" class="mt-2 text-xs font-bold text-indigo-600 hover:underline">
-                                            + প্রথম টাস্ক যোগ করুন
+                                            {{ __('+ Add first task') }}
                                         </button>
                                     </td>
                                 </tr>

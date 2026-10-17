@@ -55,13 +55,13 @@ class LeadFollowUpController extends Controller
 
         ActivityLog::log(
             action: 'lead_followup_added',
-            description: "লিড {$lead->lead_code}-এ নতুন ফলো-আপ/নোট যুক্ত করা হয়েছে ({$followUp->type_label})।",
+            description: "New follow-up added to lead {$lead->lead_code} ({$followUp->type_label}).",
             subject: $lead,
             userId: auth()->id()
         );
 
         return redirect()->route('leads.show', $lead)
-            ->with('success', 'ফলো-আপ সফলভাবে সংরক্ষণ করা হয়েছে।');
+            ->with('success', 'Follow-up saved successfully.');
     }
 
     /**
@@ -72,7 +72,7 @@ class LeadFollowUpController extends Controller
         $followUp->update([
             'status' => 'completed',
             'conducted_at' => now(),
-            'notes' => $followUp->notes . ($request->filled('outcome') ? "\n[ফলাফল: " . $request->input('outcome') . ']' : ''),
+            'notes' => $followUp->notes . ($request->filled('outcome') ? "\n[Outcome: " . $request->input('outcome') . ']' : ''),
         ]);
 
         if ($followUp->lead) {
@@ -81,12 +81,12 @@ class LeadFollowUpController extends Controller
 
         ActivityLog::log(
             action: 'lead_followup_completed',
-            description: "ফলো-আপ সম্পন্ন হয়েছে ({$followUp->type_label})।",
+            description: "Follow-up completed ({$followUp->type_label}).",
             subject: $followUp->lead,
             userId: auth()->id()
         );
 
-        return back()->with('success', 'ফলো-আপ সফলভাবে সম্পন্ন হিসেবে চিহ্নিত হয়েছে।');
+        return back()->with('success', 'Follow-up marked as completed.');
     }
 
     /**
@@ -98,6 +98,6 @@ class LeadFollowUpController extends Controller
         $followUp->delete();
 
         return redirect()->route('leads.show', $lead)
-            ->with('success', 'ফলো-আপ রেকর্ড মুছে ফেলা হয়েছে।');
+            ->with('success', 'Follow-up record deleted.');
     }
 }

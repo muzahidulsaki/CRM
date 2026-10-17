@@ -81,7 +81,7 @@
                         <span class="text-slate-500 uppercase tracking-wider text-xs font-bold">The Sum of (Amount):</span>
                         <div class="text-right">
                             <span class="text-xl sm:text-2xl font-black text-emerald-600">
-                                ৳{{ number_format($payment->amount, 2) }}
+                                {{ __('BDT') }} {{ number_format($payment->amount, 2) }}
                             </span>
                             <span class="text-xs text-slate-400 block">BDT (Bangladeshi Taka)</span>
                         </div>
@@ -102,7 +102,7 @@
                             <span class="text-slate-500 uppercase tracking-wider text-xs font-bold">On Account Of / Bill Ref:</span>
                             <span class="font-bold text-slate-800">
                                 @if($payment->invoice)
-                                    Invoice #{{ $payment->invoice->invoice_no }} (Remaining Due: ৳{{ number_format($payment->invoice->due_amount, 2) }})
+                                    Invoice #{{ $payment->invoice->invoice_no }} (Remaining Due: {{ __('BDT') }} {{ number_format($payment->invoice->due_amount, 2) }})
                                 @elseif($payment->order)
                                     Order #{{ $payment->order->order_code }}
                                 @endif

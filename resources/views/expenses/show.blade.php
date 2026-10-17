@@ -39,7 +39,7 @@
 
                     <div class="text-right">
                         <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Amount</span>
-                        <div class="text-2xl font-black text-rose-600">৳{{ number_format($expense->amount, 2) }}</div>
+                        <div class="text-2xl font-black text-rose-600">{{ __('BDT') }} {{ number_format($expense->amount, 2) }}</div>
                     </div>
                 </div>
 

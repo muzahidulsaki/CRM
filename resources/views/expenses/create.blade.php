@@ -54,7 +54,7 @@
 
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                                Amount (৳) <span class="text-rose-500">*</span>
+                                Amount ({{ __('BDT') }}) <span class="text-rose-500">*</span>
                             </label>
                             <input type="number" step="0.01" min="1" name="amount" value="{{ old('amount') }}" required
                                 class="w-full text-xs font-bold px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-rose-500 outline-none"
@@ -99,7 +99,7 @@
 
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                                Recurring Tracker (SRS 22)
+                                Recurring Tracker
                             </label>
                             <select name="recurring_frequency" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-rose-500 outline-none">
                                 <option value="">-- One-time Expense --</option>

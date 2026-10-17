@@ -71,8 +71,8 @@ class AutomationService
 
             CrmNotification::create([
                 'type' => 'new_lead',
-                'title' => 'পূর্ববর্তী লিড থেকে পুনরায় যোগাযোগ: ' . $existingLead->name,
-                'message' => "{$existingLead->name} ({$phone}) ওয়েবসাইট থেকে পুনরায় সার্ভিস আগ্রহ জানিয়েছেন: {$service}",
+                'title' => 'Lead Inquiry Re-submission: ' . $existingLead->name,
+                'message' => "{$existingLead->name} ({$phone}) re-submitted inquiry for: {$service}",
                 'link_url' => route('leads.show', $existingLead->id),
                 'priority' => 'high',
             ]);
@@ -111,8 +111,8 @@ class AutomationService
         // Dispatch Notification
         CrmNotification::create([
             'type' => 'new_lead',
-            'title' => 'নতুন ওয়েবসাইট লিড: ' . $name,
-            'message' => "ওয়েবসাইট থেকে নতুন লিড এসেছে! সার্ভিস: {$service}, ফোন: {$phone}",
+            'title' => 'New Website Lead: ' . $name,
+            'message' => "New lead received from website! Service: {$service}, Phone: {$phone}",
             'link_url' => route('leads.show', $newLead->id),
             'priority' => 'urgent',
         ]);
@@ -231,8 +231,8 @@ class AutomationService
 
         CrmNotification::create([
             'type' => 'whatsapp_msg',
-            'title' => "WhatsApp মেসেজ: {$targetName}",
-            'message' => "বার্তা: \"{$messageBody}\" ({$senderPhone})",
+            'title' => "WhatsApp Message: {$targetName}",
+            'message' => "Message: \"{$messageBody}\" ({$senderPhone})",
             'link_url' => $targetUrl,
             'priority' => 'high',
         ]);
@@ -267,7 +267,7 @@ class AutomationService
             ->get();
         foreach ($upcomingRenewals as $ren) {
             $isToday = $ren->next_due_date->isToday();
-            $title = $isToday ? "জরুরি: সার্ভিস রিনিউয়াল আজকে ডিউ ({$ren->service_name})" : "আসন্ন সার্ভিস রিনিউয়াল ({$ren->service_name})";
+            $title = $isToday ? "Urgent: Service Renewal Due Today ({$ren->service_name})" : "Upcoming Service Renewal ({$ren->service_name})";
             $priority = $isToday ? 'urgent' : 'high';
 
             // Avoid repeating identical notification today
@@ -280,7 +280,7 @@ class AutomationService
                 CrmNotification::create([
                     'type' => 'renewal_alert',
                     'title' => "{$title} - {$ren->renewal_no}",
-                    'message' => "ক্লায়েন্ট: {$ren->customer->name}, ফি: ৳{$ren->renewal_fee}, ডিউ ডেট: {$ren->next_due_date->format('d M, Y')}",
+                    'message' => "Client: {$ren->customer->name}, Fee: BDT {$ren->renewal_fee}, Due Date: {$ren->next_due_date->format('d M, Y')}",
                     'link_url' => route('renewals.show', $ren->id),
                     'priority' => $priority,
                 ]);
@@ -304,8 +304,8 @@ class AutomationService
             if (!$alreadyAlerted) {
                 CrmNotification::create([
                     'type' => 'invoice_overdue',
-                    'title' => "বকেয়া ইনভয়েস রিমাইন্ডার: {$inv->invoice_no}",
-                    'message' => "ক্লায়েন্ট: {$inv->customer->name}, বকেয়া: ৳{$inv->due_amount}, নির্ধারিত তারিখ ছিল: {$inv->due_date->format('d M, Y')}",
+                    'title' => "Overdue Invoice Reminder: {$inv->invoice_no}",
+                    'message' => "Client: {$inv->customer->name}, Due: BDT {$inv->due_amount}, Due Date was: {$inv->due_date->format('d M, Y')}",
                     'link_url' => route('invoices.show', $inv->id),
                     'priority' => 'urgent',
                 ]);
@@ -329,8 +329,8 @@ class AutomationService
             if (!$alreadyAlerted) {
                 CrmNotification::create([
                     'type' => 'follow_up',
-                    'title' => "আজকের ফলো-আপ: {$target} (Follow-up #{$fu->id})",
-                    'message' => "বিষয়: {$fu->subject}, সময়: {$fu->scheduled_at->format('h:i A')}",
+                    'title' => "Today's Follow-up: {$target} (Follow-up #{$fu->id})",
+                    'message' => "Subject: {$fu->subject}, Time: {$fu->scheduled_at->format('h:i A')}",
                     'link_url' => $fu->lead ? route('leads.show', $fu->lead->id) : route('customers.show', $fu->customer_id),
                     'priority' => 'high',
                 ]);
@@ -353,8 +353,8 @@ class AutomationService
             if (!$alreadyAlerted) {
                 CrmNotification::create([
                     'type' => 'expense_alert',
-                    'title' => "আসন্ন অফিস খরচ: {$exp->title} ({$exp->expense_no})",
-                    'message' => "ক্যাটাগরি: {$exp->category}, পরিমাণ: ৳{$exp->amount}, নির্ধারিত ডেট: {$exp->due_date->format('d M, Y')}",
+                    'title' => "Upcoming Expense Reminder: {$exp->title} ({$exp->expense_no})",
+                    'message' => "Category: {$exp->category}, Amount: BDT {$exp->amount}, Due Date: {$exp->due_date->format('d M, Y')}",
                     'link_url' => route('expenses.show', $exp->id),
                     'priority' => 'medium',
                 ]);

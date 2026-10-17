@@ -33,9 +33,9 @@ class BackupController extends Controller
 
         try {
             $result = $this->backupService->createBackup($includeFiles);
-            return redirect()->route('backups.index')->with('success', "নতুন ব্যাকআপ সফলভাবে সম্পন্ন হয়েছে! ({$result['filename']} - {$result['size']})");
+            return redirect()->route('backups.index')->with('success', "New backup completed successfully! ({$result['filename']} - {$result['size']})");
         } catch (\Throwable $e) {
-            return redirect()->route('backups.index')->with('error', "ব্যাকআপ ব্যর্থ হয়েছে: " . $e->getMessage());
+            return redirect()->route('backups.index')->with('error', "Backup failed: " . $e->getMessage());
         }
     }
 
@@ -49,7 +49,7 @@ class BackupController extends Controller
         $filePath = storage_path('app/backups' . DIRECTORY_SEPARATOR . $sanitized);
 
         if (!File::exists($filePath)) {
-            abort(404, 'ব্যাকআপ ফাইলটি পাওয়া যায়নি।');
+            abort(404, 'Backup file not found.');
         }
 
         return response()->download($filePath);
@@ -65,9 +65,9 @@ class BackupController extends Controller
 
         if (File::exists($filePath)) {
             File::delete($filePath);
-            return redirect()->route('backups.index')->with('success', "ব্যাকআপ ফাইলটি মুছে ফেলা হয়েছে।");
+            return redirect()->route('backups.index')->with('success', "Backup file deleted successfully.");
         }
 
-        return redirect()->route('backups.index')->with('error', "ফাইলটি পাওয়া যায়নি।");
+        return redirect()->route('backups.index')->with('error', "File not found.");
     }
 }

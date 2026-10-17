@@ -132,8 +132,8 @@
                                         @endif
                                     </td>
                                     <td class="py-3 px-2 text-center">{{ $item->quantity }}</td>
-                                    <td class="py-3 px-2 text-right">৳{{ number_format($item->unit_price, 2) }}</td>
-                                    <td class="py-3 px-2 text-right font-bold text-slate-900">৳{{ number_format($item->total_price, 2) }}</td>
+                                    <td class="py-3 px-2 text-right">{{ __('BDT') }} {{ number_format($item->unit_price, 2) }}</td>
+                                    <td class="py-3 px-2 text-right font-bold text-slate-900">{{ __('BDT') }} {{ number_format($item->total_price, 2) }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -160,36 +160,36 @@
                     <div class="w-full sm:w-2/5 space-y-2 text-slate-600">
                         <div class="flex justify-between">
                             <span>Subtotal:</span>
-                            <span class="font-bold text-slate-900">৳{{ number_format($invoice->subtotal, 2) }}</span>
+                            <span class="font-bold text-slate-900">{{ __('BDT') }} {{ number_format($invoice->subtotal, 2) }}</span>
                         </div>
 
                         @if($invoice->discount_amount > 0)
                             <div class="flex justify-between text-rose-600">
                                 <span>Discount ({{ $invoice->discount_type === 'percentage' ? $invoice->discount_value.'%' : 'Fixed' }}):</span>
-                                <span class="font-semibold">-৳{{ number_format($invoice->discount_amount, 2) }}</span>
+                                <span class="font-semibold">-{{ __('BDT') }} {{ number_format($invoice->discount_amount, 2) }}</span>
                             </div>
                         @endif
 
                         @if($invoice->tax_amount > 0)
                             <div class="flex justify-between text-slate-600">
                                 <span>VAT / Tax ({{ $invoice->tax_percentage }}%):</span>
-                                <span class="font-semibold">+৳{{ number_format($invoice->tax_amount, 2) }}</span>
+                                <span class="font-semibold">+{{ __('BDT') }} {{ number_format($invoice->tax_amount, 2) }}</span>
                             </div>
                         @endif
 
                         <div class="flex justify-between pt-2 border-t border-slate-200 font-black text-sm text-slate-900">
                             <span>Total Invoiced:</span>
-                            <span class="text-blue-600">৳{{ number_format($invoice->total_amount, 2) }}</span>
+                            <span class="text-blue-600">{{ __('BDT') }} {{ number_format($invoice->total_amount, 2) }}</span>
                         </div>
 
                         <div class="flex justify-between text-emerald-600 font-bold">
                             <span>Amount Paid:</span>
-                            <span>৳{{ number_format($invoice->paid_amount, 2) }}</span>
+                            <span>{{ __('BDT') }} {{ number_format($invoice->paid_amount, 2) }}</span>
                         </div>
 
                         <div class="flex justify-between pt-2 border-t border-slate-300 font-black text-sm {{ $invoice->due_amount > 0 ? 'text-amber-600' : 'text-slate-400' }}">
                             <span class="uppercase tracking-wider">Balance Due:</span>
-                            <span>৳{{ number_format($invoice->due_amount, 2) }}</span>
+                            <span>{{ __('BDT') }} {{ number_format($invoice->due_amount, 2) }}</span>
                         </div>
                     </div>
                 </div>
@@ -220,7 +220,7 @@
                                             <td class="py-2 px-2 text-slate-500">{{ $p->payment_date->format('d M, Y') }}</td>
                                             <td class="py-2 px-2">{{ $p->payment_method }}</td>
                                             <td class="py-2 px-2 text-slate-400 font-mono">{{ $p->transaction_reference ?? 'N/A' }}</td>
-                                            <td class="py-2 px-2 text-right font-bold text-emerald-600">৳{{ number_format($p->amount, 2) }}</td>
+                                            <td class="py-2 px-2 text-right font-bold text-emerald-600">{{ __('BDT') }} {{ number_format($p->amount, 2) }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>

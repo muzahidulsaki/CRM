@@ -48,12 +48,12 @@ class LeadFollowUp extends Model
     public function getTypeLabelAttribute(): string
     {
         return match ($this->type) {
-            'phone_call' => 'ফোন কল (Phone Call)',
-            'whatsapp' => 'হোয়াটসঅ্যাপ (WhatsApp)',
-            'email' => 'ইমেইল (Email)',
-            'meeting' => 'মিটিং/ভিজিট (Meeting)',
-            'internal_note' => 'অভ্যন্তরীণ নোট (Internal Note)',
-            default => ucfirst(str_replace('_', ' ', $this->type)),
+            'phone_call' => __('Phone Call'),
+            'whatsapp' => __('WhatsApp'),
+            'email' => __('Email'),
+            'meeting' => __('Meeting'),
+            'internal_note' => __('Internal Note'),
+            default => __(ucfirst(str_replace('_', ' ', $this->type))),
         };
     }
 }

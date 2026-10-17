@@ -14,11 +14,11 @@
                             {{ $customer->customer_code }}
                         </span>
                         <span class="px-2 py-0.5 rounded-full text-xs font-semibold {{ $customer->status === 'active' ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-600' }}">
-                            {{ $customer->status === 'active' ? 'Active' : 'Inactive' }}
+                            {{ $customer->status === 'active' ? __('Active') : __('Inactive') }}
                         </span>
                     </div>
                     <p class="text-xs text-gray-500 mt-0.5">
-                        {{ $customer->company_name ?? 'ব্যক্তিগত ক্লায়েন্ট' }}
+                        {{ $customer->company_name ?? __('Individual Client') }}
                         @if($customer->business_type) &bull; {{ $customer->business_type }} @endif
                     </p>
                 </div>
@@ -28,12 +28,12 @@
             <div class="flex flex-wrap items-center gap-2">
                 <a href="{{ route('quotations.create', ['customer_id' => $customer->id]) }}" class="inline-flex items-center px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold uppercase tracking-wider shadow-sm transition">
                     <svg class="w-4 h-4 me-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                    কোটেশন তৈরি
+                    {{ __('Create Quotation') }}
                 </a>
 
                 <a href="{{ route('customers.edit', $customer) }}" class="inline-flex items-center px-3.5 py-2 bg-white border border-gray-300 rounded-lg text-xs font-bold text-gray-700 uppercase tracking-wider hover:bg-gray-50 shadow-sm transition">
                     <svg class="w-4 h-4 me-1.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                    সম্পাদনা
+                    {{ __('Edit') }}
                 </a>
             </div>
         </div>
@@ -41,16 +41,6 @@
 
     <div class="py-6">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-
-            <!-- Alerts -->
-            @if(session('success'))
-                <div class="p-4 bg-emerald-50 border-l-4 border-emerald-500 text-emerald-800 rounded-r-lg shadow-sm flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <svg class="w-5 h-5 text-emerald-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                        <span class="font-medium text-sm">{{ session('success') }}</span>
-                    </div>
-                </div>
-            @endif
 
             <!-- Customer 360 Grid -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -60,13 +50,13 @@
                     <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-4">
                         <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider border-b pb-3 flex items-center gap-2">
                             <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                            গ্রাহকের যোগাযোগ তথ্য
+                            {{ __('Customer Contact Info') }}
                         </h3>
 
                         <!-- Phone -->
                         <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
                             <div>
-                                <div class="text-[11px] font-semibold text-gray-500 uppercase">মোবাইল</div>
+                                <div class="text-[11px] font-semibold text-gray-500 uppercase">{{ __('Mobile') }}</div>
                                 <div class="font-bold text-gray-900 text-sm">{{ $customer->phone }}</div>
                             </div>
                             <a href="tel:{{ $customer->phone }}" class="p-2 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 rounded-lg transition">
@@ -77,31 +67,31 @@
                         <!-- WhatsApp -->
                         <div class="flex items-center justify-between p-3 bg-emerald-50 rounded-xl">
                             <div>
-                                <div class="text-[11px] font-semibold text-emerald-800 uppercase">হোয়াটসঅ্যাপ</div>
+                                <div class="text-[11px] font-semibold text-emerald-800 uppercase">{{ __('WhatsApp') }}</div>
                                 <div class="font-bold text-emerald-900 text-sm">{{ $customer->whatsapp ?? $customer->phone }}</div>
                             </div>
                             <a href="https://wa.me/{{ $customer->normalized_whatsapp ? '88' . $customer->normalized_whatsapp : '88' . $customer->normalized_phone }}" target="_blank" class="px-3 py-1 bg-emerald-600 text-white rounded text-xs font-semibold hover:bg-emerald-700 transition">
-                                WA চ্যাট 💬
+                                {{ __('WA Chat') }} 💬
                             </a>
                         </div>
 
                         @if($customer->email)
                             <div class="p-3 bg-gray-50 rounded-xl text-xs">
-                                <div class="font-semibold text-gray-500 uppercase text-[10px]">ইমেইল</div>
+                                <div class="font-semibold text-gray-500 uppercase text-[10px">{{ __('Email') }}</div>
                                 <a href="mailto:{{ $customer->email }}" class="text-indigo-600 hover:underline font-medium">{{ $customer->email }}</a>
                             </div>
                         @endif
 
                         @if($customer->address || $customer->city)
                             <div class="text-xs text-gray-600 space-y-1">
-                                <div class="font-semibold text-gray-700">ঠিকানা:</div>
+                                <div class="font-semibold text-gray-700">{{ __('Address') }}:</div>
                                 <p>{{ $customer->address ? $customer->address . ', ' : '' }}{{ $customer->city }} ({{ $customer->country }})</p>
                             </div>
                         @endif
 
                         @if($customer->notes)
                             <div class="pt-2 border-t text-xs">
-                                <div class="font-semibold text-gray-700 mb-1">নোট:</div>
+                                <div class="font-semibold text-gray-700 mb-1">{{ __('Notes') }}:</div>
                                 <p class="text-gray-600 bg-gray-50 p-2.5 rounded-lg whitespace-pre-line">{{ $customer->notes }}</p>
                             </div>
                         @endif
@@ -116,7 +106,7 @@
                         <div class="flex items-center justify-between border-b pb-3">
                             <h3 class="text-base font-bold text-gray-900 flex items-center gap-2">
                                 <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                                সমস্ত ইনকোয়ারি ও লিড ({{ $customer->leads->count() }})
+                                {{ __('All Inquiries & Leads') }} ({{ $customer->leads->count() }})
                             </h3>
                         </div>
 
@@ -131,20 +121,20 @@
                                             <span class="text-xs font-semibold text-gray-800">{{ $lead->interested_service }}</span>
                                         </div>
                                         <div class="text-[11px] text-gray-500 mt-0.5">
-                                            তারিখ: {{ $lead->created_at->format('d M, Y') }} &bull; বাজেট: ৳{{ number_format($lead->budget) }}
+                                            {{ __('Date') }}: {{ $lead->created_at->format('d M, Y') }} &bull; {{ __('Budget') }}: {{ __('BDT') }} {{ number_format($lead->budget) }}
                                         </div>
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <span class="px-2 py-0.5 rounded-full text-xs font-semibold {{ $lead->status_badge_class }}">
-                                            {{ $lead->lead_status }}
+                                            {{ __($lead->lead_status) }}
                                         </span>
                                         <a href="{{ route('leads.show', $lead) }}" class="text-xs text-indigo-600 font-semibold hover:underline">
-                                            বিস্তারিত &rarr;
+                                            {{ __('Details') }} &rarr;
                                         </a>
                                     </div>
                                 </div>
                             @empty
-                                <p class="text-xs text-gray-400 py-3 text-center">কোন লিড রেকর্ড নেই।</p>
+                                <p class="text-xs text-gray-400 py-3 text-center">{{ __('No lead records found.') }}</p>
                             @endforelse
                         </div>
                     </div>
@@ -154,7 +144,7 @@
                         <div class="flex items-center justify-between border-b pb-3">
                             <h3 class="text-base font-bold text-gray-900 flex items-center gap-2">
                                 <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                                কোটেশন হিস্ট্রি ({{ $customer->quotations->count() }})
+                                {{ __('Quotation History') }} ({{ $customer->quotations->count() }})
                             </h3>
                         </div>
 
@@ -164,21 +154,21 @@
                                     <div>
                                         <div class="font-bold text-xs text-indigo-700">{{ $quotation->quotation_code }}</div>
                                         <div class="text-[11px] text-gray-500 mt-0.5">
-                                            ইস্যু তারিখ: {{ $quotation->quotation_date->format('d M, Y') }}
+                                            {{ __('Issue Date') }}: {{ $quotation->quotation_date->format('d M, Y') }}
                                         </div>
                                     </div>
                                     <div class="flex items-center gap-3">
-                                        <span class="font-bold text-gray-900 text-sm">৳{{ number_format($quotation->total_amount, 2) }}</span>
+                                        <span class="font-bold text-gray-900 text-sm">{{ __('BDT') }} {{ number_format($quotation->total_amount, 2) }}</span>
                                         <span class="px-2 py-0.5 rounded-full text-xs font-semibold {{ $quotation->status === 'Accepted' ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-700' }}">
-                                            {{ $quotation->status }}
+                                            {{ __($quotation->status) }}
                                         </span>
                                         <a href="{{ route('quotations.show', $quotation) }}" class="text-xs text-indigo-600 font-semibold hover:underline">
-                                            প্রিন্ট &rarr;
+                                            {{ __('Print') }} &rarr;
                                         </a>
                                     </div>
                                 </div>
                             @empty
-                                <p class="text-xs text-gray-400 py-3 text-center">কোন কোটেশন পাওয়া যায়নি।</p>
+                                <p class="text-xs text-gray-400 py-3 text-center">{{ __('No quotations found.') }}</p>
                             @endforelse
                         </div>
                     </div>

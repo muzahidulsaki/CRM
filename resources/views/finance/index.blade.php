@@ -5,7 +5,7 @@
                 <h2 class="font-bold text-2xl text-slate-800 leading-tight">
                     Financial Statements & Profit/Loss
                 </h2>
-                <p class="text-xs text-slate-500 mt-1">Real-time cashflow, income, employee payouts, office overheads, and net profit ledger (SRS 25 & 26).</p>
+                <p class="text-xs text-slate-500 mt-1">Real-time cashflow, income, employee payouts, office overheads, and net profit ledger.</p>
             </div>
             <div class="flex items-center space-x-2">
                 <a href="{{ route('invoices.create') }}" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition shadow-xs">
@@ -50,7 +50,7 @@
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div>
                         <span class="inline-block px-3 py-1 bg-white/10 text-white text-xs font-bold rounded-full uppercase tracking-wider mb-2">
-                            SRS Section 25: Financial Equation
+                            Financial Equation
                         </span>
                         <h3 class="text-xl sm:text-2xl font-black tracking-tight">
                             Net Income / Profit = Total Inflow &minus; Total Outflow
@@ -63,7 +63,7 @@
                     <div class="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/20 text-center min-w-[200px]">
                         <span class="text-xs uppercase font-bold text-slate-300 tracking-wider">Net Profit</span>
                         <div class="text-3xl font-black mt-1 {{ $summary['net_profit'] >= 0 ? 'text-emerald-400' : 'text-rose-400' }}">
-                            ৳{{ number_format($summary['net_profit'], 2) }}
+                            {{ __('BDT') }} {{ number_format($summary['net_profit'], 2) }}
                         </div>
                         <span class="text-[11px] text-slate-300 mt-0.5 block">
                             {{ $summary['net_profit'] >= 0 ? 'Surplus / Net Profit' : 'Deficit / Net Loss' }}
@@ -82,15 +82,15 @@
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"/></svg>
                         </div>
                     </div>
-                    <div class="text-2xl font-black text-slate-900">৳{{ number_format($summary['total_inflow'], 2) }}</div>
+                    <div class="text-2xl font-black text-slate-900">{{ __('BDT') }} {{ number_format($summary['total_inflow'], 2) }}</div>
                     <div class="mt-4 pt-3 border-t border-slate-100 text-xs text-slate-500 space-y-1">
                         <div class="flex justify-between">
                             <span>Client Payments & Renewals:</span>
-                            <span class="font-bold text-slate-800">৳{{ number_format($summary['total_client_income'], 2) }}</span>
+                            <span class="font-bold text-slate-800">{{ __('BDT') }} {{ number_format($summary['total_client_income'], 2) }}</span>
                         </div>
                         <div class="flex justify-between text-amber-600">
                             <span>Pending Client Due:</span>
-                            <span class="font-semibold">৳{{ number_format($summary['total_receivable_due'], 2) }}</span>
+                            <span class="font-semibold">{{ __('BDT') }} {{ number_format($summary['total_receivable_due'], 2) }}</span>
                         </div>
                     </div>
                 </div>
@@ -103,15 +103,15 @@
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6"/></svg>
                         </div>
                     </div>
-                    <div class="text-2xl font-black text-slate-900">৳{{ number_format($summary['total_outflow'], 2) }}</div>
+                    <div class="text-2xl font-black text-slate-900">{{ __('BDT') }} {{ number_format($summary['total_outflow'], 2) }}</div>
                     <div class="mt-4 pt-3 border-t border-slate-100 text-xs text-slate-500 space-y-1">
                         <div class="flex justify-between">
-                            <span>Employee Payouts (Phase 4):</span>
-                            <span class="font-bold text-slate-800">৳{{ number_format($summary['total_employee_payouts'], 2) }}</span>
+                            <span>Employee Payouts:</span>
+                            <span class="font-bold text-slate-800">{{ __('BDT') }} {{ number_format($summary['total_employee_payouts'], 2) }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span>Office & Server Expenses:</span>
-                            <span class="font-bold text-slate-800">৳{{ number_format($summary['total_office_expenses'], 2) }}</span>
+                            <span class="font-bold text-slate-800">{{ __('BDT') }} {{ number_format($summary['total_office_expenses'], 2) }}</span>
                         </div>
                     </div>
                 </div>
@@ -163,7 +163,7 @@
                                     <div class="text-[11px] text-slate-400">{{ $p->payment_no }} &bull; {{ $p->payment_method }} &bull; {{ $p->payment_date->format('d M, Y') }}</div>
                                 </div>
                                 <div class="text-right">
-                                    <span class="font-black text-emerald-600 text-sm">৳{{ number_format($p->amount, 2) }}</span>
+                                    <span class="font-black text-emerald-600 text-sm">{{ __('BDT') }} {{ number_format($p->amount, 2) }}</span>
                                 </div>
                             </div>
                         @empty
@@ -189,7 +189,7 @@
                             <div>
                                 <div class="flex justify-between items-center mb-1">
                                     <span class="font-semibold text-slate-700">{{ $ec->category }}</span>
-                                    <span class="font-bold text-slate-900">৳{{ number_format($ec->total, 2) }}</span>
+                                    <span class="font-bold text-slate-900">{{ __('BDT') }} {{ number_format($ec->total, 2) }}</span>
                                 </div>
                                 @php
                                     $pct = $summary['total_office_expenses'] > 0 ? round(($ec->total / $summary['total_office_expenses']) * 100, 1) : 0;

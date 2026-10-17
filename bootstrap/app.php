@@ -18,6 +18,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => \App\Http\Middleware\CheckPermission::class,
         ]);
 
+        // Set Application Locale from Session
+        $middleware->web(append: [
+            \App\Http\Middleware\SetLocale::class,
+        ]);
+
         // Exempt API & Webhooks from CSRF checks (SRS Section 39 & 40)
         $middleware->validateCsrfTokens(except: [
             'api/*',

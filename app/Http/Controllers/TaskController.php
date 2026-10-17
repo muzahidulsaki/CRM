@@ -74,12 +74,12 @@ class TaskController extends Controller
     public function kanban(Request $request): View
     {
         $stages = [
-            'Pending' => 'অপেক্ষমাণ (Pending)',
-            'Working' => 'চলমান কাজ (Working)',
-            'Reworking' => 'রি-ওয়ার্কিং (Reworking)',
-            'Completed' => 'সাবমিটেড / রিভিউতে (In Review)',
-            'Checked' => 'কিউএ পাস (QA Checked)',
-            'Delivered' => 'ডেলিভার্ড (Delivered)',
+            'Pending' => 'Pending',
+            'Working' => 'Working',
+            'Reworking' => 'Reworking',
+            'Completed' => 'In Review',
+            'Checked' => 'QA Checked',
+            'Delivered' => 'Delivered',
         ];
 
         $projectId = $request->input('project_id');
@@ -142,12 +142,12 @@ class TaskController extends Controller
 
         ActivityLog::log(
             action: 'task_created',
-            description: "নতুন টাস্ক তৈরি হয়েছে: {$task->task_code} ({$task->title})",
+            description: "New task created: {$task->task_code} ({$task->title})",
             subject: $task,
             userId: auth()->id()
         );
 
-        return back()->with('success', "টাস্ক {$task->task_code} সফলভাবে তৈরি হয়েছে।");
+        return back()->with('success', "Task {$task->task_code} created successfully.");
     }
 
     /**
@@ -179,12 +179,12 @@ class TaskController extends Controller
 
         ActivityLog::log(
             action: 'task_updated',
-            description: "টাস্ক {$task->task_code} তথ্য আপডেট করা হয়েছে।",
+            description: "Task {$task->task_code} updated.",
             subject: $task,
             userId: auth()->id()
         );
 
-        return back()->with('success', "টাস্ক সফলভাবে আপডেট হয়েছে।");
+        return back()->with('success', "Task updated successfully.");
     }
 
     /**
@@ -211,12 +211,12 @@ class TaskController extends Controller
 
         ActivityLog::log(
             action: 'task_work_submitted',
-            description: "টাস্ক {$task->task_code} সম্পন্ন করে পর্যালোচনার জন্য জমা দেওয়া হয়েছে।",
+            description: "Task {$task->task_code} submitted for QA review.",
             subject: $task,
             userId: auth()->id()
         );
 
-        return back()->with('success', 'কাজ সফলভাবে পর্যালোচনার জন্য জমা দেওয়া হয়েছে!');
+        return back()->with('success', 'Work submitted successfully for QA review!');
     }
 
     /**
@@ -244,12 +244,12 @@ class TaskController extends Controller
 
         ActivityLog::log(
             action: 'task_qa_reviewed',
-            description: "টাস্ক {$task->task_code} QA রিভিউ: " . ($passed ? 'অনুমোদিত (Passed)' : 'ত্রুটি থাকায় রি-ওয়ার্কিং (Failed)'),
+            description: "Task {$task->task_code} QA review: " . ($passed ? 'QA Passed' : 'Reworking Required'),
             subject: $task,
             userId: auth()->id()
         );
 
-        return back()->with('success', $passed ? 'টাস্কটি QA পাস করেছে এবং অনুমোদিত হয়েছে!' : 'টাস্কটিতে সমস্যা পাওয়ায় রি-ওয়ার্কিং হিসেবে চিহ্নিত হয়েছে।');
+        return back()->with('success', $passed ? 'Task passed QA and approved!' : 'Task has issues and marked for rework.');
     }
 
     /**
@@ -264,7 +264,7 @@ class TaskController extends Controller
         $task->update(['status' => $request->input('status')]);
         OrderService::syncProjectProgress($task->project);
 
-        return back()->with('success', 'টাস্ক স্ট্যাটাস সফলভাবে পরিবর্তন হয়েছে।');
+        return back()->with('success', 'Task status updated successfully.');
     }
 
     /**
@@ -280,11 +280,11 @@ class TaskController extends Controller
 
         ActivityLog::log(
             action: 'task_deleted',
-            description: "টাস্ক {$code} মুছে ফেলা হয়েছে।",
+            description: "Task {$code} deleted.",
             subject: null,
             userId: auth()->id()
         );
 
-        return back()->with('success', "টাস্ক {$code} মুছে ফেলা হয়েছে।");
+        return back()->with('success', "Task {$code} deleted successfully.");
     }
 }

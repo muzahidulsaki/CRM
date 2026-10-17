@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Technical Assessment - Laravel Developer | Projukti Sheba</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 12mm 15mm 12mm 15mm;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #1f2937;
+            background: #ffffff;
+            line-height: 1.42;
+            font-size: 12px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 2px solid #4f46e5;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+        }
+
+        .company-name {
+            font-size: 19px;
+            font-weight: 800;
+            color: #111827;
+            letter-spacing: -0.5px;
+        }
+
+        .doc-title {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #4f46e5;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+        }
+
+        .meta-box {
+            text-align: right;
+            font-size: 11px;
+            color: #6b7280;
+        }
+
+        .meta-box strong {
+            color: #374151;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #eef2ff;
+            color: #4338ca;
+            padding: 2px 7px;
+            border-radius: 5px;
+            font-size: 10.5px;
+            font-weight: 700;
+            margin-top: 3px;
+        }
+
+        .section {
+            margin-bottom: 11px;
+        }
+
+        .section-title {
+            font-size: 12.5px;
+            font-weight: 700;
+            color: #111827;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 3px;
+            margin-bottom: 7px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .section-title span {
+            color: #4f46e5;
+        }
+
+        p {
+            margin-bottom: 5px;
+            color: #374151;
+        }
+
+        .highlight-box {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-left: 3.5px solid #4f46e5;
+            padding: 9px 12px;
+            border-radius: 6px;
+            margin-bottom: 9px;
+            font-size: 12px;
+        }
+
+        .grid-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 9px;
+        }
+
+        .card {
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 9px 11px;
+            background: #ffffff;
+        }
+
+        .card-header {
+            font-weight: 700;
+            font-size: 12px;
+            color: #1f2937;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .card-header .icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            background: #eef2ff;
+            color: #4f46e5;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        ul {
+            padding-left: 16px;
+            margin-bottom: 5px;
+        }
+
+        li {
+            margin-bottom: 3px;
+            color: #374151;
+        }
+
+        .criteria-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+            margin-top: 4px;
+        }
+
+        .criteria-table th,
+        .criteria-table td {
+            border: 1px solid #e5e7eb;
+            padding: 5px 8px;
+            text-align: left;
+        }
+
+        .criteria-table th {
+            background: #f9fafb;
+            font-weight: 700;
+            color: #374151;
+        }
+
+        .footer {
+            margin-top: 14px;
+            padding-top: 7px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            font-size: 10.5px;
+            color: #9ca3af;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <div>
+            <div class="company-name">Projukti Sheba</div>
+            <div class="doc-title">Engineering Hiring Assessment</div>
+        </div>
+        <div class="meta-box">
+            <div><strong>Position:</strong> Laravel / Full-Stack Engineer</div>
+            <div><strong>Estimated Effort:</strong> 24–48 Hours</div>
+            <div class="badge">Practical Coding Challenge</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title"><span>01.</span> Challenge Objective</div>
+        <div class="highlight-box">
+            Build a standalone, clean Laravel mini-application titled <strong>"Task & Time Tracker"</strong>.
+            Demonstrate your software craftsmanship across database modeling, Eloquent relationships, state resilience,
+            front-end interactivity, and clean architecture.
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title"><span>02.</span> Core Functional Requirements</div>
+        <div class="grid-cards">
+            <div class="card">
+                <div class="card-header">
+                    <span class="icon">A</span>
+                    <span>Task Checklist / Sub-Tasks</span>
+                </div>
+                <ul>
+                    <li>Users can create tasks and access a dedicated <strong>Task Detail View</strong>.</li>
+                    <li>Inside a task, users can add and remove multiple checklist items (sub-tasks).</li>
+                    <li>Checklist items can be marked complete/incomplete. Seamless updates (without a full page reload)
+                        are strongly preferred.</li>
+                    <li>A <strong>dynamic progress indicator</strong> must automatically reflect the completion rate of
+                        checklist items.</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="icon">B</span>
+                    <span>Live Stopwatch & Worklogs</span>
+                </div>
+                <ul>
+                    <li>An interactive real-time stopwatch widget on the task view (<strong>Start</strong>,
+                        <strong>Pause</strong>, <strong>Stop & Save</strong>).</li>
+                    <li><strong>Resilience:</strong> The stopwatch must not lose elapsed time if the user refreshes or
+                        reloads the browser window.</li>
+                    <li>Stopping the timer prompts for a work note and saves duration into a persistent
+                        <strong>Worklogs</strong> table linked to the task.</li>
+                    <li>A chronological history of recorded work sessions should be displayed on the task.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title"><span>03.</span> Technical Architecture & Freedom</div>
+        <p>You have architectural freedom regarding UI styling and schema specifics, but we expect standard Laravel
+            conventions:</p>
+        <ul>
+            <li><strong>Relational Design:</strong> Clear migrations and foreign keys connecting Tasks, Checklists, and
+                Worklogs.</li>
+            <li><strong>Eloquent Models:</strong> Well-defined relationships (`hasMany`, `belongsTo`) and proper model
+                encapsulation.</li>
+            <li><strong>Front-End Interaction:</strong> Clean JavaScript (Vanilla JS, Alpine.js, Vue, or Fetch API) with
+                reliable state handling (e.g. `localStorage`).</li>
+            <li><strong>Validation & Security:</strong> Proper request validation, error states, and CSRF protection.
+            </li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <div class="section-title"><span>04.</span> Evaluation Rubric</div>
+        <table class="criteria-table">
+            <thead>
+                <tr>
+                    <th style="width: 25%;">Criteria</th>
+                    <th>Evaluation Focus</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Architecture & Code</strong></td>
+                    <td>Adherence to Laravel conventions, clean controllers, readable code, and proper separation of
+                        concerns.</td>
+                </tr>
+                <tr>
+                    <td><strong>Problem Solving</strong></td>
+                    <td>How cleanly you handle stopwatch persistence through page refreshes and dynamic progress
+                        recalculations.</td>
+                </tr>
+                <tr>
+                    <td><strong>UI / UX Quality</strong></td>
+                    <td>Intuitive layout, responsive design, smooth feedback states, and overall attention to usability.
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Git Hygiene</strong></td>
+                    <td>Meaningful, incremental commit history demonstrating your iterative development thought process.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section" style="margin-top: 10px;">
+        <div class="section-title"><span>05.</span> Submission Instructions</div>
+        <ul>
+            <li>Push the solution to a public or shared <strong>GitHub / GitLab</strong> repository.</li>
+            <li>Include a concise <strong>README.md</strong> outlining setup steps (migrations, seeds, dependencies).
+            </li>
+            <li>Send the repository link to our hiring team upon completion.</li>
+        </ul>
+    </div>
+
+    <div class="footer">
+        <div>Projukti Sheba &copy; Engineering Recruitment</div>
+        <div>Confidential &bull; Practical Assessment Brief</div>
+    </div>
+
+</body>
+
+</html>

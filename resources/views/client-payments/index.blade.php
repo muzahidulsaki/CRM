@@ -33,7 +33,7 @@
                         <span class="text-xs font-semibold">Total Collections</span>
                         <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     </div>
-                    <div class="text-2xl font-black text-slate-900">৳{{ number_format($metrics['total_collected'], 2) }}</div>
+                    <div class="text-2xl font-black text-slate-900">{{ __('BDT') }} {{ number_format($metrics['total_collected'], 2) }}</div>
                     <p class="text-[11px] text-slate-400 mt-1">{{ $metrics['payments_count'] }} Transactions recorded</p>
                 </div>
 
@@ -42,7 +42,7 @@
                         <span class="text-xs font-semibold">Today's Collection</span>
                         <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                     </div>
-                    <div class="text-2xl font-black text-blue-600">৳{{ number_format($metrics['today_collected'], 2) }}</div>
+                    <div class="text-2xl font-black text-blue-600">{{ __('BDT') }} {{ number_format($metrics['today_collected'], 2) }}</div>
                     <p class="text-[11px] text-slate-400 mt-1">{{ now()->format('d M, Y') }}</p>
                 </div>
 
@@ -51,7 +51,7 @@
                         <span class="text-xs font-semibold">This Month's Inflow</span>
                         <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
                     </div>
-                    <div class="text-2xl font-black text-indigo-600">৳{{ number_format($metrics['month_collected'], 2) }}</div>
+                    <div class="text-2xl font-black text-indigo-600">{{ __('BDT') }} {{ number_format($metrics['month_collected'], 2) }}</div>
                     <p class="text-[11px] text-slate-400 mt-1">{{ now()->format('F Y') }}</p>
                 </div>
 
@@ -144,7 +144,7 @@
                                         @endif
                                     </td>
                                     <td class="px-5 py-3.5 whitespace-nowrap text-right font-black text-emerald-600 text-sm">
-                                        ৳{{ number_format($p->amount, 2) }}
+                                        {{ __('BDT') }} {{ number_format($p->amount, 2) }}
                                     </td>
                                     <td class="px-5 py-3.5 whitespace-nowrap text-right">
                                         <a href="{{ route('client-payments.show', $p) }}" class="inline-flex items-center px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded transition">

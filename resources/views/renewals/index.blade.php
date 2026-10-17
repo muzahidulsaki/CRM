@@ -5,7 +5,7 @@
                 <h2 class="font-bold text-2xl text-slate-800 leading-tight">
                     Service Renewals & Subscriptions
                 </h2>
-                <p class="text-xs text-slate-500 mt-1">Track recurring domain, hosting, software licenses, and automated payment alerts (SRS 18).</p>
+                <p class="text-xs text-slate-500 mt-1">Track recurring domain, hosting, software licenses, and automated payment alerts.</p>
             </div>
             <div class="flex items-center space-x-3">
                 <a href="{{ route('renewals.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg shadow-sm transition">
@@ -60,7 +60,7 @@
                         <span class="text-xs font-semibold">Annual ARR Value</span>
                         <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     </div>
-                    <div class="text-2xl font-black text-slate-900">৳{{ number_format($metrics['total_annual_value']) }}</div>
+                    <div class="text-2xl font-black text-slate-900">{{ __('BDT') }} {{ number_format($metrics['total_annual_value']) }}</div>
                     <p class="text-[11px] text-slate-400 mt-1">{{ $metrics['total_active'] }} Total subscriptions</p>
                 </div>
             </div>
@@ -107,7 +107,7 @@
                                 <th class="px-5 py-3">Client</th>
                                 <th class="px-5 py-3">Cycle</th>
                                 <th class="px-5 py-3">Next Due Date</th>
-                                <th class="px-5 py-3 text-right">Fee (৳)</th>
+                                <th class="px-5 py-3 text-right">Fee ({{ __('BDT') }})</th>
                                 <th class="px-5 py-3 text-center">Alert Status</th>
                                 <th class="px-5 py-3 text-right">Actions</th>
                             </tr>
@@ -142,7 +142,7 @@
                                         </div>
                                     </td>
                                     <td class="px-5 py-3.5 whitespace-nowrap text-right font-black text-slate-900">
-                                        ৳{{ number_format($ren->renewal_fee, 2) }}
+                                        {{ __('BDT') }} {{ number_format($ren->renewal_fee, 2) }}
                                     </td>
                                     <td class="px-5 py-3.5 whitespace-nowrap text-center">
                                         <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold border {{ $ren->status_badge_color }}">

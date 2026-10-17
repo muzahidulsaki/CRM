@@ -56,7 +56,7 @@
                                 @foreach($invoices as $inv)
                                     <option value="{{ $inv->id }}" data-due="{{ $inv->due_amount }}" data-customer="{{ $inv->customer_id }}"
                                         {{ (old('invoice_id', $prefilledInvoice?->id) == $inv->id) ? 'selected' : '' }}>
-                                        {{ $inv->invoice_no }} ({{ $inv->customer->name }} - Due: ৳{{ number_format($inv->due_amount) }})
+                                        {{ $inv->invoice_no }} ({{ $inv->customer->name }} - Due: {{ __('BDT') }} {{ number_format($inv->due_amount) }})
                                     </option>
                                 @endforeach
                             </select>
@@ -71,7 +71,7 @@
                                 @foreach($orders as $ord)
                                     <option value="{{ $ord->id }}" data-due="{{ $ord->due_amount }}" data-customer="{{ $ord->customer_id }}"
                                         {{ (old('order_id', $prefilledOrder?->id) == $ord->id) ? 'selected' : '' }}>
-                                        {{ $ord->order_code }} (Due: ৳{{ number_format($ord->due_amount) }})
+                                        {{ $ord->order_code }} (Due: {{ __('BDT') }} {{ number_format($ord->due_amount) }})
                                     </option>
                                 @endforeach
                             </select>
@@ -79,7 +79,7 @@
 
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                                Amount Paid (৳) <span class="text-rose-500">*</span>
+                                Amount Paid ({{ __('BDT') }}) <span class="text-rose-500">*</span>
                             </label>
                             <input type="number" step="0.01" min="1" name="amount" id="amount"
                                 value="{{ old('amount', $prefilledInvoice?->due_amount ?? ($prefilledOrder?->due_amount ?? '')) }}" required

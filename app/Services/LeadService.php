@@ -105,7 +105,7 @@ class LeadService
                 'is_duplicate' => true,
                 'type' => 'customer',
                 'record' => $matchedCustomer,
-                'message' => "এই ফোন বা ইমেইল দিয়ে একজন বিদ্যমান গ্রাহক ({$matchedCustomer->customer_code}: {$matchedCustomer->name}) পাওয়া গেছে।",
+                'message' => "An existing customer ({$matchedCustomer->customer_code}: {$matchedCustomer->name}) was found with this phone or email.",
             ];
         }
 
@@ -135,7 +135,7 @@ class LeadService
                 'is_duplicate' => true,
                 'type' => 'lead',
                 'record' => $matchedLead,
-                'message' => "এই ফোন বা ইমেইল দিয়ে ইতিমধ্যে একটি লিড ({$matchedLead->lead_code}: {$matchedLead->name}, স্ট্যাটাস: {$matchedLead->lead_status}) বিদ্যমান রয়েছে।",
+                'message' => "An existing lead ({$matchedLead->lead_code}: {$matchedLead->name}, Status: {$matchedLead->lead_status}) already exists with this phone or email.",
             ];
         }
 
@@ -205,7 +205,7 @@ class LeadService
             // Log activity
             ActivityLog::log(
                 action: 'converted_to_customer',
-                description: "লিড {$lead->lead_code} সফলভাবে কাস্টমার {$customer->customer_code}-এ রূপান্তরিত হয়েছে।",
+                description: "Lead {$lead->lead_code} successfully converted to customer {$customer->customer_code}.",
                 subject: $customer,
                 userId: $userId ?? auth()->id(),
                 properties: ['lead_id' => $lead->id, 'lead_code' => $lead->lead_code]

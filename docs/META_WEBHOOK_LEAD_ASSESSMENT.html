@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Technical Assessment - Meta Webhook & Lead Automation Engine | Projukti Sheba</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 10mm 13mm 10mm 13mm;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #1f2937;
+            background: #ffffff;
+            line-height: 1.36;
+            font-size: 11px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 2px solid #2563eb;
+            padding-bottom: 6px;
+            margin-bottom: 8px;
+        }
+        .company-name {
+            font-size: 18px;
+            font-weight: 800;
+            color: #0f172a;
+            letter-spacing: -0.5px;
+        }
+        .doc-title {
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #2563eb;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+        }
+        .meta-box {
+            text-align: right;
+            font-size: 10px;
+            color: #64748b;
+        }
+        .badge {
+            display: inline-block;
+            background: #eff6ff;
+            color: #1d4ed8;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-size: 9.5px;
+            font-weight: 700;
+            margin-top: 2px;
+            border: 1px solid #bfdbfe;
+        }
+
+        .section {
+            margin-bottom: 8px;
+        }
+        .section-title {
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #0f172a;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 2px;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .section-title span {
+            color: #2563eb;
+        }
+
+        .highlight-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-left: 3.5px solid #2563eb;
+            padding: 6px 10px;
+            border-radius: 4px;
+            margin-bottom: 7px;
+            font-size: 11px;
+        }
+
+        .grid-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 7px;
+        }
+        .card {
+            border: 1px solid #e2e8f0;
+            border-radius: 5px;
+            padding: 7px 9px;
+            background: #ffffff;
+        }
+        .card-header {
+            font-weight: 700;
+            font-size: 11px;
+            color: #1e293b;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .card-header .icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+            background: #eff6ff;
+            color: #2563eb;
+            font-size: 9px;
+            font-weight: bold;
+        }
+
+        ul {
+            padding-left: 14px;
+            margin-bottom: 3px;
+        }
+        li {
+            margin-bottom: 2px;
+            color: #334155;
+        }
+
+        .split-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .footer {
+            margin-top: 8px;
+            padding-top: 5px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            font-size: 9.5px;
+            color: #94a3b8;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div>
+            <div class="company-name">Projukti Sheba</div>
+            <div class="doc-title">Engineering Hiring Assessment Brief</div>
+        </div>
+        <div class="meta-box">
+            <div><strong>Position:</strong> Mid-Level Laravel / Backend Engineer</div>
+            <div><strong>Expected Effort:</strong> 24–48 Hours</div>
+            <div class="badge">Real-World API & Webhook Automation</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title"><span>01.</span> Challenge Objective</div>
+        <div class="highlight-box">
+            Build a standalone Laravel application titled <strong>"Meta Webhook & Automated Lead Ingestion Engine"</strong>. 
+            The goal is to automatically capture customer inquiries from Meta (Facebook Messenger & Lead Ads), verify payload authenticity, prevent duplicates, distribute leads across sales agents, and view them on a clean management dashboard.
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title"><span>02.</span> Core Functional Requirements</div>
+        <div class="grid-cards">
+            <div class="card">
+                <div class="card-header">
+                    <span class="icon">A</span>
+                    <span>Meta Webhook Handshake & Verification (GET)</span>
+                </div>
+                <ul>
+                    <li>Implement the Meta Webhook Verification endpoint: <code>GET /api/v1/webhooks/meta</code>.</li>
+                    <li>Validate <code>hub.mode</code> and <code>hub.verify_token</code> against a configured secret in <code>.env</code>.</li>
+                    <li>Return the exact <code>hub.challenge</code> string with <strong>HTTP 200 OK</strong> when valid; return <strong>HTTP 403 Forbidden</strong> on mismatch.</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="icon">B</span>
+                    <span>Secure Payload Ingestion & Signature (POST)</span>
+                </div>
+                <ul>
+                    <li>Handle incoming event notifications: <code>POST /api/v1/webhooks/meta</code>.</li>
+                    <li><strong>Security:</strong> Verify the <code>X-Hub-Signature-256</code> header using HMAC-SHA256 with the app secret to guarantee genuine Meta delivery.</li>
+                    <li>Parse incoming customer data (Sender ID, Name, Phone/Email, Message text, or Lead Ad form fields).</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="icon">C</span>
+                    <span>Anti-Duplicate (Idempotency) Logic</span>
+                </div>
+                <ul>
+                    <li>If the same customer (matching phone, email, or sender ID) sends multiple messages within <strong>24 hours</strong>, do NOT create duplicate leads.</li>
+                    <li>Instead, append the new message as an <strong>Activity Note</strong> under the existing lead record.</li>
+                    <li>Ensure data integrity using Eloquent relationships & database transactions.</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="icon">D</span>
+                    <span>Round-Robin Lead Assignment & Dashboard</span>
+                </div>
+                <ul>
+                    <li><strong>Round-Robin Allocation:</strong> Auto-assign newly created leads evenly among active sales agents (users with a Sales role).</li>
+                    <li><strong>Lead Explorer Dashboard:</strong> A clean UI displaying incoming leads, source badges (Messenger / Lead Ad), assigned agent, and activity logs.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="split-grid">
+        <div class="section" style="margin-bottom: 0;">
+            <div class="section-title"><span>03.</span> Architecture & Conventions</div>
+            <ul>
+                <li><strong>Environment Configuration:</strong> <code>META_VERIFY_TOKEN</code> and <code>META_APP_SECRET</code> in <code>.env.example</code>.</li>
+                <li><strong>Service Layer:</strong> Separate webhook handling into dedicated Service classes (e.g., <code>MetaWebhookService</code>) to keep controllers thin.</li>
+                <li><strong>Response Discipline:</strong> Always acknowledge valid webhooks immediately with <code>HTTP 200 {"status": "EVENT_RECEIVED"}</code>.</li>
+                <li><strong>Database Design:</strong> Relational schema linking Leads, LeadActivities, and Assigned Users.</li>
+            </ul>
+        </div>
+
+        <div class="section" style="margin-bottom: 0;">
+            <div class="section-title"><span>04.</span> Bonus / Standout Expectations</div>
+            <ul>
+                <li><strong>Queued Processing:</strong> Dispatch webhook payload to a background Queue Job to respond within <200ms.</li>
+                <li><strong>Mock Webhook Tester:</strong> Provide a sample cURL command or Postman collection with realistic Meta JSON payloads for testing.</li>
+                <li><strong>Automated Feature Test:</strong> 1 or 2 PHPUnit/Pest tests simulating valid and invalid webhook requests.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section" style="margin-top: 6px;">
+        <div class="section-title"><span>05.</span> Submission Instructions</div>
+        <ul>
+            <li><strong>Repository:</strong> Push code to a public GitHub / GitLab repository with clear, iterative commit history.</li>
+            <li><strong>Documentation:</strong> Include a comprehensive <code>README.md</code> with setup instructions, migration steps, and sample cURL test payloads.</li>
+            <li><strong>Delivery:</strong> Share the repository URL with our hiring team upon completion.</li>
+        </ul>
+    </div>
+
+    <div class="footer">
+        <div>Projukti Sheba &copy; Engineering Recruitment</div>
+        <div>Confidential Assessment Brief &bull; Meta Webhook Lead Automation</div>
+    </div>
+
+</body>
+</html>

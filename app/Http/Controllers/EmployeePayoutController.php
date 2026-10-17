@@ -91,7 +91,7 @@ class EmployeePayoutController extends Controller
         $payout = BillingService::createPayout($request->all(), auth()->id());
 
         return redirect()->route('payouts.show', $payout)
-            ->with('success', "পেমেন্ট ভাউচার {$payout->voucher_no} সফলভাবে তৈরি ও পরিশোধ সম্পন্ন হয়েছে।");
+            ->with('success', "Payment voucher {$payout->voucher_no} created and processed successfully.");
     }
 
     /**
@@ -143,12 +143,12 @@ class EmployeePayoutController extends Controller
 
         ActivityLog::log(
             action: 'employee_payout_deleted',
-            description: "ভাউচার {$voucher} বাতিল/মুছে ফেলা হয়েছে।",
+            description: "Voucher {$voucher} cancelled/deleted.",
             subject: null,
             userId: auth()->id()
         );
 
         return redirect()->route('payouts.index')
-            ->with('success', "ভাউচার {$voucher} মুছে ফেলা হয়েছে।");
+            ->with('success', "Voucher {$voucher} deleted successfully.");
     }
 }

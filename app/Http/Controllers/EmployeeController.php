@@ -113,13 +113,13 @@ class EmployeeController extends Controller
 
         ActivityLog::log(
             action: 'employee_created',
-            description: "নতুন কর্মী প্রোফাইল তৈরি হয়েছে: {$employee->employee_code} ({$employee->user->name})",
+            description: "New employee profile created: {$employee->employee_code} ({$employee->user->name})",
             subject: $employee,
             userId: auth()->id()
         );
 
         return redirect()->route('employees.show', $employee)
-            ->with('success', "কর্মী প্রোফাইল {$employee->employee_code} সফলভাবে তৈরি হয়েছে।");
+            ->with('success', "Employee profile {$employee->employee_code} created successfully.");
     }
 
     /**
@@ -172,12 +172,12 @@ class EmployeeController extends Controller
 
         ActivityLog::log(
             action: 'employee_updated',
-            description: "কর্মী প্রোফাইল {$employee->employee_code} তথ্য আপডেট করা হয়েছে।",
+            description: "Employee profile {$employee->employee_code} updated.",
             subject: $employee,
             userId: auth()->id()
         );
 
         return redirect()->route('employees.show', $employee)
-            ->with('success', 'কর্মী প্রোফাইল সফলভাবে আপডেট হয়েছে।');
+            ->with('success', 'Employee profile updated successfully.');
     }
 }

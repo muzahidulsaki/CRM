@@ -124,7 +124,7 @@ class OrderService
 
             ActivityLog::log(
                 action: 'order_created_from_quotation',
-                description: "কোটেশন {$quotation->quotation_code} থেকে অর্ডার {$order->order_code} তৈরি করা হয়েছে।",
+                description: "Order {$order->order_code} created from quotation {$quotation->quotation_code}.",
                 subject: $order,
                 userId: auth()->id()
             );
@@ -169,7 +169,7 @@ class OrderService
 
             ActivityLog::log(
                 action: 'project_created_from_order',
-                description: "অর্ডার {$order->order_code} থেকে প্রজেক্ট {$project->project_code} ({$project->name}) তৈরি হয়েছে।",
+                description: "Project {$project->project_code} ({$project->name}) created from order {$order->order_code}.",
                 subject: $project,
                 userId: auth()->id()
             );

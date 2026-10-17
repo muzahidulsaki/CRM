@@ -34,7 +34,7 @@
 
                     <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs space-y-1">
                         <p>Client: <strong class="text-slate-900">{{ $invoice->customer->name }}</strong></p>
-                        <p>Total Invoiced: <strong class="text-blue-600">৳{{ number_format($invoice->total_amount, 2) }}</strong> &bull; Paid: <strong class="text-emerald-600">৳{{ number_format($invoice->paid_amount, 2) }}</strong> &bull; Due: <strong class="text-amber-600">৳{{ number_format($invoice->due_amount, 2) }}</strong></p>
+                        <p>Total Invoiced: <strong class="text-blue-600">{{ __('BDT') }} {{ number_format($invoice->total_amount, 2) }}</strong> &bull; Paid: <strong class="text-emerald-600">{{ __('BDT') }} {{ number_format($invoice->paid_amount, 2) }}</strong> &bull; Due: <strong class="text-amber-600">{{ __('BDT') }} {{ number_format($invoice->due_amount, 2) }}</strong></p>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">

@@ -55,7 +55,7 @@
 
                         <div class="text-right">
                             <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Renewal Fee</span>
-                            <div class="text-2xl font-black text-slate-900">৳{{ number_format($renewal->renewal_fee, 2) }}</div>
+                            <div class="text-2xl font-black text-slate-900">{{ __('BDT') }} {{ number_format($renewal->renewal_fee, 2) }}</div>
                             <span class="text-[11px] text-slate-500">Per {{ $renewal->billing_cycle }}</span>
                         </div>
                     </div>
@@ -118,7 +118,7 @@
                             @csrf
 
                             <div>
-                                <label class="block text-[11px] font-bold uppercase text-emerald-900 mb-1">Amount Paid (৳)</label>
+                                <label class="block text-[11px] font-bold uppercase text-emerald-900 mb-1">Amount Paid ({{ __('BDT') }})</label>
                                 <input type="number" step="0.01" min="1" name="paid_amount" value="{{ $renewal->renewal_fee }}" required
                                     class="w-full text-xs font-bold px-3 py-2 border border-emerald-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none bg-white">
                             </div>

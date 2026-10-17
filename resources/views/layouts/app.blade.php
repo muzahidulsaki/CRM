@@ -50,12 +50,20 @@
 
                 <!-- Footer -->
                 <footer class="mt-auto py-4 px-4 sm:px-6 lg:px-8 border-t border-slate-200/60 bg-white/50 text-center text-xs text-slate-500 flex flex-col sm:flex-row justify-between items-center gap-2">
-                    <div>&copy; {{ date('Y') }} <strong>প্রযুক্তি সেবা (Projukti Sheba)</strong> — সেন্ট্রালাইজড CRM ও ERP বিজনেস সিস্টেম</div>
-                    <div class="flex items-center gap-3">
+                    <div>&copy; {{ date('Y') }} <strong>{{ __('Projukti Sheba') }}</strong> — {{ __('Centralized CRM & ERP Business Platform') }}</div>
+                    <div class="flex items-center gap-2 sm:gap-3 text-xs text-slate-500 flex-wrap justify-center">
                         <span class="inline-flex items-center gap-1.5 text-[11px] text-emerald-600 font-semibold">
                             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                            সিস্টেম অনলাইন ও সুরক্ষিত (v1.0)
+                            {{ __('System Online & Secure') }} (v1.0)
                         </span>
+                        <span class="text-slate-300">|</span>
+                        <a href="#" class="hover:text-slate-800 transition">{{ __('Help') }}</a>
+                        <span class="text-slate-300">|</span>
+                        <a href="{{ route('public-support.create') }}" target="_blank" class="hover:text-slate-800 transition">{{ __('Support') }}</a>
+                        <span class="text-slate-300">|</span>
+                        <a href="#" class="hover:text-slate-800 transition">{{ __('Privacy') }}</a>
+                        <span class="text-slate-300">|</span>
+                        <a href="#" class="hover:text-slate-800 transition">{{ __('Terms') }}</a>
                     </div>
                 </footer>
             </div>

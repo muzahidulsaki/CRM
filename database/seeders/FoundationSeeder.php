@@ -156,7 +156,7 @@ class FoundationSeeder extends Seeder
             ['key' => 'company_name', 'value' => 'Projukti Sheba', 'group' => 'company', 'type' => 'string', 'description' => 'Company Name'],
             ['key' => 'company_phone', 'value' => '+8801700000000', 'group' => 'company', 'type' => 'string', 'description' => 'Primary Phone'],
             ['key' => 'company_email', 'value' => 'info@projuktisheba.com', 'group' => 'company', 'type' => 'string', 'description' => 'Primary Email'],
-            ['key' => 'currency_symbol', 'value' => '৳', 'group' => 'general', 'type' => 'string', 'description' => 'Default Currency Symbol'],
+            ['key' => 'currency_symbol', 'value' => 'BDT', 'group' => 'general', 'type' => 'string', 'description' => 'Default Currency Symbol'],
             ['key' => 'currency_code', 'value' => 'BDT', 'group' => 'general', 'type' => 'string', 'description' => 'Default Currency Code'],
             ['key' => 'timezone', 'value' => 'Asia/Dhaka', 'group' => 'general', 'type' => 'string', 'description' => 'Application Timezone'],
             ['key' => 'default_video_rate_per_sec', 'value' => '8.00', 'group' => 'finance', 'type' => 'decimal', 'description' => 'Default rate per second for video editing in BDT'],

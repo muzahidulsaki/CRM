@@ -151,7 +151,7 @@ class QuotationController extends Controller
 
             ActivityLog::log(
                 action: 'quotation_created',
-                description: "নতুন কোটেশন {$quotation->quotation_code} তৈরি করা হয়েছে। মোট: " . number_format($quotation->total_amount, 2) . " ৳",
+                description: "New quotation created: {$quotation->quotation_code}. Total: BDT " . number_format($quotation->total_amount, 2),
                 subject: $quotation,
                 userId: auth()->id()
             );
@@ -160,7 +160,7 @@ class QuotationController extends Controller
         });
 
         return redirect()->route('quotations.show', $quotation)
-            ->with('success', "কোটেশন {$quotation->quotation_code} সফলভাবে তৈরি করা হয়েছে।");
+            ->with('success', "Quotation {$quotation->quotation_code} created successfully.");
     }
 
     /**
@@ -174,7 +174,7 @@ class QuotationController extends Controller
             'name' => Setting::get('company_name', 'Projukti Sheba'),
             'phone' => Setting::get('company_phone', '+8801700000000'),
             'email' => Setting::get('company_email', 'info@projuktisheba.com'),
-            'currency_symbol' => Setting::get('currency_symbol', '৳'),
+            'currency_symbol' => Setting::get('currency_symbol', 'BDT'),
         ];
 
         return view('quotations.show', compact('quotation', 'companySettings'));
@@ -255,14 +255,14 @@ class QuotationController extends Controller
 
             ActivityLog::log(
                 action: 'quotation_updated',
-                description: "কোটেশন {$quotation->quotation_code} আপডেট করা হয়েছে।",
+                description: "Quotation {$quotation->quotation_code} updated.",
                 subject: $quotation,
                 userId: auth()->id()
             );
         });
 
         return redirect()->route('quotations.show', $quotation)
-            ->with('success', "কোটেশন {$quotation->quotation_code} সফলভাবে আপডেট হয়েছে।");
+            ->with('success', "Quotation {$quotation->quotation_code} updated successfully.");
     }
 
     /**
@@ -284,12 +284,12 @@ class QuotationController extends Controller
 
         ActivityLog::log(
             action: 'quotation_status_changed',
-            description: "কোটেশন {$quotation->quotation_code} স্ট্যাটাস: '{$oldStatus}' -> '{$quotation->status}'",
+            description: "Quotation {$quotation->quotation_code} status: '{$oldStatus}' -> '{$quotation->status}'",
             subject: $quotation,
             userId: auth()->id()
         );
 
-        return back()->with('success', 'কোটেশন স্ট্যাটাস সফলভাবে আপডেট করা হয়েছে।');
+        return back()->with('success', 'Quotation status updated successfully.');
     }
 
     /**
@@ -302,12 +302,12 @@ class QuotationController extends Controller
 
         ActivityLog::log(
             action: 'quotation_deleted',
-            description: "কোটেশন {$code} মুছে ফেলা হয়েছে।",
+            description: "Quotation {$code} deleted.",
             subject: null,
             userId: auth()->id()
         );
 
         return redirect()->route('quotations.index')
-            ->with('success', "কোটেশন {$code} সফলভাবে মুছে ফেলা হয়েছে।");
+            ->with('success', "Quotation {$code} deleted successfully.");
     }
 }

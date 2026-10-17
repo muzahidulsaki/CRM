@@ -42,7 +42,7 @@ class AutomationController extends Controller
 
         $token = ApiToken::generate($request->name, $request->allowed_domain, Auth::id());
 
-        return redirect()->route('automation.index')->with('success', "API Token '{$token->name}' তৈরি হয়েছে: {$token->token}");
+        return redirect()->route('automation.index')->with('success', "API Token '{$token->name}' created: {$token->token}");
     }
 
     /**
@@ -51,9 +51,9 @@ class AutomationController extends Controller
     public function toggleToken(ApiToken $token)
     {
         $token->update(['is_active' => !$token->is_active]);
-        $status = $token->is_active ? 'সক্রিয়' : 'নিষ্ক্রিয়';
+        $status = $token->is_active ? 'Activated' : 'Deactivated';
 
-        return redirect()->route('automation.index')->with('success', "API Token '{$token->name}' সফলভাবে {$status} করা হয়েছে।");
+        return redirect()->route('automation.index')->with('success', "API Token '{$token->name}' successfully {$status}.");
     }
 
     /**
@@ -63,7 +63,7 @@ class AutomationController extends Controller
     {
         $token->delete();
 
-        return redirect()->route('automation.index')->with('success', 'API Token মুছে ফেলা হয়েছে।');
+        return redirect()->route('automation.index')->with('success', 'API Token deleted successfully.');
     }
 
     /**
@@ -73,7 +73,7 @@ class AutomationController extends Controller
     {
         $stats = $this->automationService->runAutomatedReminders();
 
-        $msg = "রিমাইন্ডার ইঞ্জিন সফলভাবে সম্পন্ন হয়েছে! (রিনিউয়াল: {$stats['renewals_alerted']}, ওভারডিউ ইনভয়েস: {$stats['invoices_alerted']}, ফলো-আপ: {$stats['followups_alerted']}, মোট অ্যালার্ট: {$stats['total_notifications']})";
+        $msg = "Reminder engine executed successfully! (Renewals: {$stats['renewals_alerted']}, Overdue Invoices: {$stats['invoices_alerted']}, Follow-ups: {$stats['followups_alerted']}, Total Alerts: {$stats['total_notifications']})";
 
         return redirect()->back()->with('success', $msg);
     }
@@ -98,7 +98,7 @@ class AutomationController extends Controller
 
         $result = $this->automationService->processIncomingWhatsApp($payload);
 
-        return redirect()->route('automation.index')->with('success', "হোয়াটসঅ্যাপ মেসেজ সিমুলেশন সফল: " . ($result['message'] ?? 'OK'));
+        return redirect()->route('automation.index')->with('success', "WhatsApp message simulation successful: " . ($result['message'] ?? 'OK'));
     }
 
     /**
@@ -125,7 +125,7 @@ class AutomationController extends Controller
     {
         $notification->markAsRead();
 
-        return redirect()->back()->with('success', 'নোটিফিকেশন পঠিত হিসেবে চিহ্নিত করা হয়েছে।');
+        return redirect()->back()->with('success', 'Notification marked as read.');
     }
 
     /**
@@ -138,6 +138,6 @@ class AutomationController extends Controller
             'read_at' => now(),
         ]);
 
-        return redirect()->back()->with('success', 'সকল নোটিফিকেশন পঠিত হিসেবে চিহ্নিত করা হয়েছে।');
+        return redirect()->back()->with('success', 'All notifications marked as read.');
     }
 }

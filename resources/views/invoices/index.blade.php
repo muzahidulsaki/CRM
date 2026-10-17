@@ -3,18 +3,18 @@
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
                 <h2 class="font-bold text-2xl text-slate-800 leading-tight">
-                    Invoices & Client Billing
+                    {{ __('Invoices & Client Billing') }}
                 </h2>
-                <p class="text-xs text-slate-500 mt-1">Generate official client bills, track receivables, discounts, and payment status.</p>
+                <p class="text-xs text-slate-500 mt-1">{{ __('Generate official client bills, track receivables, discounts, and payment status.') }}</p>
             </div>
             <div class="flex items-center space-x-3">
                 <a href="{{ route('client-payments.create') }}" class="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow-sm transition">
                     <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                    Record Payment
+                    {{ __('Record Payment') }}
                 </a>
                 <a href="{{ route('invoices.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg shadow-sm transition">
                     <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                    Create New Invoice
+                    {{ __('Create New Invoice') }}
                 </a>
             </div>
         </div>
@@ -37,7 +37,7 @@
                         <span class="text-xs font-semibold">Total Invoiced</span>
                         <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                     </div>
-                    <div class="text-2xl font-black text-slate-900">৳{{ number_format($metrics['total_invoiced'], 2) }}</div>
+                    <div class="text-2xl font-black text-slate-900">{{ __('BDT') }} {{ number_format($metrics['total_invoiced'], 2) }}</div>
                 </div>
 
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
@@ -45,7 +45,7 @@
                         <span class="text-xs font-semibold">Total Paid</span>
                         <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     </div>
-                    <div class="text-2xl font-black text-emerald-600">৳{{ number_format($metrics['total_paid'], 2) }}</div>
+                    <div class="text-2xl font-black text-emerald-600">{{ __('BDT') }} {{ number_format($metrics['total_paid'], 2) }}</div>
                     <p class="text-[11px] text-slate-400 mt-1">{{ $metrics['paid_invoices_count'] }} Invoices fully cleared</p>
                 </div>
 
@@ -54,7 +54,7 @@
                         <span class="text-xs font-semibold">Receivable Due</span>
                         <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     </div>
-                    <div class="text-2xl font-black text-amber-600">৳{{ number_format($metrics['total_due'], 2) }}</div>
+                    <div class="text-2xl font-black text-amber-600">{{ __('BDT') }} {{ number_format($metrics['total_due'], 2) }}</div>
                     <p class="text-[11px] text-slate-400 mt-1">{{ $metrics['due_invoices_count'] }} Invoices pending</p>
                 </div>
 
@@ -156,13 +156,13 @@
                                         {{ $inv->due_date->format('d M, Y') }}
                                     </td>
                                     <td class="px-5 py-3.5 whitespace-nowrap text-right font-bold text-slate-900">
-                                        ৳{{ number_format($inv->total_amount, 2) }}
+                                        {{ __('BDT') }} {{ number_format($inv->total_amount, 2) }}
                                     </td>
                                     <td class="px-5 py-3.5 whitespace-nowrap text-right text-emerald-600 font-semibold">
-                                        ৳{{ number_format($inv->paid_amount, 2) }}
+                                        {{ __('BDT') }} {{ number_format($inv->paid_amount, 2) }}
                                     </td>
                                     <td class="px-5 py-3.5 whitespace-nowrap text-right font-bold {{ $inv->due_amount > 0 ? 'text-amber-600' : 'text-slate-400' }}">
-                                        ৳{{ number_format($inv->due_amount, 2) }}
+                                        {{ __('BDT') }} {{ number_format($inv->due_amount, 2) }}
                                     </td>
                                     <td class="px-5 py-3.5 whitespace-nowrap text-center">
                                         <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold border {{ $inv->status_badge_color }}">

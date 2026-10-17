@@ -91,6 +91,6 @@ class VideoBilling extends Model
     {
         $mins = floor($this->total_seconds / 60);
         $secs = $this->total_seconds % 60;
-        return sprintf('%02d মিনিট %02d সেকেন্ড (%s সে.)', $mins, $secs, number_format($this->total_seconds));
+        return sprintf('%02dm %02ds (%s sec)', $mins, $secs, number_format($this->total_seconds));
     }
 }

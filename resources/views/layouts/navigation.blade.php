@@ -1,6 +1,7 @@
 @php
     $unreadNotificationCount = \App\Models\CrmNotification::where('is_read', false)->count();
     $currentUser = Auth::user();
+    $currentLocale = app()->getLocale();
 @endphp
 
 <!-- Mobile Sidebar Drawer (Off-canvas) -->
@@ -44,14 +45,28 @@
             <!-- Mobile Drawer Content -->
             <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-slate-900 px-5 pb-4 custom-scrollbar ring-1 ring-white/10">
                 <!-- Brand Header -->
-                <div class="flex h-16 shrink-0 items-center gap-3 border-b border-slate-800">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-400 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-indigo-500/25">
-                        PS
+                <div class="flex h-16 shrink-0 items-center justify-between border-b border-slate-800">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-400 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-indigo-500/25">
+                            PS
+                        </div>
+                        <div>
+                            <div class="font-extrabold text-white text-base tracking-tight leading-none">{{ __('Projukti Sheba') }}</div>
+                            <div class="text-[11px] font-semibold text-indigo-400 tracking-wider uppercase mt-1">CRM & Business ERP</div>
+                        </div>
                     </div>
-                    <div>
-                        <div class="font-extrabold text-white text-base tracking-tight leading-none">প্রযুক্তি সেবা</div>
-                        <div class="text-[11px] font-semibold text-indigo-400 tracking-wider uppercase mt-1">CRM & Business ERP</div>
-                    </div>
+                </div>
+
+                <!-- Language Switcher in Mobile Drawer -->
+                <div class="flex items-center justify-between p-1 bg-slate-800/80 rounded-xl border border-slate-700/60">
+                    <a href="{{ route('locale.switch', 'bn') }}" 
+                       class="flex-1 py-1 text-center text-xs font-bold rounded-lg transition {{ $currentLocale === 'bn' ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-400 hover:text-white' }}">
+                        🇧🇩 বাংলা
+                    </a>
+                    <a href="{{ route('locale.switch', 'en') }}" 
+                       class="flex-1 py-1 text-center text-xs font-bold rounded-lg transition {{ $currentLocale === 'en' ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-400 hover:text-white' }}">
+                        🇬🇧 English
+                    </a>
                 </div>
 
                 <!-- Navigation Links -->
@@ -74,7 +89,7 @@
                     PS
                 </div>
                 <div>
-                    <div class="font-extrabold text-white text-base tracking-tight leading-none group-hover:text-indigo-400 transition">প্রযুক্তি সেবা</div>
+                    <div class="font-extrabold text-white text-base tracking-tight leading-none group-hover:text-indigo-400 transition">{{ __('Projukti Sheba') }}</div>
                     <div class="text-[10px] font-bold text-indigo-400 tracking-wider uppercase mt-1">CRM & ERP Platform</div>
                 </div>
             </a>
@@ -83,6 +98,8 @@
                 <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-soft-pulse" title="System Live & Healthy"></span>
             </div>
         </div>
+
+
 
         <!-- Navigation Links -->
         @include('layouts.partials.sidebar-nav-links')

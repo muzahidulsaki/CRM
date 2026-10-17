@@ -118,13 +118,13 @@ class ProjectController extends Controller
 
         ActivityLog::log(
             action: 'project_created',
-            description: "নতুন প্রজেক্ট তৈরি হয়েছে: {$project->project_code} ({$project->name})",
+            description: "New project created: {$project->project_code} ({$project->name})",
             subject: $project,
             userId: auth()->id()
         );
 
         return redirect()->route('projects.show', $project)
-            ->with('success', "প্রজেক্ট {$project->project_code} সফলভাবে তৈরি হয়েছে।");
+            ->with('success', "Project {$project->project_code} created successfully.");
     }
 
     /**
@@ -187,13 +187,13 @@ class ProjectController extends Controller
 
         ActivityLog::log(
             action: 'project_updated',
-            description: "প্রজেক্ট {$project->project_code} তথ্য আপডেট করা হয়েছে।",
+            description: "Project {$project->project_code} updated.",
             subject: $project,
             userId: auth()->id()
         );
 
         return redirect()->route('projects.show', $project)
-            ->with('success', "প্রজেক্ট তথ্য সফলভাবে আপডেট হয়েছে।");
+            ->with('success', "Project updated successfully.");
     }
 
     /**
@@ -211,12 +211,12 @@ class ProjectController extends Controller
 
         ActivityLog::log(
             action: 'project_status_updated',
-            description: "প্রজেক্ট {$project->project_code} স্ট্যাটাস: '{$old}' -> '{$project->status}'",
+            description: "Project {$project->project_code} status: '{$old}' -> '{$project->status}'",
             subject: $project,
             userId: auth()->id()
         );
 
-        return back()->with('success', 'প্রজেক্ট স্ট্যাটাস সফলভাবে আপডেট করা হয়েছে।');
+        return back()->with('success', 'Project status updated successfully.');
     }
 
     /**
@@ -229,12 +229,12 @@ class ProjectController extends Controller
 
         ActivityLog::log(
             action: 'project_deleted',
-            description: "প্রজেক্ট {$code} মুছে ফেলা হয়েছে।",
+            description: "Project {$code} deleted.",
             subject: null,
             userId: auth()->id()
         );
 
         return redirect()->route('projects.index')
-            ->with('success', "প্রজেক্ট {$code} মুছে ফেলা হয়েছে।");
+            ->with('success', "Project {$code} deleted successfully.");
     }
 }

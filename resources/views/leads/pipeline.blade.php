@@ -4,18 +4,18 @@
             <div>
                 <h2 class="font-bold text-2xl text-gray-800 leading-tight flex items-center gap-2">
                     <svg class="w-7 h-7 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"/></svg>
-                    সেলস পাইপলাইন কানবান (Sales Pipeline)
+                    {{ __('Sales Pipeline (Kanban)') }}
                 </h2>
-                <p class="text-sm text-gray-500 mt-1">পর্যায়ভিত্তিক লিড রূপান্তর ও ভিজ্যুয়াল সেলস ফানেল</p>
+                <p class="text-sm text-gray-500 mt-1">{{ __('Stage-by-stage lead conversion and visual sales funnel') }}</p>
             </div>
             <div class="flex items-center gap-2.5">
                 <a href="{{ route('leads.index') }}" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 transition">
                     <svg class="w-4 h-4 me-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
-                    লিস্ট ভিউ
+                    {{ __('List View') }}
                 </a>
                 <a href="{{ route('leads.create') }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 shadow-sm transition">
                     <svg class="w-4 h-4 me-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                    নতুন লিড
+                    {{ __('New Lead') }}
                 </a>
             </div>
         </div>
@@ -46,7 +46,7 @@
                         <!-- Column Header -->
                         <div class="p-3.5 border-b border-gray-200 bg-white rounded-t-xl flex items-center justify-between">
                             <div class="font-bold text-xs text-gray-800 tracking-tight">
-                                {{ $stageTitle }}
+                                {{ __($stageKey) }}
                             </div>
                             <span class="w-5 h-5 rounded-full bg-gray-100 text-gray-700 font-bold text-xs flex items-center justify-center">
                                 {{ $stageLeads->count() }}
@@ -83,9 +83,9 @@
 
                                     <!-- Service & Budget -->
                                     <div class="bg-gray-50 p-2 rounded-lg text-[11px] flex justify-between items-center">
-                                        <span class="text-gray-600 truncate max-w-[120px]">{{ $lead->interested_service ?? 'সার্ভিস' }}</span>
+                                        <span class="text-gray-600 truncate max-w-[120px]">{{ __($lead->interested_service ?? 'Service') }}</span>
                                         <span class="font-bold text-gray-900">
-                                            {{ $lead->budget ? '৳' . number_format($lead->budget) : '-' }}
+                                            {{ $lead->budget ? __('BDT') . ' ' . number_format($lead->budget) : '-' }}
                                         </span>
                                     </div>
 
@@ -103,10 +103,10 @@
                                             @csrf
                                             @method('PATCH')
                                             <select name="lead_status" onchange="this.form.submit()" class="w-full text-[10px] py-1 border-gray-200 rounded-md bg-gray-50 text-gray-600 focus:ring-indigo-500 focus:border-indigo-500">
-                                                <option value="" disabled selected>অন্য স্টেজে সরান...</option>
+                                                <option value="" disabled selected>{{ __('Move to stage...') }}</option>
                                                 @foreach($stages as $moveKey => $moveTitle)
                                                     @if($moveKey !== $stageKey)
-                                                        <option value="{{ $moveKey }}">&rarr; {{ $moveKey }}</option>
+                                                        <option value="{{ $moveKey }}">&rarr; {{ __($moveKey) }}</option>
                                                     @endif
                                                 @endforeach
                                             </select>
@@ -115,7 +115,7 @@
                                 </div>
                             @empty
                                 <div class="text-center py-6 text-gray-400 text-xs">
-                                    কোন লিড নেই
+                                    {{ __('No leads') }}
                                 </div>
                             @endforelse
                         </div>

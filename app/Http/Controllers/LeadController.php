@@ -187,13 +187,13 @@ class LeadController extends Controller
         // Activity log
         ActivityLog::log(
             action: 'lead_created',
-            description: "নতুন লিড তৈরি করা হয়েছে: {$lead->lead_code} ({$lead->name})",
+            description: "New lead created: {$lead->lead_code} ({$lead->name})",
             subject: $lead,
             userId: auth()->id()
         );
 
         return redirect()->route('leads.show', $lead)
-            ->with('success', "লিড {$lead->lead_code} সফলভাবে তৈরি হয়েছে।");
+            ->with('success', "Lead {$lead->lead_code} created successfully.");
     }
 
     /**
@@ -248,7 +248,7 @@ class LeadController extends Controller
         if ($oldStatus !== $lead->lead_status) {
             ActivityLog::log(
                 action: 'lead_status_changed',
-                description: "লিড {$lead->lead_code} এর স্ট্যাটাস '{$oldStatus}' থেকে '{$lead->lead_status}' এ পরিবর্তন হয়েছে।",
+                description: "Lead {$lead->lead_code} status changed from '{$oldStatus}' to '{$lead->lead_status}'.",
                 subject: $lead,
                 userId: auth()->id()
             );
@@ -264,14 +264,14 @@ class LeadController extends Controller
             $assignedName = $lead->assignedUser ? $lead->assignedUser->name : 'Unassigned';
             ActivityLog::log(
                 action: 'lead_reassigned',
-                description: "লিড {$lead->lead_code} এর দায়িত্ব দেওয়া হয়েছে: {$assignedName}",
+                description: "Lead {$lead->lead_code} assigned to: {$assignedName}",
                 subject: $lead,
                 userId: auth()->id()
             );
         }
 
         return redirect()->route('leads.show', $lead)
-            ->with('success', "লিড {$lead->lead_code} সফলভাবে আপডেট হয়েছে।");
+            ->with('success', "Lead {$lead->lead_code} updated successfully.");
     }
 
     /**
@@ -304,7 +304,7 @@ class LeadController extends Controller
         if ($oldStatus !== $lead->lead_status) {
             ActivityLog::log(
                 action: 'lead_status_changed',
-                description: "স্ট্যাটাস পরিবর্তন: '{$oldStatus}' -> '{$lead->lead_status}'",
+                description: "Status changed: '{$oldStatus}' -> '{$lead->lead_status}'",
                 subject: $lead,
                 userId: auth()->id()
             );
@@ -322,7 +322,7 @@ class LeadController extends Controller
             ]);
         }
 
-        return back()->with('success', 'স্ট্যাটাস সফলভাবে আপডেট করা হয়েছে।');
+        return back()->with('success', 'Status updated successfully.');
     }
 
     /**
@@ -333,7 +333,7 @@ class LeadController extends Controller
         $customer = LeadService::convertToCustomer($lead, auth()->id());
 
         return redirect()->route('customers.show', $customer)
-            ->with('success', "লিডটি সফলভাবে কাস্টমার {$customer->customer_code}-এ কনভার্ট হয়েছে!");
+            ->with('success', "Lead successfully converted to customer {$customer->customer_code}!");
     }
 
     /**
@@ -342,14 +342,14 @@ class LeadController extends Controller
     public function pipeline(Request $request): View
     {
         $stages = [
-            'New' => 'নতুন লিড (New)',
-            'Contacted' => 'যোগাযোগ হয়েছে (Contacted)',
-            'Interested' => 'আগ্রহী (Interested)',
-            'Meeting/Demo' => 'মিটিং/ডেমো (Meeting/Demo)',
-            'Proposal Sent' => 'প্রস্তাব পাঠানো (Proposal Sent)',
-            'Negotiation' => 'দর কষাকষি (Negotiation)',
-            'Won' => 'অর্ডার কনফার্ম (Won)',
-            'Lost' => 'বাতিল (Lost)',
+            'New' => 'New Lead',
+            'Contacted' => 'Contacted',
+            'Interested' => 'Interested',
+            'Meeting/Demo' => 'Meeting/Demo',
+            'Proposal Sent' => 'Proposal Sent',
+            'Negotiation' => 'Negotiation',
+            'Won' => 'Won',
+            'Lost' => 'Lost',
         ];
 
         $leadsByStage = [];
@@ -374,12 +374,12 @@ class LeadController extends Controller
 
         ActivityLog::log(
             action: 'lead_deleted',
-            description: "লিড {$leadCode} মুছে ফেলা হয়েছে (Soft Delete)।",
+            description: "Lead {$leadCode} deleted.",
             subject: null,
             userId: auth()->id()
         );
 
         return redirect()->route('leads.index')
-            ->with('success', "লিড {$leadCode} সফলভাবে মুছে ফেলা হয়েছে।");
+            ->with('success', "Lead {$leadCode} deleted successfully.");
     }
 }

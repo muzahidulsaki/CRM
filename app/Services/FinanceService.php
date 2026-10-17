@@ -131,7 +131,7 @@ class FinanceService
             ActivityLog::log(
                 action: 'created',
                 module: 'finance',
-                description: "Generated Invoice #{$invoice->invoice_no} for Total ৳{$invoice->total_amount}",
+                description: "Generated Invoice #{$invoice->invoice_no} for Total BDT {$invoice->total_amount}",
                 record: $invoice
             );
 
@@ -199,7 +199,7 @@ class FinanceService
             ActivityLog::log(
                 action: 'payment_received',
                 module: 'finance',
-                description: "Received payment ৳{$payment->amount} (Receipt: {$payment->payment_no})",
+                description: "Received payment BDT {$payment->amount} (Receipt: {$payment->payment_no})",
                 record: $payment
             );
 
@@ -321,7 +321,7 @@ class FinanceService
         ActivityLog::log(
             action: 'expense_logged',
             module: 'finance',
-            description: "Recorded Expense #{$expense->expense_no}: {$expense->title} (৳{$expense->amount})",
+            description: "Recorded Expense #{$expense->expense_no}: {$expense->title} (BDT {$expense->amount})",
             record: $expense
         );
 

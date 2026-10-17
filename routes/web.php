@@ -7,6 +7,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Localization switch route (en / bn)
+Route::get('/locale/{lang}', [\App\Http\Controllers\LocaleController::class, 'switch'])->name('locale.switch');
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
 

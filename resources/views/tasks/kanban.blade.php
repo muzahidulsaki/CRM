@@ -4,13 +4,13 @@
             <div>
                 <h2 class="font-bold text-2xl text-gray-800 leading-tight flex items-center gap-2">
                     <svg class="w-7 h-7 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"/></svg>
-                    ভিজ্যুয়াল কানবান বোর্ড (Task Kanban Board)
+                    {{ __('Task Kanban Board') }}
                 </h2>
-                <p class="text-sm text-gray-500 mt-1">কাজের ৬-ধাপ লাইফসাইকেল: Pending &rarr; Working &rarr; Reworking &rarr; QA Review &rarr; Checked &rarr; Delivered</p>
+                <p class="text-sm text-gray-500 mt-1">{{ __('6-Stage Lifecycle') }}: Pending &rarr; Working &rarr; Reworking &rarr; QA Review &rarr; Checked &rarr; Delivered</p>
             </div>
             <a href="{{ route('tasks.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-200 transition">
                 <svg class="w-4 h-4 me-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
-                টাস্ক টেবিল ভিউ
+                {{ __('Task Table View') }}
             </a>
         </div>
     </x-slot>
@@ -23,7 +23,7 @@
                 <form method="GET" action="{{ route('tasks.kanban') }}" class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
                     <div>
                         <select name="project_id" onchange="this.form.submit()" class="text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
-                            <option value="">সকল প্রজেক্টের টাস্ক</option>
+                            <option value="">{{ __('All Projects') }}</option>
                             @foreach($projects as $proj)
                                 <option value="{{ $proj->id }}" {{ request('project_id') == $proj->id ? 'selected' : '' }}>
                                     {{ $proj->name }} ({{ $proj->project_code }})
@@ -34,7 +34,7 @@
 
                     <div>
                         <select name="assigned_to" onchange="this.form.submit()" class="text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
-                            <option value="">সকল টিম মেম্বার</option>
+                            <option value="">{{ __('All Team Members') }}</option>
                             @foreach($teamMembers as $tm)
                                 <option value="{{ $tm->id }}" {{ request('assigned_to') == $tm->id ? 'selected' : '' }}>
                                     {{ $tm->name }}
@@ -45,13 +45,13 @@
 
                     @if(request()->anyFilled(['project_id', 'assigned_to']))
                         <a href="{{ route('tasks.kanban') }}" class="text-xs font-semibold text-gray-500 hover:text-gray-800">
-                            ফিল্টার মুছুন
+                            {{ __('Clear Filters') }}
                         </a>
                     @endif
                 </form>
 
                 <div class="text-xs text-gray-500 hidden sm:block">
-                    প্রতিটি কলামে টাস্কের বর্তমান অবস্থা ও পর্যালোচনার অগ্রগতি দেখুন
+                    {{ __('View task stage and QA progress across all workflow columns') }}
                 </div>
             </div>
 
@@ -77,7 +77,7 @@
                     <div class="bg-gray-100/70 rounded-2xl border border-gray-200 flex flex-col max-h-[85vh]">
                         <!-- Column Header -->
                         <div class="p-3.5 border-b {{ $style['header'] }} rounded-t-2xl flex items-center justify-between">
-                            <span class="font-bold text-xs">{{ $stageLabel }}</span>
+                            <span class="font-bold text-xs">{{ __($stageLabel) }}</span>
                             <span class="px-2 py-0.5 rounded-full text-xs font-bold {{ $style['badge'] }}">
                                 {{ $stageTasks->count() }}
                             </span>
@@ -102,7 +102,7 @@
                                             };
                                         @endphp
                                         <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded {{ $pClass }}">
-                                            {{ $task->priority }}
+                                            {{ __($task->priority) }}
                                         </span>
                                     </div>
 
@@ -125,7 +125,7 @@
                                                 </div>
                                                 <span class="text-gray-700 truncate max-w-[75px]">{{ $task->assignedUser->name }}</span>
                                             @else
-                                                <span class="text-gray-400 italic">অ্যাসাইন নেই</span>
+                                                <span class="text-gray-400 italic">{{ __('Unassigned') }}</span>
                                             @endif
                                         </div>
 
@@ -139,18 +139,18 @@
                                     <!-- QA Tag if applicable -->
                                     @if($task->qa_status === 'Failed')
                                         <div class="mt-2 text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded border border-rose-200">
-                                            ⚠️ রি-ওয়ার্কিং প্রয়োজন
+                                            ⚠️ {{ __('Reworking Required') }}
                                         </div>
                                     @elseif($task->qa_status === 'Passed')
                                         <div class="mt-2 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                                            ✓ কিউএ পাসড
+                                            ✓ {{ __('QA Passed') }}
                                         </div>
                                     @endif
 
                                 </div>
                             @empty
                                 <div class="py-8 text-center text-gray-400 text-xs">
-                                    কোনো টাস্ক নেই
+                                    {{ __('No tasks') }}
                                 </div>
                             @endforelse
                         </div>

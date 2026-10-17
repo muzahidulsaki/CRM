@@ -112,7 +112,7 @@ class BillingService
 
         ActivityLog::log(
             action: 'video_billing_created',
-            description: "ভিডিও বিলিং তৈরি হয়েছে: {$billing->billing_code} ({$billing->video_title}, ৳{$billing->total_payable})",
+            description: "Video billing created: {$billing->billing_code} ({$billing->video_title}, BDT {$billing->total_payable})",
             subject: $billing,
             userId: $userId
         );
@@ -134,7 +134,7 @@ class BillingService
 
         ActivityLog::log(
             action: 'video_billing_approved',
-            description: "ভিডিও বিলিং অনুমোদিত হয়েছে: {$billing->billing_code} (৳{$billing->total_payable})",
+            description: "Video billing approved: {$billing->billing_code} (BDT {$billing->total_payable})",
             subject: $billing,
             userId: $approverId
         );
@@ -203,7 +203,7 @@ class BillingService
 
             ActivityLog::log(
                 action: 'employee_payout_created',
-                description: "কর্মীর পারিশ্রমিক পরিশোধ ভাউচার তৈরি: {$payout->voucher_no} (৳{$payout->paid_amount}, মাধ্যম: {$payout->payment_method})",
+                description: "Employee payout voucher created: {$payout->voucher_no} (BDT {$payout->paid_amount}, Method: {$payout->payment_method})",
                 subject: $payout,
                 userId: $userId
             );
