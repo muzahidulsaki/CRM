@@ -103,7 +103,7 @@ class TicketService
             TicketReply::create([
                 'support_ticket_id' => $ticket->id,
                 'user_id' => auth()->id() ?? null,
-                'sender_type' => auth()->check() ? 'Agent' : 'Client',
+                'sender_type' => (auth()->check() && !auth()->user()->isClient()) ? 'Agent' : 'Client',
                 'sender_name' => $data['contact_name'],
                 'message' => "Ticket initiated: " . $ticket->subject . "\n\n" . $ticket->description,
                 'attachment_path' => $attachmentPath,

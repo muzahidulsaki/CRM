@@ -4,13 +4,19 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
+    if (auth()->check()) {
+        if (auth()->user()?->role?->slug === 'client') {
+            return redirect()->route('portal.dashboard');
+        }
+        return redirect()->route('dashboard');
+    }
     return redirect()->route('login');
 });
 
 // Localization switch route (en / bn)
 Route::get('/locale/{lang}', [\App\Http\Controllers\LocaleController::class, 'switch'])->name('locale.switch');
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'staff'])->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
 
     // Admin only routes
@@ -65,6 +71,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('quotations', \App\Http\Controllers\QuotationController::class);
 
     // Customers (Customer 360°)
+    Route::post('/customers/{customer}/portal-account', [\App\Http\Controllers\CustomerController::class, 'createPortalAccount'])->name('customers.portal-account');
+    Route::post('/customers/{customer}/portal-reset-password', [\App\Http\Controllers\CustomerController::class, 'resetPortalPassword'])->name('customers.portal-reset-password');
+    Route::patch('/customers/{customer}/portal-toggle', [\App\Http\Controllers\CustomerController::class, 'togglePortalAccess'])->name('customers.portal-toggle');
     Route::resource('customers', \App\Http\Controllers\CustomerController::class);
 
     // ==========================================
@@ -168,6 +177,32 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+// ==========================================
+// Client Self-Service Portal Routes
+// ==========================================
+Route::middleware(['auth'])->prefix('portal')->name('portal.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\PortalController::class, 'dashboard'])->name('dashboard');
+
+    // Projects
+    Route::get('/projects', [\App\Http\Controllers\PortalController::class, 'projects'])->name('projects.index');
+    Route::get('/projects/{project}', [\App\Http\Controllers\PortalController::class, 'showProject'])->name('projects.show');
+
+    // Invoices
+    Route::get('/invoices', [\App\Http\Controllers\PortalController::class, 'invoices'])->name('invoices.index');
+    Route::get('/invoices/{invoice}', [\App\Http\Controllers\PortalController::class, 'showInvoice'])->name('invoices.show');
+
+    // Support Tickets
+    Route::get('/tickets', [\App\Http\Controllers\PortalController::class, 'tickets'])->name('tickets.index');
+    Route::get('/tickets/create', [\App\Http\Controllers\PortalController::class, 'createTicket'])->name('tickets.create');
+    Route::post('/tickets', [\App\Http\Controllers\PortalController::class, 'storeTicket'])->name('tickets.store');
+    Route::get('/tickets/{ticket}', [\App\Http\Controllers\PortalController::class, 'showTicket'])->name('tickets.show');
+    Route::post('/tickets/{ticket}/reply', [\App\Http\Controllers\PortalController::class, 'replyTicket'])->name('tickets.reply');
+
+    // Profile & Security
+    Route::get('/profile', [\App\Http\Controllers\PortalController::class, 'profile'])->name('profile');
+    Route::post('/profile', [\App\Http\Controllers\PortalController::class, 'updateProfile'])->name('profile.update');
 });
 
 require __DIR__.'/auth.php';

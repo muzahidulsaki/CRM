@@ -42,6 +42,29 @@
     <div class="py-6">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
 
+            @if(session('portal_credentials'))
+                <div class="p-5 bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 text-white rounded-2xl shadow-md space-y-3">
+                    <div class="flex items-center gap-2">
+                        <span class="text-2xl">🎉</span>
+                        <h4 class="font-black text-base">{{ session('portal_credentials')['message'] }}</h4>
+                    </div>
+                    <div class="bg-black/20 p-3.5 rounded-xl flex flex-wrap items-center gap-6 text-xs sm:text-sm font-mono border border-white/20">
+                        <div>
+                            <span class="text-emerald-200 text-[11px] block font-sans uppercase font-bold">{{ __('Login URL') }}</span>
+                            <a href="{{ route('login') }}" class="font-bold underline text-white hover:text-emerald-100">{{ route('login') }}</a>
+                        </div>
+                        <div>
+                            <span class="text-emerald-200 text-[11px] block font-sans uppercase font-bold">{{ __('Email') }}</span>
+                            <span class="font-bold text-white">{{ session('portal_credentials')['email'] }}</span>
+                        </div>
+                        <div>
+                            <span class="text-emerald-200 text-[11px] block font-sans uppercase font-bold">{{ __('Password') }}</span>
+                            <span class="font-bold bg-white text-emerald-900 px-2.5 py-1 rounded select-all">{{ session('portal_credentials')['password'] }}</span>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             <!-- Customer 360 Grid -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
@@ -93,6 +116,96 @@
                             <div class="pt-2 border-t text-xs">
                                 <div class="font-semibold text-gray-700 mb-1">{{ __('Notes') }}:</div>
                                 <p class="text-gray-600 bg-gray-50 p-2.5 rounded-lg whitespace-pre-line">{{ $customer->notes }}</p>
+                            </div>
+                        @endif
+                    </div>
+
+                    <!-- Client Portal Access Management Card -->
+                    <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-4" x-data="{ showResetModal: false, showCreateModal: false }">
+                        <div class="flex items-center justify-between border-b pb-3">
+                            <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider flex items-center gap-2">
+                                <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+                                {{ __('Client Portal Account') }}
+                            </h3>
+                            @if($customer->user)
+                                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold {{ $customer->user->status === 'active' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800' }}">
+                                    {{ $customer->user->status === 'active' ? __('Portal Active') : __('Suspended') }}
+                                </span>
+                            @else
+                                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-gray-100 text-gray-600">
+                                    {{ __('Not Created') }}
+                                </span>
+                            @endif
+                        </div>
+
+                        @if($customer->user)
+                            <div class="p-3 bg-indigo-50/50 rounded-xl space-y-2 border border-indigo-100">
+                                <div class="flex items-center justify-between text-xs">
+                                    <span class="text-gray-500 font-medium">{{ __('Login Email:') }}</span>
+                                    <strong class="text-indigo-900 font-mono">{{ $customer->user->email }}</strong>
+                                </div>
+                                <div class="flex items-center justify-between text-xs">
+                                    <span class="text-gray-500 font-medium">{{ __('Role:') }}</span>
+                                    <span class="font-semibold text-gray-800">Client Portal</span>
+                                </div>
+                                <div class="flex items-center justify-between text-xs">
+                                    <span class="text-gray-500 font-medium">{{ __('Created:') }}</span>
+                                    <span class="text-gray-600">{{ $customer->user->created_at->format('d M, Y') }}</span>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-2 pt-1">
+                                <button type="button" @click="showResetModal = true" class="flex-1 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg transition text-center shadow-xs">
+                                    {{ __('Reset Password') }}
+                                </button>
+                                
+                                <form action="{{ route('customers.portal-toggle', $customer) }}" method="POST">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button type="submit" class="px-3 py-2 border rounded-lg text-xs font-bold transition {{ $customer->user->status === 'active' ? 'border-rose-300 text-rose-700 hover:bg-rose-50' : 'border-emerald-300 text-emerald-700 hover:bg-emerald-50' }}">
+                                        {{ $customer->user->status === 'active' ? __('Deactivate') : __('Activate') }}
+                                    </button>
+                                </form>
+                            </div>
+
+                            <!-- Reset Password Modal -->
+                            <div x-show="showResetModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" x-cloak>
+                                <div class="bg-white rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-xl" @click.away="showResetModal = false">
+                                    <h4 class="font-bold text-gray-900 text-base">{{ __('Reset Portal Password') }}</h4>
+                                    <p class="text-xs text-gray-500">{{ __('Enter a new password or leave blank to auto-generate a secure random password.') }}</p>
+                                    
+                                    <form action="{{ route('customers.portal-reset-password', $customer) }}" method="POST" class="space-y-3">
+                                        @csrf
+                                        <div>
+                                            <label class="block text-xs font-semibold text-gray-700 mb-1">{{ __('New Password (Optional)') }}</label>
+                                            <input type="text" name="password" placeholder="Leave blank to auto-generate" class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500">
+                                        </div>
+                                        <div class="flex justify-end gap-2 pt-2">
+                                            <button type="button" @click="showResetModal = false" class="px-3 py-1.5 text-xs text-gray-600 hover:bg-gray-100 rounded-lg">{{ __('Cancel') }}</button>
+                                            <button type="submit" class="px-4 py-1.5 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg">{{ __('Reset & Update') }}</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        @else
+                            <div class="text-xs text-gray-500 space-y-3">
+                                <p>{{ __('Create a client login account so this customer can sign in to view their projects, download invoices, and submit support tickets directly.') }}</p>
+                                
+                                <form action="{{ route('customers.portal-account', $customer) }}" method="POST" class="space-y-3 pt-1">
+                                    @csrf
+                                    <div>
+                                        <label class="block text-xs font-semibold text-gray-700 mb-1">{{ __('Login Email') }} <span class="text-rose-500">*</span></label>
+                                        <input type="email" name="email" value="{{ old('email', $customer->email) }}" required class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500" placeholder="client@example.com">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-gray-700 mb-1">{{ __('Set Password (Optional)') }}</label>
+                                        <input type="text" name="password" placeholder="Leave blank to auto-generate" class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500">
+                                    </div>
+                                    <button type="submit" class="w-full py-2.5 px-4 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center justify-center gap-1.5">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
+                                        {{ __('Create Client Portal Account') }}
+                                    </button>
+                                </form>
                             </div>
                         @endif
                     </div>

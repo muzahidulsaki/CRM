@@ -48,6 +48,16 @@ class User extends Authenticatable
         return $this->hasOne(Employee::class);
     }
 
+    public function customer(): HasOne
+    {
+        return $this->hasOne(Customer::class);
+    }
+
+    public function isClient(): bool
+    {
+        return $this->hasRole('client');
+    }
+
     public function assignedLeads(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Lead::class, 'assigned_to');

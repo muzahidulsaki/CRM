@@ -4,10 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\ActivityLog;
 use App\Models\Customer;
+use App\Models\Role;
+use App\Models\User;
 use App\Services\LeadService;
 use App\Services\PhoneHelper;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class CustomerController extends Controller
@@ -168,5 +172,105 @@ class CustomerController extends Controller
 
         return redirect()->route('customers.index')
             ->with('success', "Customer {$code} deleted successfully.");
+    }
+
+    /**
+     * Create client portal login user for this customer.
+     */
+    public function createPortalAccount(Request $request, Customer $customer): RedirectResponse
+    {
+        if ($customer->user_id) {
+            return back()->with('error', 'This customer already has a portal login account.');
+        }
+
+        $request->validate([
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+            'password' => ['nullable', 'string', 'min:6'],
+        ]);
+
+        $plainPassword = $request->filled('password') ? $request->password : Str::random(10);
+        $clientRole = Role::firstOrCreate(['slug' => 'client'], ['name' => 'Client', 'description' => 'Client Portal Access']);
+
+        $user = User::create([
+            'name' => $customer->name,
+            'email' => $request->email,
+            'phone' => $customer->phone,
+            'role_id' => $clientRole->id,
+            'status' => 'active',
+            'password' => Hash::make($plainPassword),
+            'email_verified_at' => now(),
+        ]);
+
+        $customer->update([
+            'user_id' => $user->id,
+            'email' => $request->email,
+        ]);
+
+        ActivityLog::log(
+            action: 'client_portal_account_created',
+            description: "Portal account created for customer {$customer->customer_code} ({$user->email}).",
+            subject: $customer,
+            userId: auth()->id()
+        );
+
+        return back()->with('portal_credentials', [
+            'email' => $user->email,
+            'password' => $plainPassword,
+            'message' => 'Client portal account successfully created! Please share these login details with the client.',
+        ]);
+    }
+
+    /**
+     * Reset portal password for client.
+     */
+    public function resetPortalPassword(Request $request, Customer $customer): RedirectResponse
+    {
+        if (!$customer->user) {
+            return back()->with('error', 'No portal account linked to this customer.');
+        }
+
+        $request->validate([
+            'password' => ['nullable', 'string', 'min:6'],
+        ]);
+
+        $plainPassword = $request->filled('password') ? $request->password : Str::random(10);
+        $customer->user->update([
+            'password' => Hash::make($plainPassword),
+        ]);
+
+        ActivityLog::log(
+            action: 'client_portal_password_reset',
+            description: "Portal password reset for customer {$customer->customer_code}.",
+            subject: $customer,
+            userId: auth()->id()
+        );
+
+        return back()->with('portal_credentials', [
+            'email' => $customer->user->email,
+            'password' => $plainPassword,
+            'message' => 'Portal password has been reset! Please share the new password with the client.',
+        ]);
+    }
+
+    /**
+     * Toggle active/inactive portal status.
+     */
+    public function togglePortalAccess(Customer $customer): RedirectResponse
+    {
+        if (!$customer->user) {
+            return back()->with('error', 'No portal account linked to this customer.');
+        }
+
+        $newStatus = $customer->user->status === 'active' ? 'inactive' : 'active';
+        $customer->user->update(['status' => $newStatus]);
+
+        ActivityLog::log(
+            action: 'client_portal_status_toggled',
+            description: "Portal access status changed to '{$newStatus}' for {$customer->customer_code}.",
+            subject: $customer,
+            userId: auth()->id()
+        );
+
+        return back()->with('success', "Portal access has been " . ($newStatus === 'active' ? 'activated' : 'deactivated') . ".");
     }
 }

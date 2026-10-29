@@ -15,6 +15,7 @@ class Customer extends Model
 
     protected $fillable = [
         'customer_code',
+        'user_id',
         'name',
         'company_name',
         'business_type',
@@ -42,6 +43,11 @@ class Customer extends Model
                 $customer->normalized_whatsapp = PhoneHelper::normalize($customer->whatsapp);
             }
         });
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function creator(): BelongsTo
