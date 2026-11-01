@@ -111,6 +111,7 @@ class AdsCampaignReportController extends Controller
             'order_details' => 'nullable|string',
             'starting_date' => 'nullable|date',
             'total_days' => 'nullable|integer|min:0',
+            'lifetime_budget' => 'nullable|numeric|min:0',
             'daily_cost' => 'nullable|numeric|min:0',
             'previous_dollar' => 'nullable|numeric|min:0',
             'running_dollar' => 'nullable|numeric|min:0',
@@ -163,6 +164,7 @@ class AdsCampaignReportController extends Controller
             'order_details' => 'nullable|string',
             'starting_date' => 'nullable|date',
             'total_days' => 'nullable|integer|min:0',
+            'lifetime_budget' => 'nullable|numeric|min:0',
             'daily_cost' => 'nullable|numeric|min:0',
             'previous_dollar' => 'nullable|numeric|min:0',
             'running_dollar' => 'nullable|numeric|min:0',
@@ -204,3 +206,4 @@ class AdsCampaignReportController extends Controller
         return redirect()->route('ads-reports.index')->with('success', 'Ads campaign report entry removed.');
     }
 }
+

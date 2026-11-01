@@ -151,3 +151,4 @@ class EmployeeDailyReportController extends Controller
             ->with('success', 'Review & feedback remarks saved successfully!');
     }
 }
+

@@ -29,6 +29,7 @@ class AdsCampaignReport extends Model
         'order_details',
         'starting_date',
         'total_days',
+        'lifetime_budget',
         'daily_cost',
         'previous_dollar',
         'running_dollar',
@@ -47,6 +48,7 @@ class AdsCampaignReport extends Model
         'today_checked_at' => 'date',
         'total_amount' => 'decimal:2',
         'total_dollar' => 'decimal:2',
+        'lifetime_budget' => 'decimal:2',
         'daily_cost' => 'decimal:2',
         'previous_dollar' => 'decimal:2',
         'running_dollar' => 'decimal:2',
@@ -95,3 +97,4 @@ class AdsCampaignReport extends Model
         });
     }
 }
+

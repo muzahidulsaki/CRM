@@ -160,6 +160,11 @@
                     </div>
 
                     <div>
+                        <label class="block font-bold text-slate-700 mb-1">Lifetime Budget ($)</label>
+                        <input type="number" step="0.01" name="lifetime_budget" value="{{ old('lifetime_budget', $adsReport->lifetime_budget) }}" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-xl outline-none font-semibold text-slate-800">
+                    </div>
+
+                    <div>
                         <label class="block font-bold text-slate-700 mb-1">Daily Cost ($)</label>
                         <input type="number" step="0.01" name="daily_cost" x-model="dailyCost" @input="calculateMetrics()" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-xl outline-none font-bold">
                     </div>
@@ -207,3 +212,4 @@
         </form>
     </div>
 </x-app-layout>
+

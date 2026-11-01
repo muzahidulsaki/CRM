@@ -125,7 +125,7 @@
                         <svg class="h-4 w-4 shrink-0 text-slate-400 group-hover:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/><path stroke-linecap="round" stroke-linejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/>
                         </svg>
-                        <span>{{ __('Our Ads Reports') }}</span>
+                        <span>{{ __('Client Ads Reports') }}</span>
                     </a>
                 </li>
                 <li>

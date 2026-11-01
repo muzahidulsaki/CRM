@@ -6,7 +6,7 @@
                     <span class="p-2 bg-indigo-50 text-indigo-600 rounded-xl">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/></svg>
                     </span>
-                    Our Ads Reports & Campaign Tracking
+                    Client Ads Reports & Campaign Tracking
                 </h2>
                 <p class="text-xs text-slate-500 mt-1">
                     Excel parity campaign ledger: track daily dollar burn, Facebook/Google post links, daily costing, today status checks, and client WhatsApp links.
@@ -132,9 +132,9 @@
         <div class="bg-white rounded-2xl border border-slate-200/80 shadow-2xs overflow-hidden">
             <div class="p-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
                 <span class="text-xs font-bold text-slate-700">
-                    Showing {{ $reports->firstItem() ?? 0 }}-{{ $reports->lastItem() ?? 0 }} of {{ $reports->total() }} Ads Campaigns
+                    Showing {{ $reports->firstItem() ?? 0 }}-{{ $reports->lastItem() ?? 0 }} of {{ $reports->total() }} Client Ads Campaigns
                 </span>
-                <span class="text-[11px] text-slate-500 italic">21-Column Spreadsheet View matching CRM Format.xlsx</span>
+                <span class="text-[11px] text-slate-500 italic">22-Column Spreadsheet View matching CRM_pr.xlsx Client Ads</span>
             </div>
 
             <div class="overflow-x-auto">
@@ -155,6 +155,7 @@
                             <th class="px-3 py-3 text-left">End Date</th>
                             <th class="px-3 py-3 text-left">Starting Date</th>
                             <th class="px-3 py-3 text-center">Total Days</th>
+                            <th class="px-3 py-3 text-right">Lifetime Budget ($)</th>
                             <th class="px-3 py-3 text-right">Daily Cost ($)</th>
                             <th class="px-3 py-3 text-right">Previous $</th>
                             <th class="px-3 py-3 text-right">Running $</th>
@@ -256,7 +257,12 @@
                                     {{ $row->total_days }}
                                 </td>
 
-                                <!-- 16. Daily Cost -->
+                                <!-- 16. Lifetime Budget -->
+                                <td class="px-3 py-2.5 text-right font-medium text-slate-700">
+                                    ${{ number_format($row->lifetime_budget, 2) }}
+                                </td>
+
+                                <!-- 17. Daily Cost -->
                                 <td class="px-3 py-2.5 text-right font-medium text-slate-700">
                                     ${{ number_format($row->daily_cost, 2) }}
                                 </td>
@@ -329,3 +335,4 @@
         </div>
     </div>
 </x-app-layout>
+
