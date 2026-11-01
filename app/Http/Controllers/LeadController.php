@@ -64,12 +64,77 @@ class LeadController extends Controller
         if ($followUpFilter = $request->input('follow_up')) {
             $today = now()->format('Y-m-d');
             if ($followUpFilter === 'today') {
-                $query->whereDate('next_followup_date', $today);
+                $query->where(function ($q) use ($today) {
+                    $q->whereDate('next_followup_date', $today)
+                      ->orWhereDate('followup_next_date', $today);
+                });
             } elseif ($followUpFilter === 'overdue') {
-                $query->whereDate('next_followup_date', '<', $today)
-                      ->whereNotIn('lead_status', ['Won', 'Lost']);
+                $query->where(function ($q) use ($today) {
+                    $q->whereDate('next_followup_date', '<', $today)
+                      ->orWhereDate('followup_next_date', '<', $today);
+                })->whereNotIn('lead_status', ['Won', 'Lost']);
             } elseif ($followUpFilter === 'upcoming') {
-                $query->whereDate('next_followup_date', '>', $today);
+                $query->where(function ($q) use ($today) {
+                    $q->whereDate('next_followup_date', '>', $today)
+                      ->orWhereDate('followup_next_date', '>', $today);
+                });
+            }
+        }
+
+        // Today Follow-up Direct Filter
+        if ($request->boolean('today_followup') || $request->input('follow_up') === 'today') {
+            $today = now()->format('Y-m-d');
+            $query->where(function ($q) use ($today) {
+                $q->whereDate('next_followup_date', $today)
+                  ->orWhereDate('followup_next_date', $today);
+            });
+        }
+
+        // Today Meeting Date Filter
+        if ($request->boolean('today_meeting') || $request->filled('meeting_date')) {
+            $meetingDate = $request->input('meeting_date') ?: now()->format('Y-m-d');
+            $query->whereDate('next_meeting_datetime', $meetingDate);
+        }
+
+        // Why Not Order Filter
+        if ($whyNotOrder = $request->input('why_not_order')) {
+            $query->where('why_not_order', $whyNotOrder);
+        }
+
+        // Existing Order Filter (has orders, or by category, matched via customer_id or phone)
+        if ($existingOrder = $request->input('existing_order')) {
+            if ($existingOrder === 'has_orders') {
+                $query->where(function ($q) {
+                    $q->whereHas('customer.orders')
+                      ->orWhereIn('phone', function ($sub) {
+                          $sub->select('phone')->from('customers')->whereIn('id', function ($sub2) {
+                              $sub2->select('customer_id')->from('orders')->whereNull('deleted_at');
+                          });
+                      })
+                      ->orWhereIn('normalized_phone', function ($sub) {
+                          $sub->select('normalized_phone')->from('customers')->whereIn('id', function ($sub2) {
+                              $sub2->select('customer_id')->from('orders')->whereNull('deleted_at');
+                          });
+                      });
+                });
+            } elseif ($existingOrder === 'no_orders') {
+                $query->whereDoesntHave('customer.orders')
+                      ->whereNotIn('phone', function ($sub) {
+                          $sub->select('phone')->from('customers')->whereIn('id', function ($sub2) {
+                              $sub2->select('customer_id')->from('orders')->whereNull('deleted_at');
+                          });
+                      });
+            } else {
+                $query->where(function ($q) use ($existingOrder) {
+                    $q->whereHas('customer.orders', function ($oq) use ($existingOrder) {
+                        $oq->where('service_category', 'like', "%{$existingOrder}%");
+                    })
+                    ->orWhereIn('phone', function ($sub) use ($existingOrder) {
+                        $sub->select('phone')->from('customers')->whereIn('id', function ($sub2) use ($existingOrder) {
+                            $sub2->select('customer_id')->from('orders')->where('service_category', 'like', "%{$existingOrder}%")->whereNull('deleted_at');
+                        });
+                    });
+                });
             }
         }
 
@@ -88,11 +153,16 @@ class LeadController extends Controller
             'overdue_followups' => Lead::whereDate('next_followup_date', '<', $today)->whereNotIn('lead_status', ['Won', 'Lost'])->count(),
         ];
 
-        $leadSources = Setting::get('lead_sources', []);
-        $serviceCategories = Setting::get('service_categories', []);
-        $users = User::where('status', 'active')->orderBy('name')->get();
+        $dropdowns = $this->getFormDropdowns();
 
-        return view('leads.index', compact('leads', 'metrics', 'leadSources', 'serviceCategories', 'users'));
+        return view('leads.index', array_merge([
+            'leads' => $leads,
+            'metrics' => $metrics,
+            'leadSources' => $dropdowns['leadSources'],
+            'serviceCategories' => Setting::get('service_categories', []),
+            'users' => $dropdowns['users'],
+            'whyNotOrderOptions' => $dropdowns['whyNotOrderOptions'],
+        ], $dropdowns));
     }
 
     /**
@@ -100,11 +170,10 @@ class LeadController extends Controller
      */
     public function create(): View
     {
-        $leadSources = Setting::get('lead_sources', []);
-        $serviceCategories = Setting::get('service_categories', []);
-        $users = User::where('status', 'active')->orderBy('name')->get();
+        $nextLeadCode = LeadService::generateLeadCode();
+        $dropdowns = $this->getFormDropdowns();
 
-        return view('leads.create', compact('leadSources', 'serviceCategories', 'users'));
+        return view('leads.create', array_merge(['nextLeadCode' => $nextLeadCode], $dropdowns));
     }
 
     /**
@@ -127,6 +196,11 @@ class LeadController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        // Support either field name
+        if (!$request->has('lead_temperature') && $request->has('client_temperature')) {
+            $request->merge(['lead_temperature' => $request->input('client_temperature')]);
+        }
+
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'phone' => ['required', 'string', 'max:30'],
@@ -156,33 +230,18 @@ class LeadController extends Controller
 
         $leadCode = LeadService::generateLeadCode();
 
-        $lead = Lead::create([
-            'lead_code' => $leadCode,
-            'name' => $request->input('name'),
-            'company_name' => $request->input('company_name'),
-            'business_type' => $request->input('business_type'),
-            'phone' => $request->input('phone'),
-            'whatsapp' => $request->input('whatsapp'),
-            'email' => $request->input('email'),
-            'address' => $request->input('address'),
-            'city' => $request->input('city'),
-            'country' => $request->input('country', 'Bangladesh'),
-            'website' => $request->input('website'),
-            'facebook' => $request->input('facebook'),
-            'instagram' => $request->input('instagram'),
-            'other_socials' => $request->input('other_socials'),
-            'lead_source' => $request->input('lead_source'),
-            'interested_service' => $request->input('interested_service'),
-            'budget' => $request->input('budget'),
-            'discussed_amount' => $request->input('discussed_amount'),
-            'lead_temperature' => $request->input('lead_temperature', 'Warm'),
-            'lead_status' => 'New',
-            'assigned_to' => $request->input('assigned_to'),
-            'expected_work_date' => $request->input('expected_work_date'),
-            'next_followup_date' => $request->input('next_followup_date'),
-            'notes' => $request->input('notes'),
-            'created_by' => auth()->id(),
-        ]);
+        $data = $request->except(['_token', 'allow_duplicate']);
+        $data['lead_code'] = $leadCode;
+        $data['lead_status'] = $request->input('lead_status', 'New');
+        $data['lead_temperature'] = $request->input('lead_temperature', 'Warm');
+        $data['created_by'] = auth()->id();
+
+        // If next_followup_date is empty but followup_next_date is provided, sync it
+        if (empty($data['next_followup_date']) && !empty($data['followup_next_date'])) {
+            $data['next_followup_date'] = $data['followup_next_date'];
+        }
+
+        $lead = Lead::create($data);
 
         // Activity log
         ActivityLog::log(
@@ -214,11 +273,89 @@ class LeadController extends Controller
      */
     public function edit(Lead $lead): View
     {
-        $leadSources = Setting::get('lead_sources', []);
-        $serviceCategories = Setting::get('service_categories', []);
-        $users = User::where('status', 'active')->orderBy('name')->get();
+        $dropdowns = $this->getFormDropdowns();
 
-        return view('leads.edit', compact('lead', 'leadSources', 'serviceCategories', 'users'));
+        return view('leads.edit', array_merge(['lead' => $lead], $dropdowns));
+    }
+
+    /**
+     * Helper for standardized dropdown options matching CRM Format.xlsx
+     */
+    private function getFormDropdowns(): array
+    {
+        return [
+            'whatsappStatuses' => ['Active', 'Delivered', 'Seen', 'Replied', 'Unreachable', 'Blocked'],
+            'emailStatuses' => ['Valid', 'Sent', 'Bounced', 'Opened', 'Replied', 'Invalid'],
+            'messengerStatuses' => ['Active', 'Contacted', 'Seen', 'Unresponsive'],
+            'meetingPlatforms' => ['Google Meet', 'Zoom', 'WhatsApp Video/Call', 'Phone Call', 'In-Person (Office)', 'Other'],
+            'srsStatuses' => ['Pending', 'In Discussion', 'Drafting', 'Under Review', 'Approved', 'Rejected'],
+            'whyNotOrderOptions' => [
+                'High Price',
+                'Service Not Available',
+                'Delayed Response',
+                'Chose Competitor',
+                'Budget Issue',
+                'Need Time/Postponed',
+                'Not Interested',
+                'Unreachable',
+                'Other'
+            ],
+            'potentialOrderOptions' => ['High', 'Medium', 'Low', 'Future Prospect'],
+            'retentionsMarketingOptions' => ['Active', 'Queued', 'Follow-up Required', 'Not Applicable'],
+            'repeatMarketingOptions' => ['Active', 'Queued', 'Follow-up Required', 'Not Applicable'],
+            'businessCategories' => [
+                'Travel Agency',
+                'E-commerce',
+                'Healthcare & Medical',
+                'Education & School',
+                'Real Estate',
+                'Restaurant & Food',
+                'Retail & Wholesale',
+                'Service Provider',
+                'Digital Business',
+                'Corporate & Finance',
+                'Other'
+            ],
+            'interestedProductsList' => [
+                'ERP / Custom Software',
+                'E-commerce Website',
+                'Business Website',
+                'Video Editing',
+                'Graphics Design',
+                'Social Media Marketing (SMM)',
+                'Paid Ads Campaign',
+                'Mobile App',
+                'Domain & Hosting',
+                'Other'
+            ],
+            'countries' => [
+                'Saudi Arabia',
+                'Bangladesh',
+                'United Arab Emirates',
+                'Qatar',
+                'Kuwait',
+                'Oman',
+                'United States',
+                'United Kingdom',
+                'Canada',
+                'Australia',
+                'Malaysia',
+                'Other'
+            ],
+            'leadSources' => Setting::get('lead_sources', [
+                'Google Maps',
+                'Facebook Ad',
+                'Facebook Page/Organic',
+                'Instagram',
+                'WhatsApp Outreach',
+                'Referral',
+                'Website Form',
+                'Cold Call',
+                'LinkedIn',
+                'Other'
+            ]),
+            'users' => User::where('status', 'active')->orderBy('name')->get(),
+        ];
     }
 
     /**

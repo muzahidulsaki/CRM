@@ -56,6 +56,9 @@ class FinanceController extends Controller
             ->take(5)
             ->get();
 
+        // 3 Segmented Due Alerts (Creative Due, Website Initial Due, Website Subscription Fee Due)
+        $dueAlerts = $this->financeService->getSegmentedDueAlerts();
+
         return view('finance.index', [
             'summary' => $summary,
             'startDate' => $startDate,
@@ -64,6 +67,7 @@ class FinanceController extends Controller
             'recentExpenses' => $recentExpenses,
             'expenseCategories' => $expenseCategories,
             'urgentRenewals' => $urgentRenewals,
+            'dueAlerts' => $dueAlerts,
         ]);
     }
 }

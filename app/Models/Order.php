@@ -20,11 +20,15 @@ class Order extends Model
         'sales_person_id',
         'project_manager_id',
         'service_category',
+        'order_type',
+        'order_source',
+        'activity_status',
         'title',
         'description',
         'total_amount',
         'paid_amount',
         'due_amount',
+        'payment_status',
         'payment_terms',
         'order_date',
         'start_date',
@@ -32,6 +36,7 @@ class Order extends Model
         'status',
         'notes',
         'attachments',
+        'meta',
     ];
 
     protected $casts = [
@@ -42,13 +47,44 @@ class Order extends Model
         'paid_amount' => 'decimal:2',
         'due_amount' => 'decimal:2',
         'attachments' => 'array',
+        'meta' => 'array',
     ];
 
     protected static function booted(): void
     {
         static::saving(function ($order) {
-            $order->due_amount = max(0, floatval($order->total_amount) - floatval($order->paid_amount));
+            $total = floatval($order->total_amount);
+            $paid = floatval($order->paid_amount);
+            $order->due_amount = max(0, $total - $paid);
+
+            if ($order->due_amount <= 0 && $total > 0) {
+                $order->payment_status = 'Paid';
+            } elseif ($paid > 0 && $order->due_amount > 0) {
+                $order->payment_status = 'Partially Paid';
+            } else {
+                $order->payment_status = 'Due';
+            }
         });
+    }
+
+    public function getMeta(string $key, $default = null)
+    {
+        return $this->meta[$key] ?? $default;
+    }
+
+    public function isCreative(): bool
+    {
+        return $this->order_type === 'creative';
+    }
+
+    public function isAds(): bool
+    {
+        return $this->order_type === 'ads';
+    }
+
+    public function isWebSoftware(): bool
+    {
+        return $this->order_type === 'web_software';
     }
 
     public function customer(): BelongsTo

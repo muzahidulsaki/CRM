@@ -17,162 +17,406 @@
     </x-slot>
 
     <div class="py-6">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
             <form method="POST" action="{{ route('leads.update', $lead) }}" class="space-y-6">
                 @csrf
                 @method('PUT')
 
-                <!-- Section 1: Customer & Business Info -->
+                <!-- Section 1: Lead Identification & Category -->
                 <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-4">
-                    <h3 class="text-base font-bold text-gray-900 flex items-center gap-2 border-b pb-3">
-                        <span class="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-sm">1</span>
-                        {{ __('Personal & Organization Info') }}
+                    <h3 class="text-base font-bold text-gray-900 flex items-center justify-between border-b pb-3">
+                        <span class="flex items-center gap-2">
+                            <span class="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-sm">1</span>
+                            {{ __('Lead Identification & Category') }}
+                        </span>
+                        <span class="text-xs font-semibold px-2.5 py-1 bg-slate-100 text-slate-700 rounded">
+                            {{ __('Lead ID') }}: <strong class="text-indigo-600 font-mono">{{ $lead->lead_code }}</strong>
+                        </span>
                     </h3>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         <div>
-                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Customer Name') }} <span class="text-rose-500">*</span></label>
-                            <input type="text" name="name" value="{{ old('name', $lead->name) }}" required class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
-                            @error('name') <span class="text-rose-600 text-xs">{{ $message }}</span> @enderror
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Token ID') }}</label>
+                            <input type="text" name="token_id" value="{{ old('token_id', $lead->token_id) }}" placeholder="e.g. TKN-9821" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
 
                         <div>
-                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Mobile Number') }} <span class="text-rose-500">*</span></label>
-                            <input type="text" name="phone" value="{{ old('phone', $lead->phone) }}" required class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
-                            @error('phone') <span class="text-rose-600 text-xs">{{ $message }}</span> @enderror
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Lead Source') }} <span class="text-rose-500">*</span></label>
+                            <input list="lead_sources_list" name="lead_source" value="{{ old('lead_source', $lead->lead_source) }}" required class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                            <datalist id="lead_sources_list">
+                                @foreach($leadSources as $source)
+                                    <option value="{{ $source }}">
+                                @endforeach
+                            </datalist>
                         </div>
 
                         <div>
-                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('WhatsApp') }}</label>
-                            <input type="text" name="whatsapp" value="{{ old('whatsapp', $lead->whatsapp) }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Business Category') }}</label>
+                            <input list="business_categories_list" name="business_type" value="{{ old('business_type', $lead->business_type) }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                            <datalist id="business_categories_list">
+                                @foreach($businessCategories as $cat)
+                                    <option value="{{ $cat }}">
+                                @endforeach
+                            </datalist>
                         </div>
 
                         <div>
-                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Email Address') }}</label>
-                            <input type="email" name="email" value="{{ old('email', $lead->email) }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Company Name') }}</label>
-                            <input type="text" name="company_name" value="{{ old('company_name', $lead->company_name) }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Business Type') }}</label>
-                            <input type="text" name="business_type" value="{{ old('business_type', $lead->business_type) }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Client Temperature') }} <span class="text-rose-500">*</span></label>
+                            <select name="lead_temperature" required class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="Warm" {{ old('lead_temperature', $lead->lead_temperature) === 'Warm' ? 'selected' : '' }}>🔥 Warm</option>
+                                <option value="Hot" {{ old('lead_temperature', $lead->lead_temperature) === 'Hot' ? 'selected' : '' }}>⚡ Hot</option>
+                                <option value="Cold" {{ old('lead_temperature', $lead->lead_temperature) === 'Cold' ? 'selected' : '' }}>❄️ Cold</option>
+                            </select>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
                         <div>
-                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Address') }}</label>
-                            <input type="text" name="address" value="{{ old('address', $lead->address) }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Client Name') }} <span class="text-rose-500">*</span></label>
+                            <input type="text" name="name" value="{{ old('name', $lead->name) }}" required class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                            @error('name') <span class="text-rose-600 text-xs">{{ $message }}</span> @enderror
                         </div>
+
                         <div>
-                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('City / District') }}</label>
-                            <input type="text" name="city" value="{{ old('city', $lead->city) }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Business Name') }}</label>
+                            <input type="text" name="company_name" value="{{ old('company_name', $lead->company_name) }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
+
                         <div>
-                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Website / Social Page') }}</label>
-                            <input type="text" name="website" value="{{ old('website', $lead->website) }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Pipeline Status') }} <span class="text-rose-500">*</span></label>
+                            <select name="lead_status" required class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 font-semibold">
+                                @foreach(['New', 'Contacted', 'Interested', 'Meeting/Demo', 'Proposal Sent', 'Negotiation', 'Won', 'Lost'] as $st)
+                                    <option value="{{ $st }}" {{ old('lead_status', $lead->lead_status) === $st ? 'selected' : '' }}>{{ $st }}</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
                 </div>
 
-                <!-- Section 2: Pipeline, Service & Budget -->
+                <!-- Section 2: Contact Channels & Live Status -->
                 <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-4">
                     <h3 class="text-base font-bold text-gray-900 flex items-center gap-2 border-b pb-3">
                         <span class="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-sm">2</span>
-                        {{ __('Pipeline Status & Sales Parameters') }}
+                        {{ __('Contact Numbers & Messaging Channels') }}
                     </h3>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <!-- Lead Status -->
                         <div>
-                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Lead Status') }} <span class="text-rose-500">*</span></label>
-                            <select name="lead_status" required class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 font-semibold text-indigo-900 bg-indigo-50/30">
-                                @foreach(['New', 'Contacted', 'Interested', 'Meeting/Demo', 'Proposal Sent', 'Negotiation', 'Won', 'Lost'] as $st)
-                                    <option value="{{ $st }}" {{ old('lead_status', $lead->lead_status) == $st ? 'selected' : '' }}>{{ __($st) }}</option>
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">🟢 {{ __('WhatsApp Number') }}</label>
+                            <input type="text" name="whatsapp" value="{{ old('whatsapp', $lead->whatsapp) }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('WhatsApp Status') }}</label>
+                            <select name="whatsapp_status" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">{{ __('Select Status') }}</option>
+                                @foreach($whatsappStatuses as $st)
+                                    <option value="{{ $st }}" {{ old('whatsapp_status', $lead->whatsapp_status) === $st ? 'selected' : '' }}>{{ $st }}</option>
                                 @endforeach
                             </select>
                         </div>
 
-                        <!-- Lead Temperature -->
                         <div>
-                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Lead Temperature') }} <span class="text-rose-500">*</span></label>
-                            <select name="lead_temperature" required class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 font-semibold">
-                                <option value="Hot" class="text-rose-600" {{ old('lead_temperature', $lead->lead_temperature) == 'Hot' ? 'selected' : '' }}>🔥 {{ __('Hot') }}</option>
-                                <option value="Warm" class="text-amber-600" {{ old('lead_temperature', $lead->lead_temperature) == 'Warm' ? 'selected' : '' }}>⚡ {{ __('Warm') }}</option>
-                                <option value="Cold" class="text-sky-600" {{ old('lead_temperature', $lead->lead_temperature) == 'Cold' ? 'selected' : '' }}>❄️ {{ __('Cold') }}</option>
-                            </select>
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">🟣 {{ __('Imo Number') }}</label>
+                            <input type="text" name="imo_number" value="{{ old('imo_number', $lead->imo_number) }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
 
-                        <!-- Interested Service -->
                         <div>
-                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Interested Service') }} <span class="text-rose-500">*</span></label>
-                            <select name="interested_service" required class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
-                                @foreach($serviceCategories as $cat)
-                                    <option value="{{ $cat }}" {{ old('interested_service', $lead->interested_service) == $cat ? 'selected' : '' }}>{{ __($cat) }}</option>
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">📞 {{ __('Mobile (Phone)') }} <span class="text-rose-500">*</span></label>
+                            <input type="text" name="phone" value="{{ old('phone', $lead->phone) }}" required class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                            @error('phone') <span class="text-rose-600 text-xs">{{ $message }}</span> @enderror
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">✉️ {{ __('Email Address') }}</label>
+                            <input type="email" name="email" value="{{ old('email', $lead->email) }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Email Status') }}</label>
+                            <select name="email_status" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">{{ __('Select Status') }}</option>
+                                @foreach($emailStatuses as $st)
+                                    <option value="{{ $st }}" {{ old('email_status', $lead->email_status) === $st ? 'selected' : '' }}>{{ $st }}</option>
                                 @endforeach
                             </select>
                         </div>
 
-                        <!-- Lead Source -->
                         <div>
-                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Lead Source') }} <span class="text-rose-500">*</span></label>
-                            <select name="lead_source" required class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
-                                @foreach($leadSources as $src)
-                                    <option value="{{ $src }}" {{ old('lead_source', $lead->lead_source) == $src ? 'selected' : '' }}>{{ __($src) }}</option>
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">💬 {{ __('Messenger Link') }}</label>
+                            <input type="text" name="messenger_link" value="{{ old('messenger_link', $lead->messenger_link) }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Messenger Status') }}</label>
+                            <select name="messenger_status" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">{{ __('Select Status') }}</option>
+                                @foreach($messengerStatuses as $st)
+                                    <option value="{{ $st }}" {{ old('messenger_status', $lead->messenger_status) === $st ? 'selected' : '' }}>{{ $st }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 3: Web & Social Media Links -->
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-4">
+                    <h3 class="text-base font-bold text-gray-900 flex items-center gap-2 border-b pb-3">
+                        <span class="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-sm">3</span>
+                        {{ __('Website & Social Media Links') }}
+                    </h3>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">🌐 {{ __('Website / Domain') }}</label>
+                            <input type="text" name="website" value="{{ old('website', $lead->website) }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">📘 {{ __('FB Page') }}</label>
+                            <input type="text" name="facebook" value="{{ old('facebook', $lead->facebook) }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">📸 {{ __('Instagram') }}</label>
+                            <input type="text" name="instagram" value="{{ old('instagram', $lead->instagram) }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">🔴 {{ __('YouTube') }}</label>
+                            <input type="text" name="youtube" value="{{ old('youtube', $lead->youtube) }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">🎵 {{ __('TikTok') }}</label>
+                            <input type="text" name="tiktok" value="{{ old('tiktok', $lead->tiktok) }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">🐦 {{ __('Twitter / X') }}</label>
+                            <input type="text" name="twitter" value="{{ old('twitter', $lead->twitter) }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">👻 {{ __('Snapchat') }}</label>
+                            <input type="text" name="snapchat" value="{{ old('snapchat', $lead->snapchat) }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">💼 {{ __('LinkedIn') }}</label>
+                            <input type="text" name="linkedin" value="{{ old('linkedin', $lead->linkedin) }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">🔗 {{ __('Others Link') }}</label>
+                            <input type="text" name="other_socials" value="{{ old('other_socials', $lead->other_socials) }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 4: Geographical Location & Maps -->
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-4">
+                    <h3 class="text-base font-bold text-gray-900 flex items-center gap-2 border-b pb-3">
+                        <span class="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-sm">4</span>
+                        {{ __('Location & Geographical Intelligence') }}
+                    </h3>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">📍 {{ __('Current Country') }}</label>
+                            <input list="countries_list" name="current_country" value="{{ old('current_country', $lead->current_country ?? 'Saudi Arabia') }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">🏢 {{ __('Business Country') }}</label>
+                            <input list="countries_list" name="business_country" value="{{ old('business_country', $lead->business_country ?? 'Saudi Arabia') }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">🗺️ {{ __('Google Maps Link') }}</label>
+                            <input type="text" name="google_maps_link" value="{{ old('google_maps_link', $lead->google_maps_link) }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+
+                        <datalist id="countries_list">
+                            @foreach($countries as $cnt)
+                                <option value="{{ $cnt }}">
+                            @endforeach
+                        </datalist>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Full Physical Address') }}</label>
+                        <textarea name="address" rows="2" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">{{ old('address', $lead->address) }}</textarea>
+                    </div>
+                </div>
+
+                <!-- Section 5: Follow-up & Meeting Operations -->
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-4">
+                    <h3 class="text-base font-bold text-gray-900 flex items-center gap-2 border-b pb-3">
+                        <span class="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-sm">5</span>
+                        {{ __('Follow-up & Meeting Operations') }}
+                    </h3>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">📝 {{ __('Follow-up Comment / Note') }}</label>
+                        <textarea name="followup_comment" rows="2" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">{{ old('followup_comment', $lead->followup_comment) }}</textarea>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Follow-up 1st Date') }}</label>
+                            <input type="date" name="followup_first_date" value="{{ old('followup_first_date', $lead->followup_first_date?->format('Y-m-d')) }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Follow-up Last Date') }}</label>
+                            <input type="date" name="followup_last_date" value="{{ old('followup_last_date', $lead->followup_last_date?->format('Y-m-d')) }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Follow-up Next Month') }}</label>
+                            <input type="text" name="followup_next_month" value="{{ old('followup_next_month', $lead->followup_next_month) }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Follow-up Next Date') }}</label>
+                            <input type="date" name="followup_next_date" value="{{ old('followup_next_date', $lead->followup_next_date?->format('Y-m-d') ?? $lead->next_followup_date?->format('Y-m-d')) }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">💻 {{ __('Meeting Platform') }}</label>
+                            <select name="meeting_platform" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">{{ __('Select Meeting Platform') }}</option>
+                                @foreach($meetingPlatforms as $mp)
+                                    <option value="{{ $mp }}" {{ old('meeting_platform', $lead->meeting_platform) === $mp ? 'selected' : '' }}>{{ $mp }}</option>
                                 @endforeach
                             </select>
                         </div>
 
-                        <!-- Assigned To -->
                         <div>
-                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Assigned Sales Agent') }}</label>
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">⏰ {{ __('Next Meeting Date & Time') }}</label>
+                            <input type="datetime-local" name="next_meeting_datetime" value="{{ old('next_meeting_datetime', $lead->next_meeting_datetime?->format('Y-m-d\TH:i')) }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 6: SRS, Product Interest & Sales Pipeline -->
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-4">
+                    <h3 class="text-base font-bold text-gray-900 flex items-center gap-2 border-b pb-3">
+                        <span class="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-sm">6</span>
+                        {{ __('SRS, Product Interest & Sales Pipeline') }}
+                    </h3>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('SRS Status') }}</label>
+                            <select name="srs_status" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">{{ __('Select SRS Status') }}</option>
+                                @foreach($srsStatuses as $st)
+                                    <option value="{{ $st }}" {{ old('srs_status', $lead->srs_status) === $st ? 'selected' : '' }}>{{ $st }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('SRS Number') }}</label>
+                            <input type="text" name="srs_number" value="{{ old('srs_number', $lead->srs_number) }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Interested Product / Service') }}</label>
+                            <input list="interested_products_list" name="interested_products" value="{{ old('interested_products', $lead->interested_products ?? $lead->interested_service) }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                            <datalist id="interested_products_list">
+                                @foreach($interestedProductsList as $prod)
+                                    <option value="{{ $prod }}">
+                                @endforeach
+                            </datalist>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Potential Order') }}</label>
+                            <select name="potential_order" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">{{ __('Select Potential') }}</option>
+                                @foreach($potentialOrderOptions as $po)
+                                    <option value="{{ $po }}" {{ old('potential_order', $lead->potential_order) === $po ? 'selected' : '' }}>{{ $po }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1 text-rose-700">{{ __('Why Not Order (Reason if Lost or Delayed)') }}</label>
+                            <select name="why_not_order" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">{{ __('Select Reason') }}</option>
+                                @foreach($whyNotOrderOptions as $reason)
+                                    <option value="{{ $reason }}" {{ old('why_not_order', $lead->why_not_order ?? $lead->lost_reason) === $reason ? 'selected' : '' }}>{{ $reason }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Retentions Marketing') }}</label>
+                            <select name="retentions_marketing" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">{{ __('Select Status') }}</option>
+                                @foreach($retentionsMarketingOptions as $rm)
+                                    <option value="{{ $rm }}" {{ old('retentions_marketing', $lead->retentions_marketing) === $rm ? 'selected' : '' }}>{{ $rm }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Repeat Marketing') }}</label>
+                            <select name="repeat_marketing" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">{{ __('Select Status') }}</option>
+                                @foreach($repeatMarketingOptions as $rm)
+                                    <option value="{{ $rm }}" {{ old('repeat_marketing', $lead->repeat_marketing) === $rm ? 'selected' : '' }}>{{ $rm }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 7: Assignment & Financial Estimation -->
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-4">
+                    <h3 class="text-base font-bold text-gray-900 flex items-center gap-2 border-b pb-3">
+                        <span class="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-sm">7</span>
+                        {{ __('Staff Assignment & Budget Estimation') }}
+                    </h3>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Assigned Staff') }}</label>
                             <select name="assigned_to" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
                                 <option value="">{{ __('Unassigned') }}</option>
                                 @foreach($users as $user)
-                                    <option value="{{ $user->id }}" {{ old('assigned_to', $lead->assigned_to) == $user->id ? 'selected' : '' }}>{{ $user->name }} ({{ $user->role->name ?? 'User' }})</option>
+                                    <option value="{{ $user->id }}" {{ old('assigned_to', $lead->assigned_to) == $user->id ? 'selected' : '' }}>
+                                        {{ $user->name }} ({{ $user->role->name ?? 'Staff' }})
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
 
-                        <!-- Budget -->
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Client Budget') }} ({{ __('BDT') }})</label>
                             <input type="number" step="0.01" name="budget" value="{{ old('budget', $lead->budget) }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
 
-                        <!-- Discussed Amount -->
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Discussed Amount') }} ({{ __('BDT') }})</label>
                             <input type="number" step="0.01" name="discussed_amount" value="{{ old('discussed_amount', $lead->discussed_amount) }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
-
-                        <!-- Next Follow-up Date -->
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Next Follow-up') }}</label>
-                            <input type="datetime-local" name="next_followup_date" value="{{ old('next_followup_date', $lead->next_followup_date?->format('Y-m-d\TH:i')) }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
-                        </div>
                     </div>
 
-                    <!-- Lost Reason (if Lost) -->
                     <div>
-                        <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Reason for Lost (If Lost)') }}</label>
-                        <input type="text" name="lost_reason" value="{{ old('lost_reason', $lead->lost_reason) }}" placeholder="{{ __('e.g. Budget constraints, opted for another agency, unresponsive') }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
-                    </div>
-
-                    <!-- Notes -->
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Notes & Remarks') }}</label>
-                        <textarea name="notes" rows="3" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">{{ old('notes', $lead->notes) }}</textarea>
+                        <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Internal Notes') }}</label>
+                        <textarea name="notes" rows="2" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">{{ old('notes', $lead->notes) }}</textarea>
                     </div>
                 </div>
 
                 <!-- Submit Button -->
-                <div class="flex items-center justify-end gap-3">
+                <div class="flex items-center justify-end gap-3 pt-4">
                     <a href="{{ route('leads.show', $lead) }}" class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-lg text-sm transition">
                         {{ __('Cancel') }}
                     </a>

@@ -13,6 +13,16 @@
                         <span class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-indigo-100 text-indigo-800">
                             {{ $lead->lead_code }}
                         </span>
+                        @if($lead->token_id)
+                            <span class="px-2 py-0.5 rounded-md text-xs font-mono font-semibold bg-slate-100 text-slate-700">
+                                Token: {{ $lead->token_id }}
+                            </span>
+                        @endif
+                        @if($lead->srs_number)
+                            <span class="px-2 py-0.5 rounded-md text-xs font-mono font-semibold bg-purple-100 text-purple-700">
+                                SRS: {{ $lead->srs_number }} ({{ $lead->srs_status ?? 'Pending' }})
+                            </span>
+                        @endif
                         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border {{ $lead->temperature_badge_class }}">
                             @if($lead->lead_temperature === 'Hot') 🔥 {{ __('Hot') }}
                             @elseif($lead->lead_temperature === 'Warm') ⚡ {{ __('Warm') }}
@@ -193,6 +203,54 @@
                             <div class="pt-2 border-t text-xs">
                                 <div class="font-semibold text-gray-700 mb-1">{{ __('Notes') }}:</div>
                                 <p class="text-gray-600 bg-gray-50 p-2.5 rounded-lg whitespace-pre-line">{{ $lead->notes }}</p>
+                            </div>
+                        @endif
+                    </div>
+
+                    <!-- Existing Order Breakdown Card -->
+                    @php $orderCounts = $lead->existing_order_counts; @endphp
+                    <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm space-y-3">
+                        <div class="flex items-center justify-between border-b pb-2.5">
+                            <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider flex items-center gap-2">
+                                <span>📦 {{ __('Existing Orders History') }}</span>
+                            </h3>
+                            <span class="px-2 py-0.5 rounded-full text-xs font-bold {{ $orderCounts['total'] > 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-600' }}">
+                                {{ $orderCounts['total'] }} {{ __('Total') }}
+                            </span>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <div class="p-2 rounded-lg bg-indigo-50/60 border border-indigo-100 flex items-center justify-between">
+                                <span class="text-indigo-900 font-medium">Software / ERP:</span>
+                                <strong class="text-indigo-700 font-bold text-sm">{{ $orderCounts['erp'] }}</strong>
+                            </div>
+                            <div class="p-2 rounded-lg bg-blue-50/60 border border-blue-100 flex items-center justify-between">
+                                <span class="text-blue-900 font-medium">Website:</span>
+                                <strong class="text-blue-700 font-bold text-sm">{{ $orderCounts['website'] }}</strong>
+                            </div>
+                            <div class="p-2 rounded-lg bg-purple-50/60 border border-purple-100 flex items-center justify-between">
+                                <span class="text-purple-900 font-medium">Video Edit:</span>
+                                <strong class="text-purple-700 font-bold text-sm">{{ $orderCounts['video'] }}</strong>
+                            </div>
+                            <div class="p-2 rounded-lg bg-pink-50/60 border border-pink-100 flex items-center justify-between">
+                                <span class="text-pink-900 font-medium">Graphics:</span>
+                                <strong class="text-pink-700 font-bold text-sm">{{ $orderCounts['graphics'] }}</strong>
+                            </div>
+                            <div class="p-2 rounded-lg bg-sky-50/60 border border-sky-100 flex items-center justify-between">
+                                <span class="text-sky-900 font-medium">SMM / Social:</span>
+                                <strong class="text-sky-700 font-bold text-sm">{{ $orderCounts['smm'] }}</strong>
+                            </div>
+                            <div class="p-2 rounded-lg bg-amber-50/60 border border-amber-100 flex items-center justify-between">
+                                <span class="text-amber-900 font-medium">Ads Campaign:</span>
+                                <strong class="text-amber-700 font-bold text-sm">{{ $orderCounts['ads'] }}</strong>
+                            </div>
+                        </div>
+
+                        @if($lead->customer && $lead->customer->orders->count() > 0)
+                            <div class="pt-2 border-t">
+                                <a href="{{ route('customers.show', $lead->customer_id) }}" class="text-xs font-semibold text-indigo-600 hover:underline block text-center">
+                                    {{ __('View All Customer Orders & Invoices') }} &rarr;
+                                </a>
                             </div>
                         @endif
                     </div>

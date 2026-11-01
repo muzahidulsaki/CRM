@@ -84,6 +84,10 @@ Route::middleware(['auth', 'verified', 'staff'])->group(function () {
     Route::patch('/orders/{order}/status', [\App\Http\Controllers\OrderController::class, 'updateStatus'])->name('orders.update-status');
     Route::resource('orders', \App\Http\Controllers\OrderController::class);
 
+    // Ads Campaign Reports & Daily Tracking (CRM Format.xlsx Parity)
+    Route::post('/ads-reports/{adsReport}/toggle-check', [\App\Http\Controllers\AdsCampaignReportController::class, 'toggleCheck'])->name('ads-reports.toggle-check');
+    Route::resource('ads-reports', \App\Http\Controllers\AdsCampaignReportController::class)->parameters(['ads-reports' => 'adsReport']);
+
     // Projects
     Route::patch('/projects/{project}/status', [\App\Http\Controllers\ProjectController::class, 'updateStatus'])->name('projects.update-status');
     Route::resource('projects', \App\Http\Controllers\ProjectController::class);
@@ -104,6 +108,10 @@ Route::middleware(['auth', 'verified', 'staff'])->group(function () {
 
     // Employees (Team Management & Financial Ledger)
     Route::resource('employees', \App\Http\Controllers\EmployeeController::class);
+
+    // Employee Daily Reports (Accountability & Progress Tracking)
+    Route::post('/daily-reports/{dailyReport}/feedback', [\App\Http\Controllers\EmployeeDailyReportController::class, 'feedback'])->name('daily-reports.feedback');
+    Route::resource('daily-reports', \App\Http\Controllers\EmployeeDailyReportController::class)->parameters(['daily-reports' => 'dailyReport']);
 
     // Worklogs
     Route::resource('worklogs', \App\Http\Controllers\WorklogController::class)->only(['index', 'store', 'destroy']);

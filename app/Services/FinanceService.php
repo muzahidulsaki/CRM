@@ -378,4 +378,72 @@ class FinanceService
             ],
         ];
     }
+
+    /**
+     * Get 3 Categorized Due Payment Alerts:
+     * 1. Creative Due
+     * 2. Website Initial Due
+     * 3. Website Monthly/Yearly Subscription Fee Due
+     */
+    public function getSegmentedDueAlerts(): array
+    {
+        // 1. Creative Due Orders
+        $creativeOrders = \App\Models\Order::with('customer')
+            ->where(function ($q) {
+                $q->where('order_type', 'creative')
+                  ->orWhere('service_category', 'like', '%video%')
+                  ->orWhere('service_category', 'like', '%graphic%')
+                  ->orWhere('service_category', 'like', '%smm%');
+            })
+            ->where('due_amount', '>', 0)
+            ->where('status', '!=', 'Cancelled')
+            ->orderBy('due_amount', 'desc')
+            ->get();
+
+        $creativeTotalDue = (float) $creativeOrders->sum('due_amount');
+
+        // 2. Website & Software Initial Due Orders
+        $webSoftwareOrders = \App\Models\Order::with('customer')
+            ->where(function ($q) {
+                $q->where('order_type', 'web_software')
+                  ->orWhere('service_category', 'like', '%web%')
+                  ->orWhere('service_category', 'like', '%software%')
+                  ->orWhere('service_category', 'like', '%erp%');
+            })
+            ->where('due_amount', '>', 0)
+            ->where('status', '!=', 'Cancelled')
+            ->orderBy('due_amount', 'desc')
+            ->get();
+
+        $webSoftwareTotalDue = (float) $webSoftwareOrders->sum('due_amount');
+
+        // 3. Website Monthly/Yearly Subscription Fee Due
+        $today = now()->toDateString();
+        $subscriptionRenewals = ServiceRenewal::with(['customer', 'project'])
+            ->where('next_due_date', '<=', now()->addDays(30)->toDateString())
+            ->whereNotIn('status', ['Suspended', 'Cancelled'])
+            ->orderBy('next_due_date', 'asc')
+            ->get();
+
+        $subscriptionTotalDue = (float) $subscriptionRenewals->sum('renewal_fee');
+
+        return [
+            'creative' => [
+                'total_due' => $creativeTotalDue,
+                'count' => $creativeOrders->count(),
+                'orders' => $creativeOrders,
+            ],
+            'website_initial' => [
+                'total_due' => $webSoftwareTotalDue,
+                'count' => $webSoftwareOrders->count(),
+                'orders' => $webSoftwareOrders,
+            ],
+            'subscription_fee' => [
+                'total_due' => $subscriptionTotalDue,
+                'count' => $subscriptionRenewals->count(),
+                'renewals' => $subscriptionRenewals,
+            ],
+            'total_all_dues' => $creativeTotalDue + $webSoftwareTotalDue + $subscriptionTotalDue,
+        ];
+    }
 }

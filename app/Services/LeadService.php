@@ -11,24 +11,23 @@ use Illuminate\Support\Facades\DB;
 class LeadService
 {
     /**
-     * Generate unique sequential Lead Code: LD-YYYY-XXXXX
+     * Generate unique sequential Lead Code: PS10001 (matching CRM Format.xlsx)
      */
     public static function generateLeadCode(): string
     {
-        $year = date('Y');
-        $prefix = "LD-{$year}-";
+        $prefix = "PS";
 
         $lastLead = Lead::withTrashed()
             ->where('lead_code', 'like', "{$prefix}%")
             ->orderBy('id', 'desc')
             ->first();
 
-        $sequence = 1;
-        if ($lastLead && preg_match('/LD-\d{4}-(\d+)/', $lastLead->lead_code, $matches)) {
-            $sequence = intval($matches[1]) + 1;
+        $sequence = 10001;
+        if ($lastLead && preg_match('/PS(\d+)/', $lastLead->lead_code, $matches)) {
+            $sequence = max(10001, intval($matches[1]) + 1);
         }
 
-        return sprintf('%s%05d', $prefix, $sequence);
+        return sprintf('%s%d', $prefix, $sequence);
     }
 
     /**

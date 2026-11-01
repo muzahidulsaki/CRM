@@ -72,6 +72,284 @@
                 </div>
             </div>
 
+            <!-- ACCOUNTS DUE PAYMENT ALERTS (Excel CRM Parity) -->
+            @if(isset($dueAlerts))
+            <div class="space-y-4" x-data="{ activeDueTab: 'creative' }">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-base font-black text-slate-900 flex items-center gap-2">
+                            <span class="flex h-3 w-3 relative">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-3 w-3 bg-rose-500"></span>
+                            </span>
+                            Accounts Due Payment Alerts
+                        </h3>
+                        <p class="text-xs text-slate-500 mt-0.5">Real-time alerts for Creative Dues, Website Initial Dues, and Recurring Subscription Dues.</p>
+                    </div>
+                    <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl text-xs font-bold">
+                        <button type="button" @click="activeDueTab = 'creative'" :class="activeDueTab === 'creative' ? 'bg-white text-purple-700 shadow-xs' : 'text-slate-600 hover:text-slate-900'" class="px-3 py-1.5 rounded-lg transition">
+                            🎨 Creative ({{ $dueAlerts['creative']['count'] }})
+                        </button>
+                        <button type="button" @click="activeDueTab = 'website_initial'" :class="activeDueTab === 'website_initial' ? 'bg-white text-blue-700 shadow-xs' : 'text-slate-600 hover:text-slate-900'" class="px-3 py-1.5 rounded-lg transition">
+                            💻 Website Initial ({{ $dueAlerts['website_initial']['count'] }})
+                        </button>
+                        <button type="button" @click="activeDueTab = 'subscription_fee'" :class="activeDueTab === 'subscription_fee' ? 'bg-white text-emerald-700 shadow-xs' : 'text-slate-600 hover:text-slate-900'" class="px-3 py-1.5 rounded-lg transition">
+                            🔄 Subscription Fee ({{ $dueAlerts['subscription_fee']['count'] }})
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 3 Due Summary Metric Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <!-- Creative Due Card -->
+                    <div @click="activeDueTab = 'creative'" class="cursor-pointer bg-white p-5 rounded-2xl border-2 transition hover:shadow-md" :class="activeDueTab === 'creative' ? 'border-purple-500 bg-purple-50/20 shadow-xs' : 'border-slate-200'">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-bold uppercase tracking-wider text-purple-700 flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+                                Creative Due Alert
+                            </span>
+                            <span class="px-2 py-0.5 rounded-full text-[11px] font-black bg-purple-100 text-purple-800">
+                                {{ $dueAlerts['creative']['count'] }} Orders
+                            </span>
+                        </div>
+                        <div class="text-2xl font-black text-slate-900">
+                            {{ __('BDT') }} {{ number_format($dueAlerts['creative']['total_due'], 2) }}
+                        </div>
+                        <p class="text-[11px] text-slate-500 mt-1">Pending payments on video editing, graphic design, and creative services.</p>
+                    </div>
+
+                    <!-- Website Initial Due Card -->
+                    <div @click="activeDueTab = 'website_initial'" class="cursor-pointer bg-white p-5 rounded-2xl border-2 transition hover:shadow-md" :class="activeDueTab === 'website_initial' ? 'border-blue-500 bg-blue-50/20 shadow-xs' : 'border-slate-200'">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-bold uppercase tracking-wider text-blue-700 flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                                Website Initial Due Alert
+                            </span>
+                            <span class="px-2 py-0.5 rounded-full text-[11px] font-black bg-blue-100 text-blue-800">
+                                {{ $dueAlerts['website_initial']['count'] }} Orders
+                            </span>
+                        </div>
+                        <div class="text-2xl font-black text-slate-900">
+                            {{ __('BDT') }} {{ number_format($dueAlerts['website_initial']['total_due'], 2) }}
+                        </div>
+                        <p class="text-[11px] text-slate-500 mt-1">Remaining project milestones/installments on web and ERP software development.</p>
+                    </div>
+
+                    <!-- Website Monthly/Yearly Subscription Fee Due Card -->
+                    <div @click="activeDueTab = 'subscription_fee'" class="cursor-pointer bg-white p-5 rounded-2xl border-2 transition hover:shadow-md" :class="activeDueTab === 'subscription_fee' ? 'border-emerald-500 bg-emerald-50/20 shadow-xs' : 'border-slate-200'">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-bold uppercase tracking-wider text-emerald-700 flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                Subscription Fee Due Alert
+                            </span>
+                            <span class="px-2 py-0.5 rounded-full text-[11px] font-black bg-emerald-100 text-emerald-800">
+                                {{ $dueAlerts['subscription_fee']['count'] }} Renewals
+                            </span>
+                        </div>
+                        <div class="text-2xl font-black text-slate-900">
+                            {{ __('BDT') }} {{ number_format($dueAlerts['subscription_fee']['total_due'], 2) }}
+                        </div>
+                        <p class="text-[11px] text-slate-500 mt-1">Monthly/Yearly domain, hosting, maintenance, and ERP SaaS recurring dues.</p>
+                    </div>
+                </div>
+
+                <!-- Tab 1: Creative Due Detail Table -->
+                <div x-show="activeDueTab === 'creative'" class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+                    <div class="p-4 bg-purple-50/50 border-b border-purple-100 flex items-center justify-between">
+                        <div class="font-bold text-xs text-purple-900 flex items-center gap-2">
+                            <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                            Creative Orders with Outstanding Due
+                        </div>
+                        <a href="{{ route('orders.index', ['type' => 'creative']) }}" class="text-xs font-bold text-purple-700 hover:underline">View All Creative Orders &rarr;</a>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-slate-100 text-xs">
+                            <thead class="bg-slate-50 font-bold text-slate-600 uppercase tracking-wider text-[11px]">
+                                <tr>
+                                    <th class="px-4 py-2.5 text-left">Order #</th>
+                                    <th class="px-4 py-2.5 text-left">Client & WhatsApp</th>
+                                    <th class="px-4 py-2.5 text-left">Service / Title</th>
+                                    <th class="px-4 py-2.5 text-right">Total Price</th>
+                                    <th class="px-4 py-2.5 text-right">Paid</th>
+                                    <th class="px-4 py-2.5 text-right text-rose-600">Due Amount</th>
+                                    <th class="px-4 py-2.5 text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                @forelse($dueAlerts['creative']['items'] as $item)
+                                    @php $phoneClean = preg_replace('/[^0-9]/', '', $item->customer->phone ?? ''); @endphp
+                                    <tr class="hover:bg-slate-50/70">
+                                        <td class="px-4 py-2.5 font-bold text-slate-800">
+                                            <a href="{{ route('orders.show', $item->id) }}" class="text-blue-600 hover:underline">{{ $item->order_number }}</a>
+                                        </td>
+                                        <td class="px-4 py-2.5">
+                                            <div class="font-bold text-slate-900">{{ $item->customer->name ?? 'N/A' }}</div>
+                                            <div class="text-[11px] text-slate-500 font-mono">{{ $item->customer->phone ?? 'N/A' }}</div>
+                                        </td>
+                                        <td class="px-4 py-2.5">
+                                            <span class="px-2 py-0.5 rounded bg-purple-50 text-purple-700 font-medium">{{ $item->service->name ?? $item->title }}</span>
+                                        </td>
+                                        <td class="px-4 py-2.5 text-right font-medium text-slate-700">{{ __('BDT') }} {{ number_format($item->price, 2) }}</td>
+                                        <td class="px-4 py-2.5 text-right font-semibold text-emerald-600">{{ __('BDT') }} {{ number_format($item->paid_amount, 2) }}</td>
+                                        <td class="px-4 py-2.5 text-right font-black text-rose-600">{{ __('BDT') }} {{ number_format($item->due_amount, 2) }}</td>
+                                        <td class="px-4 py-2.5 text-center">
+                                            @if($phoneClean)
+                                                <a href="https://wa.me/{{ $phoneClean }}?text={{ urlencode('Assalamu Alaikum ' . ($item->customer->name ?? '') . ', this is a gentle reminder regarding your pending due of BDT ' . number_format($item->due_amount, 2) . ' for Order #' . $item->order_number . '. Thank you!') }}" target="_blank" class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition shadow-xs text-[11px]">
+                                                    💬 Send Reminder
+                                                </a>
+                                            @else
+                                                <span class="text-slate-400 italic">No WhatsApp</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="7" class="px-4 py-6 text-center text-slate-400 italic">No creative order dues pending at this moment! 🎉</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tab 2: Website Initial Due Detail Table -->
+                <div x-show="activeDueTab === 'website_initial'" class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+                    <div class="p-4 bg-blue-50/50 border-b border-blue-100 flex items-center justify-between">
+                        <div class="font-bold text-xs text-blue-900 flex items-center gap-2">
+                            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                            Website & Software Development Orders with Initial Due
+                        </div>
+                        <a href="{{ route('orders.index', ['type' => 'web_software']) }}" class="text-xs font-bold text-blue-700 hover:underline">View All Soft/Web Orders &rarr;</a>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-slate-100 text-xs">
+                            <thead class="bg-slate-50 font-bold text-slate-600 uppercase tracking-wider text-[11px]">
+                                <tr>
+                                    <th class="px-4 py-2.5 text-left">Order #</th>
+                                    <th class="px-4 py-2.5 text-left">Client & WhatsApp</th>
+                                    <th class="px-4 py-2.5 text-left">Subscription System</th>
+                                    <th class="px-4 py-2.5 text-right">Project Total</th>
+                                    <th class="px-4 py-2.5 text-right">Paid Installments</th>
+                                    <th class="px-4 py-2.5 text-right text-rose-600">Initial Due</th>
+                                    <th class="px-4 py-2.5 text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                @forelse($dueAlerts['website_initial']['items'] as $item)
+                                    @php $phoneClean = preg_replace('/[^0-9]/', '', $item->customer->phone ?? ''); @endphp
+                                    <tr class="hover:bg-slate-50/70">
+                                        <td class="px-4 py-2.5 font-bold text-slate-800">
+                                            <a href="{{ route('orders.show', $item->id) }}" class="text-blue-600 hover:underline">{{ $item->order_number }}</a>
+                                        </td>
+                                        <td class="px-4 py-2.5">
+                                            <div class="font-bold text-slate-900">{{ $item->customer->name ?? 'N/A' }}</div>
+                                            <div class="text-[11px] text-slate-500 font-mono">{{ $item->customer->phone ?? 'N/A' }}</div>
+                                        </td>
+                                        <td class="px-4 py-2.5 font-medium text-slate-700">
+                                            {{ $item->getMeta('subscription_system', 'Regular') }}
+                                        </td>
+                                        <td class="px-4 py-2.5 text-right font-medium text-slate-700">{{ __('BDT') }} {{ number_format($item->price, 2) }}</td>
+                                        <td class="px-4 py-2.5 text-right font-semibold text-emerald-600">{{ __('BDT') }} {{ number_format($item->paid_amount, 2) }}</td>
+                                        <td class="px-4 py-2.5 text-right font-black text-rose-600">{{ __('BDT') }} {{ number_format($item->due_amount, 2) }}</td>
+                                        <td class="px-4 py-2.5 text-center">
+                                            @if($phoneClean)
+                                                <a href="https://wa.me/{{ $phoneClean }}?text={{ urlencode('Assalamu Alaikum ' . ($item->customer->name ?? '') . ', this is an update from Projukti Sheba regarding the milestone due payment of BDT ' . number_format($item->due_amount, 2) . ' for Order #' . $item->order_number . '. Thank you!') }}" target="_blank" class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition shadow-xs text-[11px]">
+                                                    💬 Send Reminder
+                                                </a>
+                                            @else
+                                                <span class="text-slate-400 italic">No WhatsApp</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="7" class="px-4 py-6 text-center text-slate-400 italic">No website initial dues pending! 🎉</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tab 3: Website Monthly/Yearly Subscription Fee Due Detail Table -->
+                <div x-show="activeDueTab === 'subscription_fee'" class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+                    <div class="p-4 bg-emerald-50/50 border-b border-emerald-100 flex items-center justify-between">
+                        <div class="font-bold text-xs text-emerald-900 flex items-center gap-2">
+                            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                            Website & Software Recurring Subscription Fees (Monthly/Yearly)
+                        </div>
+                        <a href="{{ route('renewals.index') }}" class="text-xs font-bold text-emerald-700 hover:underline">Manage All Subscriptions &rarr;</a>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-slate-100 text-xs">
+                            <thead class="bg-slate-50 font-bold text-slate-600 uppercase tracking-wider text-[11px]">
+                                <tr>
+                                    <th class="px-4 py-2.5 text-left">Customer & WhatsApp</th>
+                                    <th class="px-4 py-2.5 text-left">Service / Plan</th>
+                                    <th class="px-4 py-2.5 text-left">Billing Cycle</th>
+                                    <th class="px-4 py-2.5 text-left">Next Due Date</th>
+                                    <th class="px-4 py-2.5 text-right text-rose-600">Renewal Fee</th>
+                                    <th class="px-4 py-2.5 text-center">Status</th>
+                                    <th class="px-4 py-2.5 text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                @forelse($dueAlerts['subscription_fee']['items'] as $item)
+                                    @php
+                                        $phoneClean = preg_replace('/[^0-9]/', '', $item->customer->phone ?? '');
+                                        $isOverdue = $item->next_due_date && $item->next_due_date->isPast();
+                                    @endphp
+                                    <tr class="hover:bg-slate-50/70">
+                                        <td class="px-4 py-2.5">
+                                            <div class="font-bold text-slate-900">{{ $item->customer->name ?? 'N/A' }}</div>
+                                            <div class="text-[11px] text-slate-500 font-mono">{{ $item->customer->phone ?? 'N/A' }}</div>
+                                        </td>
+                                        <td class="px-4 py-2.5 font-bold text-slate-800">
+                                            {{ $item->service_name ?? $item->service->name ?? 'Maintenance / SaaS' }}
+                                        </td>
+                                        <td class="px-4 py-2.5 uppercase font-semibold text-slate-600">
+                                            {{ $item->billing_cycle ?? 'Monthly' }}
+                                        </td>
+                                        <td class="px-4 py-2.5">
+                                            <span class="font-bold {{ $isOverdue ? 'text-rose-600' : 'text-amber-600' }}">
+                                                {{ $item->next_due_date ? $item->next_due_date->format('d M, Y') : 'N/A' }}
+                                            </span>
+                                            @if($item->next_due_date)
+                                                <div class="text-[10px] text-slate-400">
+                                                    {{ $item->next_due_date->diffForHumans() }}
+                                                </div>
+                                            @endif
+                                        </td>
+                                        <td class="px-4 py-2.5 text-right font-black text-rose-600">{{ __('BDT') }} {{ number_format($item->renewal_fee, 2) }}</td>
+                                        <td class="px-4 py-2.5 text-center">
+                                            @if($isOverdue)
+                                                <span class="px-2 py-0.5 rounded text-[10px] font-black bg-rose-100 text-rose-800 uppercase">Overdue</span>
+                                            @else
+                                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 uppercase">Due Soon</span>
+                                            @endif
+                                        </td>
+                                        <td class="px-4 py-2.5 text-center">
+                                            @if($phoneClean)
+                                                <a href="https://wa.me/{{ $phoneClean }}?text={{ urlencode('Assalamu Alaikum ' . ($item->customer->name ?? '') . ', this is a notice regarding your ' . ($item->billing_cycle ?? '') . ' subscription renewal fee of BDT ' . number_format($item->renewal_fee, 2) . ' due on ' . ($item->next_due_date ? $item->next_due_date->format('d M, Y') : '') . '. Thank you!') }}" target="_blank" class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition shadow-xs text-[11px]">
+                                                    💬 Send Reminder
+                                                </a>
+                                            @else
+                                                <span class="text-slate-400 italic">No WhatsApp</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="7" class="px-4 py-6 text-center text-slate-400 italic">No upcoming subscription dues within the next 30 days! 🎉</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            @endif
+
             <!-- Inflow vs Outflow Cards -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <!-- Total Inflow -->

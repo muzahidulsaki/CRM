@@ -42,6 +42,12 @@ class OrderController extends Controller
             $query->where('service_category', $category);
         }
 
+        if ($orderType = $request->input('type')) {
+            if ($orderType !== 'all') {
+                $query->where('order_type', $orderType);
+            }
+        }
+
         $orders = $query->orderBy('id', 'desc')->paginate(15)->withQueryString();
 
         $metrics = [
@@ -50,6 +56,9 @@ class OrderController extends Controller
             'completed' => Order::whereIn('status', ['Completed', 'Delivered'])->count(),
             'total_sales' => Order::where('status', '!=', 'Cancelled')->sum('total_amount'),
             'total_due' => Order::where('status', '!=', 'Cancelled')->sum('due_amount'),
+            'creative_count' => Order::where('order_type', 'creative')->count(),
+            'ads_count' => Order::where('order_type', 'ads')->count(),
+            'soft_count' => Order::where('order_type', 'web_software')->count(),
         ];
 
         $serviceCategories = Setting::get('service_categories', []);
@@ -65,11 +74,27 @@ class OrderController extends Controller
         $preselectedQuotation = $request->filled('quotation_id') ? Quotation::with(['lead', 'customer', 'items'])->find($request->input('quotation_id')) : null;
         $preselectedCustomer = $request->filled('customer_id') ? Customer::find($request->input('customer_id')) : ($preselectedQuotation?->customer);
 
-        $customers = Customer::where('status', 'active')->orderBy('name')->get();
-        $users = User::where('status', 'active')->orderBy('name')->get();
-        $serviceCategories = Setting::get('service_categories', []);
+        // Fetch active customers with their whatsapp and phone for fast search dropdown
+        $customers = Customer::where('status', 'active')
+            ->select('id', 'customer_code', 'name', 'company_name', 'phone', 'whatsapp', 'email')
+            ->orderBy('name')
+            ->get();
 
-        return view('orders.create', compact('preselectedQuotation', 'preselectedCustomer', 'customers', 'users', 'serviceCategories'));
+        $users = User::where('status', 'active')->orderBy('name')->get();
+        $serviceCategories = Setting::get('service_categories', [
+            'Web Development',
+            'Software / ERP',
+            'Video Editing',
+            'Graphics Design',
+            'Social Media Marketing (SMM)',
+            'Digital Marketing / Ads',
+            'Mobile App Development',
+            'Other'
+        ]);
+
+        $orderType = $request->input('type', 'creative');
+
+        return view('orders.create', compact('preselectedQuotation', 'preselectedCustomer', 'customers', 'users', 'serviceCategories', 'orderType'));
     }
 
     /**
@@ -93,6 +118,27 @@ class OrderController extends Controller
         $orderCode = OrderService::generateOrderCode();
         $total = floatval($request->input('total_amount'));
         $paid = floatval($request->input('paid_amount', 0));
+
+        $orderType = $request->input('order_type', 'creative');
+        $meta = $request->input('meta', []);
+
+        // Compute paid amount from installments if provided
+        if ($orderType === 'creative') {
+            $sumInstallments = floatval($meta['pay_1st'] ?? 0) + floatval($meta['pay_2nd'] ?? 0) + floatval($meta['pay_3rd'] ?? 0);
+            if ($sumInstallments > 0) {
+                $paid = $sumInstallments;
+            }
+        } elseif ($orderType === 'web_software') {
+            $sumInstallments = 0;
+            for ($i = 1; $i <= 7; $i++) {
+                $suffix = match($i) { 1 => '1st', 2 => '2nd', 3 => '3rd', default => "{$i}th" };
+                $sumInstallments += floatval($meta["pay_{$suffix}"] ?? 0);
+            }
+            if ($sumInstallments > 0) {
+                $paid = $sumInstallments;
+            }
+        }
+
         $due = max(0, $total - $paid);
 
         $order = Order::create([
@@ -102,6 +148,9 @@ class OrderController extends Controller
             'sales_person_id' => $request->input('sales_person_id', auth()->id()),
             'project_manager_id' => $request->input('project_manager_id'),
             'service_category' => $request->input('service_category'),
+            'order_type' => $orderType,
+            'order_source' => $request->input('order_source', 'Repeated'),
+            'activity_status' => $request->input('activity_status', 'Active'),
             'title' => $request->input('title'),
             'description' => $request->input('description'),
             'total_amount' => $total,
@@ -112,6 +161,7 @@ class OrderController extends Controller
             'expected_delivery_date' => $request->input('expected_delivery_date'),
             'status' => $request->input('status', 'Confirmed'),
             'notes' => $request->input('notes'),
+            'meta' => $meta,
         ]);
 
         // If from quotation, update quotation status

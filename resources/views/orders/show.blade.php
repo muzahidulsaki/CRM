@@ -179,6 +179,140 @@
                         @endif
                     </div>
 
+                    <!-- Format-Specific Specifications (Creative, Ads, Soft/Web) -->
+                    @php $meta = $order->meta ?? []; @endphp
+                    @if(!empty($meta) || in_array($order->order_type, ['creative', 'ads', 'web_software']))
+                        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 space-y-4">
+                            <div class="flex items-center justify-between border-b border-gray-100 pb-3">
+                                <h3 class="font-bold text-gray-900 flex items-center gap-2">
+                                    @if($order->order_type === 'creative')
+                                        <span>🎨 {{ __('Creative Order Specifications') }}</span>
+                                    @elseif($order->order_type === 'ads')
+                                        <span>📈 {{ __('Ads Campaign Specifications') }}</span>
+                                    @elseif($order->order_type === 'web_software')
+                                        <span>💻 {{ __('Software & Website Specifications') }}</span>
+                                    @else
+                                        <span>📋 {{ __('Order Specifications') }}</span>
+                                    @endif
+                                </h3>
+                                <span class="px-2.5 py-0.5 rounded text-xs font-bold uppercase {{ $order->order_type === 'creative' ? 'bg-indigo-100 text-indigo-800' : ($order->order_type === 'ads' ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800') }}">
+                                    {{ $order->order_type }}
+                                </span>
+                            </div>
+
+                            @if($order->order_type === 'creative')
+                                <dl class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
+                                    <div class="p-3 bg-gray-50 rounded-xl">
+                                        <dt class="text-gray-500 font-semibold">{{ __('Script / Idea') }}</dt>
+                                        <dd class="font-bold text-gray-900 mt-0.5">{{ $meta['script_idea'] ?? '-' }}</dd>
+                                    </div>
+                                    <div class="p-3 bg-gray-50 rounded-xl">
+                                        <dt class="text-gray-500 font-semibold">{{ __('Script Code') }}</dt>
+                                        <dd class="font-bold font-mono text-indigo-700 mt-0.5">{{ $meta['script_code'] ?? '-' }}</dd>
+                                    </div>
+                                    <div class="p-3 bg-gray-50 rounded-xl">
+                                        <dt class="text-gray-500 font-semibold">{{ __('Voice / Design') }}</dt>
+                                        <dd class="font-bold text-gray-900 mt-0.5">{{ $meta['voice_design'] ?? '-' }}</dd>
+                                    </div>
+                                    <div class="p-3 bg-gray-50 rounded-xl">
+                                        <dt class="text-gray-500 font-semibold">{{ __('Duration') }}</dt>
+                                        <dd class="font-bold text-gray-900 mt-0.5">{{ !empty($meta['second']) ? $meta['second'] . 's' : '-' }}</dd>
+                                    </div>
+                                    <div class="p-3 bg-gray-50 rounded-xl">
+                                        <dt class="text-gray-500 font-semibold">{{ __('Language') }}</dt>
+                                        <dd class="font-bold text-gray-900 mt-0.5">{{ $meta['language'] ?? '-' }}</dd>
+                                    </div>
+                                    <div class="p-3 bg-gray-50 rounded-xl">
+                                        <dt class="text-gray-500 font-semibold">{{ __('Voice Link') }}</dt>
+                                        <dd class="mt-0.5">
+                                            @if(!empty($meta['voice_link']))
+                                                <a href="{{ $meta['voice_link'] }}" target="_blank" class="text-indigo-600 hover:underline font-bold">🎙️ Open Link ↗</a>
+                                            @else
+                                                <span class="text-gray-400">-</span>
+                                            @endif
+                                        </dd>
+                                    </div>
+                                </dl>
+
+                            @elseif($order->order_type === 'ads')
+                                <dl class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                                    <div class="p-3 bg-gray-50 rounded-xl sm:col-span-2">
+                                        <dt class="text-gray-500 font-semibold">{{ __('Ads Post Link') }}</dt>
+                                        <dd class="mt-0.5 truncate">
+                                            @if(!empty($meta['ads_post_link']))
+                                                <a href="{{ $meta['ads_post_link'] }}" target="_blank" class="text-indigo-600 hover:underline font-bold">🔗 {{ $meta['ads_post_link'] }}</a>
+                                            @else
+                                                <span class="text-gray-400">-</span>
+                                            @endif
+                                        </dd>
+                                    </div>
+                                    <div class="p-3 bg-gray-50 rounded-xl">
+                                        <dt class="text-gray-500 font-semibold">{{ __('Dollar Budget') }}</dt>
+                                        <dd class="font-bold font-mono text-amber-700 mt-0.5">${{ number_format(floatval($meta['total_dollar'] ?? 0), 2) }}</dd>
+                                    </div>
+                                    <div class="p-3 bg-gray-50 rounded-xl">
+                                        <dt class="text-gray-500 font-semibold">{{ __('Daily Cost') }}</dt>
+                                        <dd class="font-bold font-mono text-gray-900 mt-0.5">${{ number_format(floatval($meta['daily_cost'] ?? 0), 2) }}</dd>
+                                    </div>
+                                    <div class="p-3 bg-gray-50 rounded-xl">
+                                        <dt class="text-gray-500 font-semibold">{{ __('Total Days') }}</dt>
+                                        <dd class="font-bold font-mono text-gray-900 mt-0.5">{{ $meta['total_days'] ?? '-' }} days</dd>
+                                    </div>
+                                    <div class="p-3 bg-gray-50 rounded-xl">
+                                        <dt class="text-gray-500 font-semibold">{{ __('Dollar Due') }}</dt>
+                                        <dd class="font-bold font-mono text-rose-600 mt-0.5">${{ number_format(floatval($meta['dollar_due'] ?? 0), 2) }}</dd>
+                                    </div>
+                                    <div class="p-3 bg-gray-50 rounded-xl">
+                                        <dt class="text-gray-500 font-semibold">{{ __('Today Check') }}</dt>
+                                        <dd class="font-bold mt-0.5">{{ $meta['today_check'] ?? 'Pending' }}</dd>
+                                    </div>
+                                </dl>
+
+                            @elseif($order->order_type === 'web_software')
+                                <dl class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
+                                    <div class="p-3 bg-gray-50 rounded-xl">
+                                        <dt class="text-gray-500 font-semibold">{{ __('Subscription System') }}</dt>
+                                        <dd class="font-bold text-gray-900 mt-0.5">{{ $meta['subscription_system'] ?? 'None' }}</dd>
+                                    </div>
+                                    <div class="p-3 bg-gray-50 rounded-xl">
+                                        <dt class="text-gray-500 font-semibold">{{ __('Subscription Fee') }}</dt>
+                                        <dd class="font-bold font-mono text-blue-700 mt-0.5">{{ !empty($meta['subscription_fee']) ? 'BDT ' . number_format(floatval($meta['subscription_fee'])) : '-' }}</dd>
+                                    </div>
+                                    <div class="p-3 bg-gray-50 rounded-xl">
+                                        <dt class="text-gray-500 font-semibold">{{ __('Working Priority') }}</dt>
+                                        <dd class="font-bold text-gray-900 mt-0.5">{{ $meta['working_priority'] ?? 'Normal' }}</dd>
+                                    </div>
+                                </dl>
+
+                                @if(!empty($meta['official_admin_link']) || !empty($meta['client_admin_link']))
+                                    <div class="p-4 bg-gray-50/70 border border-gray-200 rounded-xl space-y-2 text-xs">
+                                        <div class="font-bold text-gray-800 flex items-center gap-1">
+                                            <span>🔐</span> {{ __('Stored Portals & Credentials') }}
+                                        </div>
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                                            @if(!empty($meta['official_admin_link']))
+                                                <div class="p-2.5 bg-white rounded-lg border border-gray-200">
+                                                    <span class="text-2xs font-bold text-indigo-700 uppercase block mb-1">{{ __('Official Admin Access') }}</span>
+                                                    <div class="font-mono text-2xs truncate">URL: {{ $meta['official_admin_link'] }}</div>
+                                                    <div class="font-mono text-2xs">User: {{ $meta['official_user_id'] ?? '-' }}</div>
+                                                    <div class="font-mono text-2xs text-gray-600">Pass: {{ $meta['official_password'] ?? '-' }}</div>
+                                                </div>
+                                            @endif
+                                            @if(!empty($meta['client_admin_link']))
+                                                <div class="p-2.5 bg-white rounded-lg border border-gray-200">
+                                                    <span class="text-2xs font-bold text-emerald-700 uppercase block mb-1">{{ __('Client Admin Access') }}</span>
+                                                    <div class="font-mono text-2xs truncate">URL: {{ $meta['client_admin_link'] }}</div>
+                                                    <div class="font-mono text-2xs">User: {{ $meta['client_user_id'] ?? '-' }}</div>
+                                                    <div class="font-mono text-2xs text-gray-600">Pass: {{ $meta['client_password'] ?? '-' }}</div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @endif
+                            @endif
+                        </div>
+                    @endif
+
                 </div>
 
                 <!-- Right Column (Customer & Quick Actions) -->
@@ -208,6 +342,14 @@
                             </div>
 
                             <div class="space-y-2 text-xs text-gray-600 pt-2 border-t border-gray-100">
+                                @if($order->customer->whatsapp)
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-emerald-600">💬</span>
+                                        <a href="https://wa.me/{{ preg_replace('/\D/', '', $order->customer->whatsapp) }}" target="_blank" class="text-emerald-700 font-mono font-bold hover:underline">
+                                            WhatsApp: {{ $order->customer->whatsapp }}
+                                        </a>
+                                    </div>
+                                @endif
                                 <div class="flex items-center gap-2">
                                     <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
                                     <a href="tel:{{ $order->customer->phone }}" class="hover:text-indigo-600 font-medium">{{ $order->customer->phone }}</a>

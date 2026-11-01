@@ -1,8 +1,8 @@
 <!-- Navigation Menu Groups with Collapsible Accordion Dropdowns -->
 <nav class="flex flex-1 flex-col gap-y-4" x-data="{
     crmOpen: {{ request()->routeIs('leads.*') || request()->routeIs('quotations.*') || request()->routeIs('customers.*') ? 'true' : 'true' }},
-    opsOpen: {{ request()->routeIs('orders.*') || request()->routeIs('projects.*') || request()->routeIs('tasks.*') ? 'true' : 'true' }},
-    teamOpen: {{ request()->routeIs('video-billings.*') || request()->routeIs('employees.*') || request()->routeIs('worklogs.*') || request()->routeIs('payouts.*') ? 'true' : 'true' }},
+    opsOpen: {{ request()->routeIs('orders.*') || request()->routeIs('ads-reports.*') || request()->routeIs('projects.*') || request()->routeIs('tasks.*') ? 'true' : 'true' }},
+    teamOpen: {{ request()->routeIs('video-billings.*') || request()->routeIs('employees.*') || request()->routeIs('daily-reports.*') || request()->routeIs('worklogs.*') || request()->routeIs('payouts.*') ? 'true' : 'true' }},
     financeOpen: {{ request()->routeIs('invoices.*') || request()->routeIs('client-payments.*') || request()->routeIs('renewals.*') || request()->routeIs('expenses.*') || request()->routeIs('finance.*') ? 'true' : 'true' }},
     supportOpen: {{ request()->routeIs('support-tickets.*') || request()->routeIs('public-support.*') ? 'true' : 'false' }},
     reportsOpen: {{ request()->routeIs('reports.*') ? 'true' : 'false' }},
@@ -120,6 +120,15 @@
                     </a>
                 </li>
                 <li>
+                    <a href="{{ route('ads-reports.index') }}" 
+                       class="group flex items-center gap-x-3 rounded-xl px-3 py-2 text-xs font-medium transition {{ request()->routeIs('ads-reports.*') ? 'bg-indigo-600 text-white shadow-sm font-semibold' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                        <svg class="h-4 w-4 shrink-0 text-slate-400 group-hover:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/><path stroke-linecap="round" stroke-linejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/>
+                        </svg>
+                        <span>{{ __('Our Ads Reports') }}</span>
+                    </a>
+                </li>
+                <li>
                     <a href="{{ route('projects.index') }}" 
                        class="group flex items-center gap-x-3 rounded-xl px-3 py-2 text-xs font-medium transition {{ request()->routeIs('projects.*') ? 'bg-indigo-600 text-white shadow-sm font-semibold' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
                         <svg class="h-4 w-4 shrink-0 text-slate-400 group-hover:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
@@ -194,6 +203,15 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         <span>{{ __('Hours & Worklogs') }}</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('daily-reports.index') }}" 
+                       class="group flex items-center gap-x-3 rounded-xl px-3 py-2 text-xs font-medium transition {{ request()->routeIs('daily-reports.*') ? 'bg-indigo-600 text-white shadow-sm font-semibold' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                        <svg class="h-4 w-4 shrink-0 text-slate-400 group-hover:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                        </svg>
+                        <span>{{ __('Employee Daily Reports') }}</span>
                     </a>
                 </li>
                 @if(Auth::user()->isAdmin() || Auth::user()->hasRole('project_manager'))
