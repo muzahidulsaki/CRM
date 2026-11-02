@@ -74,6 +74,9 @@
                                     <div class="flex items-center gap-2">
                                         <h4 class="font-bold text-emerald-950 text-sm" x-text="selectedCustomer.name"></h4>
                                         <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-200/60 text-emerald-900" x-text="selectedCustomer.customer_code"></span>
+                                        <template x-if="selectedCustomer.badge">
+                                            <span class="px-2 py-0.5 rounded text-[10px] font-bold" :class="selectedCustomer.type === 'lead' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'" x-text="selectedCustomer.badge"></span>
+                                        </template>
                                     </div>
                                     <div class="text-xs text-emerald-800 flex flex-wrap items-center gap-2 mt-0.5">
                                         <template x-if="selectedCustomer.company_name">
@@ -114,7 +117,10 @@
                             <template x-for="cust in filteredCustomers" :key="cust.id">
                                 <div @click="selectCustomer(cust)" class="p-3 hover:bg-emerald-50/50 cursor-pointer transition flex items-center justify-between">
                                     <div>
-                                        <div class="font-bold text-gray-900 text-sm" x-text="cust.name"></div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="font-bold text-gray-900 text-sm" x-text="cust.name"></span>
+                                            <span class="px-2 py-0.5 rounded text-[10px] font-bold" :class="cust.type === 'lead' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'" x-text="cust.badge"></span>
+                                        </div>
                                         <div class="text-xs text-gray-500" x-text="cust.company_name ? cust.company_name : 'Individual'"></div>
                                     </div>
                                     <div class="text-right">

@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\ActivityLog;
 use App\Models\Customer;
+use App\Models\Lead;
 use App\Models\Order;
 use App\Models\Quotation;
 use App\Models\Setting;
 use App\Models\User;
+use App\Services\LeadService;
 use App\Services\OrderService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -72,13 +74,73 @@ class OrderController extends Controller
     public function create(Request $request): View
     {
         $preselectedQuotation = $request->filled('quotation_id') ? Quotation::with(['lead', 'customer', 'items'])->find($request->input('quotation_id')) : null;
-        $preselectedCustomer = $request->filled('customer_id') ? Customer::find($request->input('customer_id')) : ($preselectedQuotation?->customer);
+        $preselectedCustomer = null;
 
-        // Fetch active customers with their whatsapp and phone for fast search dropdown
-        $customers = Customer::where('status', 'active')
+        if ($request->filled('customer_id')) {
+            $preselectedCustomer = Customer::find($request->input('customer_id'));
+        } elseif ($preselectedQuotation?->customer) {
+            $preselectedCustomer = $preselectedQuotation->customer;
+        } elseif ($request->filled('lead_id')) {
+            $lead = Lead::find($request->input('lead_id'));
+            if ($lead) {
+                if ($lead->customer_id) {
+                    $preselectedCustomer = Customer::find($lead->customer_id);
+                } else {
+                    $preselectedCustomer = [
+                        'id' => 'lead_' . $lead->id,
+                        'type' => 'lead',
+                        'customer_code' => $lead->lead_code,
+                        'name' => $lead->name,
+                        'company_name' => $lead->company_name,
+                        'phone' => $lead->phone,
+                        'whatsapp' => $lead->whatsapp,
+                        'email' => $lead->email,
+                        'badge' => 'Lead (' . $lead->lead_code . ')',
+                    ];
+                }
+            }
+        }
+
+        // Fetch active customers
+        $customersList = Customer::where('status', 'active')
             ->select('id', 'customer_code', 'name', 'company_name', 'phone', 'whatsapp', 'email')
             ->orderBy('name')
-            ->get();
+            ->get()
+            ->map(function ($c) {
+                return [
+                    'id' => $c->id,
+                    'type' => 'customer',
+                    'customer_code' => $c->customer_code,
+                    'name' => $c->name,
+                    'company_name' => $c->company_name,
+                    'phone' => $c->phone,
+                    'whatsapp' => $c->whatsapp,
+                    'email' => $c->email,
+                    'badge' => 'Client',
+                ];
+            });
+
+        // Also fetch unconverted Leads so they can be selected directly by WhatsApp/phone
+        $leadsList = Lead::whereNull('customer_id')
+            ->select('id', 'lead_code', 'name', 'company_name', 'phone', 'whatsapp', 'email')
+            ->latest('id')
+            ->limit(100)
+            ->get()
+            ->map(function ($l) {
+                return [
+                    'id' => 'lead_' . $l->id,
+                    'type' => 'lead',
+                    'customer_code' => $l->lead_code,
+                    'name' => $l->name,
+                    'company_name' => $l->company_name,
+                    'phone' => $l->phone,
+                    'whatsapp' => $l->whatsapp,
+                    'email' => $l->email,
+                    'badge' => 'Lead (' . $l->lead_code . ')',
+                ];
+            });
+
+        $customers = $customersList->concat($leadsList)->values();
 
         $users = User::where('status', 'active')->orderBy('name')->get();
         $serviceCategories = Setting::get('service_categories', [
@@ -102,6 +164,19 @@ class OrderController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        // Auto-convert lead to customer if a lead was selected in the Client selection dropdown
+        $customerId = $request->input('customer_id');
+        if (is_string($customerId) && str_starts_with($customerId, 'lead_')) {
+            $leadId = intval(str_replace('lead_', '', $customerId));
+            $lead = Lead::findOrFail($leadId);
+            $customer = LeadService::convertToCustomer($lead, auth()->id());
+            $request->merge(['customer_id' => $customer->id]);
+        } elseif (!$request->filled('customer_id') && $request->filled('lead_id')) {
+            $lead = Lead::findOrFail($request->input('lead_id'));
+            $customer = LeadService::convertToCustomer($lead, auth()->id());
+            $request->merge(['customer_id' => $customer->id]);
+        }
+
         $request->validate([
             'customer_id' => ['required', 'exists:customers,id'],
             'title' => ['required', 'string', 'max:255'],
