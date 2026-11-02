@@ -30,10 +30,14 @@
                             @endif
                         </span>
                     </div>
-                    <p class="text-xs text-gray-500 mt-1 flex items-center gap-2">
-                        <span>{{ $lead->company_name ?? __('Individual Client') }}</span>
+                    <p class="text-xs text-gray-500 mt-1 flex items-center gap-2 flex-wrap">
+                        <span class="font-bold text-slate-800">{{ $lead->company_name ?? __('Individual Client') }}</span>
+                        @if($lead->business_category || $lead->business_type)
+                            <span>&bull;</span>
+                            <span class="px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 font-semibold">{{ $lead->business_category ?? $lead->business_type }}</span>
+                        @endif
                         <span>&bull;</span>
-                        <span>{{ __('Source') }}: {{ __($lead->lead_source) }}</span>
+                        <span>{{ __('Source') }}: <strong>{{ __($lead->lead_source) }}</strong></span>
                         <span>&bull;</span>
                         <span>{{ __('Captured') }}: {{ $lead->created_at->format('d M, Y h:i A') }}</span>
                     </p>
@@ -124,20 +128,46 @@
                         <!-- Direct WhatsApp -->
                         <div class="flex items-center justify-between p-3 bg-emerald-50/50 rounded-xl border border-emerald-100">
                             <div>
-                                <div class="text-[11px] font-semibold text-emerald-800 uppercase">{{ __('WhatsApp') }}</div>
+                                <div class="text-[11px] font-semibold text-emerald-800 uppercase flex items-center gap-1.5">
+                                    <span>{{ __('WhatsApp') }}</span>
+                                    @if($lead->whatsapp_status)
+                                        <span class="px-1.5 py-0.2 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">{{ $lead->whatsapp_status }}</span>
+                                    @endif
+                                </div>
                                 <div class="font-bold text-emerald-900 text-sm mt-0.5">{{ $lead->whatsapp ?? $lead->phone }}</div>
                             </div>
-                            <a href="https://wa.me/{{ $lead->normalized_whatsapp ? '88' . $lead->normalized_whatsapp : '88' . $lead->normalized_phone }}" target="_blank" class="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-semibold hover:bg-emerald-700 transition flex items-center gap-1.5 shadow-sm">
-                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.007c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.353.101.173.449.741.964 1.2 1.309 1.168 1.706.772 1.95.836.087.023.23-.014.354-.188.125-.174.529-.623.67-.837.14-.213.281-.178.472-.107.19.071 1.208.57 1.415.674.208.104.346.155.397.242.051.087.051.505-.093.91z"/></svg>
-                                {{ __('Chat') }}
-                            </a>
+                            @php
+                                $waPhone = preg_replace('/[^0-9]/', '', $lead->whatsapp ?? $lead->phone ?? '');
+                            @endphp
+                            @if($waPhone)
+                                <a href="https://wa.me/{{ $waPhone }}" target="_blank" class="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-semibold hover:bg-emerald-700 transition flex items-center gap-1.5 shadow-sm">
+                                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.007c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.353.101.173.449.741.964 1.2 1.309 1.168 1.706.772 1.95.836.087.023.23-.014.354-.188.125-.174.529-.623.67-.837.14-.213.281-.178.472-.107.19.071 1.208.57 1.415.674.208.104.346.155.397.242.051.087.051.505-.093.91z"/></svg>
+                                    {{ __('Chat') }}
+                                </a>
+                            @endif
                         </div>
+
+                        <!-- Imo Number -->
+                        @if($lead->imo_number)
+                            <div class="flex items-center justify-between p-3 bg-sky-50/50 rounded-xl border border-sky-100">
+                                <div>
+                                    <div class="text-[11px] font-semibold text-sky-800 uppercase">{{ __('Imo Number') }}</div>
+                                    <div class="font-bold text-sky-900 text-sm mt-0.5">{{ $lead->imo_number }}</div>
+                                </div>
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-sky-100 text-sky-800">Imo</span>
+                            </div>
+                        @endif
 
                         <!-- Email -->
                         @if($lead->email)
                             <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-100">
                                 <div>
-                                    <div class="text-[11px] font-semibold text-gray-500 uppercase">{{ __('Email') }}</div>
+                                    <div class="text-[11px] font-semibold text-gray-500 uppercase flex items-center gap-1.5">
+                                        <span>{{ __('Email') }}</span>
+                                        @if($lead->email_status)
+                                            <span class="px-1.5 py-0.2 rounded text-[10px] font-bold bg-slate-200 text-slate-800">{{ $lead->email_status }}</span>
+                                        @endif
+                                    </div>
                                     <div class="font-medium text-gray-900 text-xs mt-0.5 truncate max-w-[200px]">{{ $lead->email }}</div>
                                 </div>
                                 <a href="mailto:{{ $lead->email }}" class="p-2 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 rounded-lg transition" title="{{ __('Send Email') }}">
@@ -146,21 +176,162 @@
                             </div>
                         @endif
 
-                        <!-- Address & Location -->
-                        @if($lead->address || $lead->city)
-                            <div class="pt-2 text-xs text-gray-600 space-y-1">
-                                <div class="font-semibold text-gray-700">{{ __('Address & Location') }}:</div>
-                                <p>{{ $lead->address ? $lead->address . ', ' : '' }}{{ $lead->city }} ({{ $lead->country }})</p>
+                        <!-- Messenger -->
+                        @if($lead->messenger_link)
+                            <div class="flex items-center justify-between p-3 bg-blue-50/50 rounded-xl border border-blue-100">
+                                <div class="min-w-0 pr-2">
+                                    <div class="text-[11px] font-semibold text-blue-800 uppercase flex items-center gap-1.5">
+                                        <span>{{ __('Messenger') }}</span>
+                                        @if($lead->messenger_status)
+                                            <span class="px-1.5 py-0.2 rounded text-[10px] font-bold bg-blue-100 text-blue-800">{{ $lead->messenger_status }}</span>
+                                        @endif
+                                    </div>
+                                    <a href="{{ Str::startsWith($lead->messenger_link, 'http') ? $lead->messenger_link : 'https://' . $lead->messenger_link }}" target="_blank" class="font-medium text-blue-600 hover:underline text-xs mt-0.5 block truncate">
+                                        {{ $lead->messenger_link }}
+                                    </a>
+                                </div>
+                                <a href="{{ Str::startsWith($lead->messenger_link, 'http') ? $lead->messenger_link : 'https://' . $lead->messenger_link }}" target="_blank" class="px-2.5 py-1 bg-blue-600 text-white rounded-lg text-xs font-semibold hover:bg-blue-700 transition shrink-0">
+                                    {{ __('Open') }}
+                                </a>
                             </div>
                         @endif
 
-                        <!-- Website / Links -->
-                        @if($lead->website)
-                            <div class="pt-1 text-xs">
-                                <span class="font-semibold text-gray-700">{{ __('Website') }}:</span>
-                                <a href="{{ $lead->website }}" target="_blank" class="text-indigo-600 hover:underline block truncate">{{ $lead->website }}</a>
+                        <!-- Geographical Details -->
+                        <div class="pt-2 border-t border-gray-100 space-y-2 text-xs">
+                            <div class="grid grid-cols-2 gap-2">
+                                <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                                    <span class="text-[10px] font-bold uppercase text-slate-400 block">📍 {{ __('Current Country') }}</span>
+                                    <span class="font-bold text-slate-900">{{ $lead->current_country ?? $lead->country ?? 'N/A' }}</span>
+                                </div>
+                                <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                                    <span class="text-[10px] font-bold uppercase text-slate-400 block">🏢 {{ __('Business Country') }}</span>
+                                    <span class="font-bold text-slate-900">{{ $lead->business_country ?? $lead->country ?? 'N/A' }}</span>
+                                </div>
+                            </div>
+
+                            @if($lead->address || $lead->city)
+                                <div class="text-slate-600">
+                                    <span class="font-semibold text-slate-700">{{ __('Address') }}:</span>
+                                    <span>{{ $lead->address ? $lead->address . ', ' : '' }}{{ $lead->city }}</span>
+                                </div>
+                            @endif
+
+                            @if($lead->google_maps_link)
+                                <div class="pt-1">
+                                    <a href="{{ Str::startsWith($lead->google_maps_link, 'http') ? $lead->google_maps_link : 'https://' . $lead->google_maps_link }}" target="_blank" class="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-600 hover:text-rose-700 hover:underline">
+                                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                        <span>{{ __('View on Google Maps') }} &rarr;</span>
+                                    </a>
+                                </div>
+                            @endif
+                        </div>
+
+                        <!-- Social Media Links Hub -->
+                        @php
+                            $socials = [
+                                ['label' => 'Website', 'val' => $lead->website, 'icon' => '🌐', 'color' => 'text-indigo-600'],
+                                ['label' => 'Facebook', 'val' => $lead->facebook, 'icon' => 'FB', 'color' => 'text-blue-600'],
+                                ['label' => 'Instagram', 'val' => $lead->instagram, 'icon' => 'IG', 'color' => 'text-pink-600'],
+                                ['label' => 'YouTube', 'val' => $lead->youtube, 'icon' => 'YT', 'color' => 'text-red-600'],
+                                ['label' => 'TikTok', 'val' => $lead->tiktok, 'icon' => 'TT', 'color' => 'text-slate-900'],
+                                ['label' => 'Twitter/X', 'val' => $lead->twitter, 'icon' => '𝕏', 'color' => 'text-slate-800'],
+                                ['label' => 'Snapchat', 'val' => $lead->snapchat, 'icon' => 'SC', 'color' => 'text-amber-500'],
+                                ['label' => 'LinkedIn', 'val' => $lead->linkedin, 'icon' => 'IN', 'color' => 'text-blue-700'],
+                                ['label' => 'Other Link', 'val' => $lead->other_socials, 'icon' => '🔗', 'color' => 'text-slate-600'],
+                            ];
+                            $activeSocials = array_filter($socials, fn($s) => !empty($s['val']));
+                        @endphp
+
+                        @if(count($activeSocials) > 0)
+                            <div class="pt-2 border-t border-gray-100 space-y-1.5">
+                                <span class="text-[11px] font-bold text-gray-500 uppercase">{{ __('Social & Web Profiles') }}:</span>
+                                <div class="flex flex-wrap gap-1.5">
+                                    @foreach($activeSocials as $soc)
+                                        @php
+                                            $url = Str::startsWith($soc['val'], 'http') ? $soc['val'] : 'https://' . $soc['val'];
+                                        @endphp
+                                        <a href="{{ $url }}" target="_blank" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-gray-50 hover:bg-gray-100 border border-gray-200 text-xs font-semibold {{ $soc['color'] }} transition" title="{{ $soc['label'] }}: {{ $soc['val'] }}">
+                                            <span>{{ $soc['icon'] }}</span>
+                                            <span>{{ $soc['label'] }}</span>
+                                        </a>
+                                    @endforeach
+                                </div>
                             </div>
                         @endif
+                    </div>
+
+                    <!-- Follow-up, Meeting & Pipeline Intelligence Card -->
+                    <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm space-y-3">
+                        <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider flex items-center gap-2 border-b pb-2.5">
+                            <span>📅 {{ __('Follow-up & Meeting Intelligence') }}</span>
+                        </h3>
+
+                        @if($lead->followup_comment)
+                            <div class="bg-amber-50/60 p-3 rounded-xl border border-amber-200/80 text-xs text-amber-900">
+                                <span class="font-bold block text-[10px] uppercase text-amber-700 mb-0.5">📝 Follow-up Comment / Note:</span>
+                                <p class="leading-relaxed whitespace-pre-line">{{ $lead->followup_comment }}</p>
+                            </div>
+                        @endif
+
+                        <div class="grid grid-cols-3 gap-2 text-xs">
+                            <div class="p-2 rounded-lg bg-slate-50 border border-slate-100">
+                                <span class="text-[10px] font-semibold text-slate-400 block uppercase">1st Date</span>
+                                <strong class="text-slate-800 text-[11px]">{{ $lead->followup_first_date ? $lead->followup_first_date->format('d M, Y') : '—' }}</strong>
+                            </div>
+                            <div class="p-2 rounded-lg bg-slate-50 border border-slate-100">
+                                <span class="text-[10px] font-semibold text-slate-400 block uppercase">Last Date</span>
+                                <strong class="text-slate-800 text-[11px]">{{ $lead->followup_last_date ? $lead->followup_last_date->format('d M, Y') : '—' }}</strong>
+                            </div>
+                            <div class="p-2 rounded-lg bg-indigo-50 border border-indigo-100">
+                                <span class="text-[10px] font-semibold text-indigo-500 block uppercase">Next Date</span>
+                                <strong class="text-indigo-800 text-[11px]">{{ $lead->followup_next_date ? $lead->followup_next_date->format('d M, Y') : '—' }}</strong>
+                            </div>
+                        </div>
+
+                        <!-- Meeting Info -->
+                        @if($lead->meeting_platform || $lead->next_meeting_datetime)
+                            <div class="p-3 rounded-xl bg-purple-50/60 border border-purple-100 text-xs space-y-1">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-purple-700 font-semibold">💻 {{ __('Meeting Platform') }}:</span>
+                                    <span class="font-bold text-purple-900">{{ $lead->meeting_platform ?? 'TBD' }}</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-purple-700 font-semibold">⏰ {{ __('Meeting Date & Time') }}:</span>
+                                    <span class="font-bold text-purple-900">{{ $lead->next_meeting_datetime ? $lead->next_meeting_datetime->format('d M, Y h:i A') : 'Not Set' }}</span>
+                                </div>
+                            </div>
+                        @endif
+
+                        <!-- Sales Pipeline Indicators -->
+                        <div class="pt-2 border-t border-gray-100 space-y-2 text-xs">
+                            @if($lead->why_not_order)
+                                <div class="flex justify-between items-center">
+                                    <span class="text-rose-600 font-semibold">{{ __('Why Not Order') }}:</span>
+                                    <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-rose-100 text-rose-800">{{ $lead->why_not_order }}</span>
+                                </div>
+                            @endif
+
+                            @if($lead->potential_order)
+                                <div class="flex justify-between items-center">
+                                    <span class="text-slate-600 font-medium">{{ __('Potential Order') }}:</span>
+                                    <span class="font-bold text-indigo-700">{{ $lead->potential_order }}</span>
+                                </div>
+                            @endif
+
+                            @if($lead->retentions_marketing)
+                                <div class="flex justify-between items-center">
+                                    <span class="text-slate-600 font-medium">{{ __('Retentions Marketing') }}:</span>
+                                    <span class="font-semibold text-slate-800">{{ $lead->retentions_marketing }}</span>
+                                </div>
+                            @endif
+
+                            @if($lead->repeat_marketing)
+                                <div class="flex justify-between items-center">
+                                    <span class="text-slate-600 font-medium">{{ __('Repeat Marketing') }}:</span>
+                                    <span class="font-semibold text-slate-800">{{ $lead->repeat_marketing }}</span>
+                                </div>
+                            @endif
+                        </div>
                     </div>
 
                     <!-- Deal & Parameters Card -->
@@ -170,9 +341,18 @@
                         </h3>
 
                         <div class="flex justify-between items-center text-xs">
-                            <span class="text-gray-500">{{ __('Interested Service') }}:</span>
-                            <span class="font-bold text-gray-900 bg-gray-100 px-2 py-0.5 rounded">{{ __($lead->interested_service ?? 'Unspecified') }}</span>
+                            <span class="text-gray-500">{{ __('Interested Service / Product') }}:</span>
+                            <span class="font-bold text-gray-900 bg-gray-100 px-2 py-0.5 rounded">{{ $lead->interested_products ?? $lead->interested_service ?? 'Unspecified' }}</span>
                         </div>
+
+                        @if($lead->srs_number || $lead->srs_status)
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-gray-500">{{ __('SRS Specification') }}:</span>
+                                <span class="font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded">
+                                    {{ $lead->srs_number ?? 'N/A' }} ({{ $lead->srs_status ?? 'Pending' }})
+                                </span>
+                            </div>
+                        @endif
 
                         <div class="flex justify-between items-center text-xs">
                             <span class="text-gray-500">{{ __('Estimated Budget') }}:</span>
