@@ -263,7 +263,7 @@
                         <textarea name="followup_comment" rows="2" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">{{ old('followup_comment', $lead->followup_comment) }}</textarea>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Follow-up 1st Date') }}</label>
                             <input type="date" name="followup_first_date" value="{{ old('followup_first_date', $lead->followup_first_date?->format('Y-m-d')) }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
@@ -272,11 +272,6 @@
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Follow-up Last Date') }}</label>
                             <input type="date" name="followup_last_date" value="{{ old('followup_last_date', $lead->followup_last_date?->format('Y-m-d')) }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Follow-up Next Month') }}</label>
-                            <input type="text" name="followup_next_month" value="{{ old('followup_next_month', $lead->followup_next_month) }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
 
                         <div>
@@ -338,12 +333,7 @@
 
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Potential Order') }}</label>
-                            <select name="potential_order" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
-                                <option value="">{{ __('Select Potential') }}</option>
-                                @foreach($potentialOrderOptions as $po)
-                                    <option value="{{ $po }}" {{ old('potential_order', $lead->potential_order) === $po ? 'selected' : '' }}>{{ $po }}</option>
-                                @endforeach
-                            </select>
+                            <input type="text" name="potential_order" value="{{ old('potential_order', $lead->potential_order) }}" placeholder="{{ __('e.g. ERP software, 3 promo videos') }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
 
                         <div class="sm:col-span-2">
@@ -358,22 +348,12 @@
 
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Retentions Marketing') }}</label>
-                            <select name="retentions_marketing" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
-                                <option value="">{{ __('Select Status') }}</option>
-                                @foreach($retentionsMarketingOptions as $rm)
-                                    <option value="{{ $rm }}" {{ old('retentions_marketing', $lead->retentions_marketing) === $rm ? 'selected' : '' }}>{{ $rm }}</option>
-                                @endforeach
-                            </select>
+                            <input type="text" name="retentions_marketing" value="{{ old('retentions_marketing', $lead->retentions_marketing) }}" placeholder="{{ __('e.g. Call after Eid offer') }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
 
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Repeat Marketing') }}</label>
-                            <select name="repeat_marketing" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
-                                <option value="">{{ __('Select Status') }}</option>
-                                @foreach($repeatMarketingOptions as $rm)
-                                    <option value="{{ $rm }}" {{ old('repeat_marketing', $lead->repeat_marketing) === $rm ? 'selected' : '' }}>{{ $rm }}</option>
-                                @endforeach
-                            </select>
+                            <input type="text" name="repeat_marketing" value="{{ old('repeat_marketing', $lead->repeat_marketing) }}" placeholder="{{ __('e.g. Next month website redesign pitch') }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
                     </div>
                 </div>
