@@ -223,7 +223,7 @@
 
                                     <!-- Client & Business -->
                                     <td class="py-3 px-3 min-w-[160px]">
-                                        <div class="font-bold text-gray-900">{{ $lead->name }}</div>
+                                        <div class="font-bold text-gray-900">{{ !empty($lead->name) && $lead->name !== '-' ? $lead->name : ($lead->company_name ?: '-') }}</div>
                                         @if($lead->company_name)
                                             <div class="text-gray-600 text-2xs truncate max-w-[180px]">{{ $lead->company_name }}</div>
                                         @endif

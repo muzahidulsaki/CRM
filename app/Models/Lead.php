@@ -211,4 +211,16 @@ class Lead extends Model
 
         return $counts;
     }
+
+    /**
+     * Get user-facing display name when client name is empty.
+     */
+    public function getDisplayNameAttribute(): string
+    {
+        if (!empty($this->name) && $this->name !== '-' && $this->name !== 'N/A') {
+            return $this->name;
+        }
+
+        return $this->company_name ?: ($this->phone ? 'Client (' . $this->phone . ')' : 'Client (' . $this->lead_code . ')');
+    }
 }

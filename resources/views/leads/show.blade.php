@@ -8,7 +8,7 @@
                 <div>
                     <div class="flex items-center gap-2.5">
                         <h2 class="font-bold text-2xl text-gray-900 leading-tight">
-                            {{ $lead->name }}
+                            {{ !empty($lead->name) && $lead->name !== '-' ? $lead->name : ($lead->company_name ?: $lead->lead_code) }}
                         </h2>
                         <span class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-indigo-100 text-indigo-800">
                             {{ $lead->lead_code }}

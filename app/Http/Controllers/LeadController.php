@@ -202,10 +202,12 @@ class LeadController extends Controller
         }
 
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['nullable', 'string', 'max:255'],
+            'company_name' => ['nullable', 'string', 'max:255'],
+            'business_type' => ['required', 'string', 'max:255'],
             'phone' => ['required', 'string', 'max:30'],
             'email' => ['nullable', 'email', 'max:255'],
-            'lead_source' => ['required', 'string'],
+            'lead_source' => ['required', 'string', 'max:255'],
             'lead_temperature' => ['required', 'in:Hot,Warm,Cold'],
             'budget' => ['nullable', 'numeric', 'min:0'],
             'discussed_amount' => ['nullable', 'numeric', 'min:0'],
@@ -232,6 +234,10 @@ class LeadController extends Controller
 
         $data = $request->except(['_token', 'allow_duplicate']);
         $data['lead_code'] = $leadCode;
+        $data['name'] = $request->filled('name')
+            ? $request->input('name')
+            : ($request->filled('company_name') ? $request->input('company_name') : '-');
+        $data['lead_source'] = $request->input('lead_source');
         $data['lead_status'] = $request->input('lead_status', 'New');
         $data['lead_temperature'] = $request->input('lead_temperature', 'Warm');
         $data['created_by'] = auth()->id();
@@ -368,10 +374,12 @@ class LeadController extends Controller
     public function update(Request $request, Lead $lead): RedirectResponse
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['nullable', 'string', 'max:255'],
+            'company_name' => ['nullable', 'string', 'max:255'],
+            'business_type' => ['required', 'string', 'max:255'],
             'phone' => ['required', 'string', 'max:30'],
             'email' => ['nullable', 'email', 'max:255'],
-            'lead_source' => ['required', 'string'],
+            'lead_source' => ['required', 'string', 'max:255'],
             'lead_temperature' => ['required', 'in:Hot,Warm,Cold'],
             'lead_status' => ['required', 'in:New,Contacted,Interested,Meeting/Demo,Proposal Sent,Negotiation,Won,Lost'],
             'budget' => ['nullable', 'numeric', 'min:0'],
@@ -383,7 +391,12 @@ class LeadController extends Controller
         $oldStatus = $lead->lead_status;
         $oldAssigned = $lead->assigned_to;
 
-        $lead->update($request->all());
+        $updateData = $request->all();
+        if (empty($updateData['name'])) {
+            $updateData['name'] = $request->filled('company_name') ? $request->input('company_name') : '-';
+        }
+
+        $lead->update($updateData);
 
         // Status change log
         if ($oldStatus !== $lead->lead_status) {
@@ -511,7 +524,7 @@ class LeadController extends Controller
     public function destroy(Lead $lead): RedirectResponse
     {
         $leadCode = $lead->lead_code;
-        $lead->forceDelete();
+        $lead->delete();
 
         ActivityLog::log(
             action: 'lead_deleted',

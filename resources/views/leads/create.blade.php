@@ -96,17 +96,19 @@
                                     <option value="{{ $source }}">
                                 @endforeach
                             </datalist>
+                            @error('lead_source') <span class="text-rose-600 text-xs">{{ $message }}</span> @enderror
                         </div>
 
                         <!-- Business Category -->
                         <div>
-                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Business Category') }}</label>
-                            <input list="business_categories_list" name="business_type" value="{{ old('business_type') }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="{{ __('e.g. Travel Agency') }}">
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Business Category') }} <span class="text-rose-500">*</span></label>
+                            <input list="business_categories_list" name="business_type" value="{{ old('business_type') }}" required class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="{{ __('e.g. Travel Agency') }}">
                             <datalist id="business_categories_list">
                                 @foreach($businessCategories as $cat)
                                     <option value="{{ $cat }}">
                                 @endforeach
                             </datalist>
+                            @error('business_type') <span class="text-rose-600 text-xs">{{ $message }}</span> @enderror
                         </div>
 
                         <!-- Temperature -->
@@ -117,14 +119,15 @@
                                 <option value="Hot" {{ old('lead_temperature') === 'Hot' ? 'selected' : '' }}>⚡ Hot</option>
                                 <option value="Cold" {{ old('lead_temperature') === 'Cold' ? 'selected' : '' }}>❄️ Cold</option>
                             </select>
+                            @error('lead_temperature') <span class="text-rose-600 text-xs">{{ $message }}</span> @enderror
                         </div>
                     </div>
 
                     <!-- Client Name & Business Name -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                         <div>
-                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Client Name (Person)') }} <span class="text-rose-500">*</span></label>
-                            <input type="text" name="name" value="{{ old('name') }}" required placeholder="e.g. Bashir Ahmed" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Client Name (Person)') }}</label>
+                            <input type="text" name="name" value="{{ old('name') }}" placeholder="e.g. Bashir Ahmed (Optional)" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
                             @error('name') <span class="text-rose-600 text-xs">{{ $message }}</span> @enderror
                         </div>
 
