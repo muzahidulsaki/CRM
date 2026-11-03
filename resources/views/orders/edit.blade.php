@@ -53,11 +53,26 @@
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">{{ __('Service Category') }} <span class="text-rose-500">*</span></label>
                         <select name="service_category" required class="w-full text-sm rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
-                            @foreach($serviceCategories as $cat)
-                                <option value="{{ $cat }}" {{ old('service_category', $order->service_category) == $cat ? 'selected' : '' }}>
-                                    {{ __($cat) }}
-                                </option>
-                            @endforeach
+                            <optgroup label="Creative Services">
+                                @foreach(['Video Edit', 'Graphics Design', 'SMO & SMM', 'Voice Recording', 'Others Work'] as $cat)
+                                    <option value="{{ $cat }}" {{ old('service_category', $order->service_category) == $cat ? 'selected' : '' }}>{{ $cat }}</option>
+                                @endforeach
+                            </optgroup>
+                            <optgroup label="Ads Campaign">
+                                @foreach(['Meta Ads', 'TikTok Ads', 'YouTube Ads', 'LinkedIn Ads', 'Google Ads', 'Others Ads'] as $cat)
+                                    <option value="{{ $cat }}" {{ old('service_category', $order->service_category) == $cat ? 'selected' : '' }}>{{ $cat }}</option>
+                                @endforeach
+                            </optgroup>
+                            <optgroup label="Soft & Web Develop">
+                                @foreach(['ERP Solutions', 'E-commerce Management', 'Restaurant Management', 'Travel Agency Web', 'Salon Management', 'Cleaning Service Web', 'Construction Web', 'Company ERP', 'School Management', 'Hotel Management', 'APP Development', 'Custom Soft & Web'] as $cat)
+                                    <option value="{{ $cat }}" {{ old('service_category', $order->service_category) == $cat ? 'selected' : '' }}>{{ $cat }}</option>
+                                @endforeach
+                            </optgroup>
+                            @if(!in_array($order->service_category, ['Video Edit', 'Graphics Design', 'SMO & SMM', 'Voice Recording', 'Others Work', 'Meta Ads', 'TikTok Ads', 'YouTube Ads', 'LinkedIn Ads', 'Google Ads', 'Others Ads', 'ERP Solutions', 'E-commerce Management', 'Restaurant Management', 'Travel Agency Web', 'Salon Management', 'Cleaning Service Web', 'Construction Web', 'Company ERP', 'School Management', 'Hotel Management', 'APP Development', 'Custom Soft & Web']) && !empty($order->service_category))
+                                <optgroup label="Other">
+                                    <option value="{{ $order->service_category }}" selected>{{ $order->service_category }}</option>
+                                </optgroup>
+                            @endif
                         </select>
                     </div>
 

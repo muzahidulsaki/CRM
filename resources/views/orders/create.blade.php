@@ -177,32 +177,53 @@
 
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Service Category') }} <span class="text-rose-500">*</span></label>
-                            <select name="service_category" required x-model="serviceCategory" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500 focus:border-indigo-500">
-                                <template x-if="orderType === 'creative'">
+                            
+                            <!-- Creative Services Category -->
+                            <div x-show="orderType === 'creative'">
+                                <select name="service_category" :disabled="orderType !== 'creative'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500 focus:border-indigo-500">
                                     <optgroup label="Creative Services">
                                         <option value="Video Edit">Video Edit</option>
                                         <option value="Graphics Design">Graphics Design</option>
                                         <option value="SMO & SMM">SMO & SMM</option>
-                                        <option value="Content Creation">Content Creation</option>
+                                        <option value="Voice Recording">Voice Recording</option>
+                                        <option value="Others Work">Others Work</option>
                                     </optgroup>
-                                </template>
-                                <template x-if="orderType === 'ads'">
-                                    <optgroup label="Ads Services">
-                                        <option value="Facebook & Instagram Ads">Facebook & Instagram Ads</option>
-                                        <option value="Google Search Ads">Google Search Ads</option>
+                                </select>
+                            </div>
+
+                            <!-- Ads Campaign Category -->
+                            <div x-show="orderType === 'ads'">
+                                <select name="service_category" :disabled="orderType !== 'ads'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500 focus:border-amber-500">
+                                    <optgroup label="Ads Campaign">
+                                        <option value="Meta Ads">Meta Ads</option>
                                         <option value="TikTok Ads">TikTok Ads</option>
-                                        <option value="Snapchat Ads">Snapchat Ads</option>
+                                        <option value="YouTube Ads">YouTube Ads</option>
+                                        <option value="LinkedIn Ads">LinkedIn Ads</option>
+                                        <option value="Google Ads">Google Ads</option>
+                                        <option value="Others Ads">Others Ads</option>
                                     </optgroup>
-                                </template>
-                                <template x-if="orderType === 'web_software'">
-                                    <optgroup label="Soft & Web Services">
-                                        <option value="Custom ERP / Software">Custom ERP / Software</option>
-                                        <option value="E-commerce Website">E-commerce Website</option>
-                                        <option value="Corporate Website">Corporate Website</option>
-                                        <option value="Web Portal & API">Web Portal & API</option>
+                                </select>
+                            </div>
+
+                            <!-- Website & Software Category -->
+                            <div x-show="orderType === 'web_software'">
+                                <select name="service_category" :disabled="orderType !== 'web_software'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500">
+                                    <optgroup label="Soft & Web Develop">
+                                        <option value="ERP Solutions">ERP Solutions</option>
+                                        <option value="E-commerce Management">E-commerce Management</option>
+                                        <option value="Restaurant Management">Restaurant Management</option>
+                                        <option value="Travel Agency Web">Travel Agency Web</option>
+                                        <option value="Salon Management">Salon Management</option>
+                                        <option value="Cleaning Service Web">Cleaning Service Web</option>
+                                        <option value="Construction Web">Construction Web</option>
+                                        <option value="Company ERP">Company ERP</option>
+                                        <option value="School Management">School Management</option>
+                                        <option value="Hotel Management">Hotel Management</option>
+                                        <option value="APP Development">APP Development</option>
+                                        <option value="Custom Soft & Web">Custom Soft & Web</option>
                                     </optgroup>
-                                </template>
-                            </select>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
