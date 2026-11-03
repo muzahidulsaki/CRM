@@ -511,7 +511,7 @@ class LeadController extends Controller
     public function destroy(Lead $lead): RedirectResponse
     {
         $leadCode = $lead->lead_code;
-        $lead->delete();
+        $lead->forceDelete();
 
         ActivityLog::log(
             action: 'lead_deleted',

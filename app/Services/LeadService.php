@@ -12,22 +12,37 @@ class LeadService
 {
     /**
      * Generate unique sequential Lead Code: PS10001 (matching CRM Format.xlsx)
+     * Automatically fills gaps if any previous sequence (e.g. PS10002) is deleted.
      */
     public static function generateLeadCode(): string
     {
         $prefix = "PS";
+        $baseSequence = 10001;
 
-        $lastLead = Lead::withTrashed()
-            ->where('lead_code', 'like', "{$prefix}%")
-            ->orderBy('id', 'desc')
-            ->first();
+        // Fetch all active lead codes matching prefix
+        $existingCodes = Lead::where('lead_code', 'like', "{$prefix}%")
+            ->pluck('lead_code')
+            ->toArray();
 
-        $sequence = 10001;
-        if ($lastLead && preg_match('/PS(\d+)/', $lastLead->lead_code, $matches)) {
-            $sequence = max(10001, intval($matches[1]) + 1);
+        $usedSequences = [];
+        foreach ($existingCodes as $code) {
+            if (preg_match('/^PS(\d+)$/', $code, $matches)) {
+                $usedSequences[intval($matches[1])] = true;
+            }
         }
 
-        return sprintf('%s%d', $prefix, $sequence);
+        // Find the smallest missing sequence starting from baseSequence
+        $sequence = $baseSequence;
+        while (isset($usedSequences[$sequence])) {
+            $sequence++;
+        }
+
+        $nextCode = sprintf('%s%d', $prefix, $sequence);
+
+        // Purge any trashed record that previously held this code so MySQL unique constraint won't fail
+        Lead::onlyTrashed()->where('lead_code', $nextCode)->forceDelete();
+
+        return $nextCode;
     }
 
     /**

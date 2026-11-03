@@ -162,6 +162,22 @@
                                 <dd class="font-medium text-gray-900 mt-0.5">{{ $order->expected_delivery_date ? $order->expected_delivery_date->format('d M, Y') : __('Not Specified') }}</dd>
                             </div>
                             <div>
+                                <dt class="text-xs font-semibold text-gray-500">{{ __('Order Source') }}</dt>
+                                <dd class="font-medium text-gray-900 mt-0.5">
+                                    <span class="px-2 py-0.5 rounded text-xs font-semibold bg-gray-100 text-gray-700">
+                                        {{ $order->order_source ?? __('Direct') }}
+                                    </span>
+                                </dd>
+                            </div>
+                            <div>
+                                <dt class="text-xs font-semibold text-gray-500">{{ __('Activity Status') }}</dt>
+                                <dd class="font-medium text-gray-900 mt-0.5">
+                                    <span class="px-2 py-0.5 rounded text-xs font-semibold {{ ($order->activity_status ?? 'Active') === 'Active' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-gray-100 text-gray-600' }}">
+                                        {{ $order->activity_status ?? __('Active') }}
+                                    </span>
+                                </dd>
+                            </div>
+                            <div>
                                 <dt class="text-xs font-semibold text-gray-500">{{ __('Sales Representative') }}</dt>
                                 <dd class="font-medium text-gray-900 mt-0.5">{{ $order->salesPerson?->name ?? '-' }}</dd>
                             </div>
@@ -224,9 +240,23 @@
                                     </div>
                                     <div class="p-3 bg-gray-50 rounded-xl">
                                         <dt class="text-gray-500 font-semibold">{{ __('Voice Link') }}</dt>
-                                        <dd class="mt-0.5">
+                                        <dd class="mt-0.5 truncate">
                                             @if(!empty($meta['voice_link']))
-                                                <a href="{{ $meta['voice_link'] }}" target="_blank" class="text-indigo-600 hover:underline font-bold">🎙️ Open Link ↗</a>
+                                                <a href="{{ $meta['voice_link'] }}" target="_blank" class="text-indigo-600 hover:underline font-bold flex items-center gap-1">
+                                                    <span>🎙️</span> <span class="truncate">{{ __('Open Audio Link') }}</span> ↗
+                                                </a>
+                                            @else
+                                                <span class="text-gray-400">-</span>
+                                            @endif
+                                        </dd>
+                                    </div>
+                                    <div class="p-3 bg-gray-50 rounded-xl sm:col-span-3">
+                                        <dt class="text-gray-500 font-semibold">{{ __('Reference Link / Asset Drive') }}</dt>
+                                        <dd class="mt-0.5 truncate">
+                                            @if(!empty($meta['reference_link']))
+                                                <a href="{{ $meta['reference_link'] }}" target="_blank" class="text-indigo-600 hover:underline font-bold flex items-center gap-1.5">
+                                                    <span>📁</span> <span class="truncate">{{ $meta['reference_link'] }}</span> ↗
+                                                </a>
                                             @else
                                                 <span class="text-gray-400">-</span>
                                             @endif
@@ -234,37 +264,91 @@
                                     </div>
                                 </dl>
 
+                                <!-- Creative 3-Step Installment Payments Breakdown -->
+                                <div class="mt-4 p-4 bg-indigo-50/50 rounded-xl border border-indigo-100 space-y-3">
+                                    <div class="flex items-center justify-between">
+                                        <h4 class="text-xs font-bold text-indigo-950 uppercase tracking-wider flex items-center gap-1.5">
+                                            <span>💳</span> {{ __('Creative Milestone Installments') }}
+                                        </h4>
+                                        <span class="text-2xs font-semibold text-indigo-700 bg-indigo-100/70 px-2 py-0.5 rounded">3-Step Milestone</span>
+                                    </div>
+                                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
+                                        <div class="p-3 bg-white rounded-lg border border-indigo-100">
+                                            <span class="text-2xs font-semibold text-gray-500 block uppercase">{{ __('1st Pay') }}</span>
+                                            <div class="font-bold font-mono text-gray-900 text-sm mt-0.5">
+                                                {{ !empty($meta['pay_1st']) ? 'BDT ' . number_format(floatval($meta['pay_1st']), 2) : 'BDT 0.00' }}
+                                            </div>
+                                        </div>
+                                        <div class="p-3 bg-white rounded-lg border border-indigo-100">
+                                            <span class="text-2xs font-semibold text-gray-500 block uppercase">{{ __('2nd Pay') }}</span>
+                                            <div class="font-bold font-mono text-gray-900 text-sm mt-0.5">
+                                                {{ !empty($meta['pay_2nd']) ? 'BDT ' . number_format(floatval($meta['pay_2nd']), 2) : 'BDT 0.00' }}
+                                            </div>
+                                        </div>
+                                        <div class="p-3 bg-white rounded-lg border border-indigo-100">
+                                            <span class="text-2xs font-semibold text-gray-500 block uppercase">{{ __('3rd Pay') }}</span>
+                                            <div class="font-bold font-mono text-gray-900 text-sm mt-0.5">
+                                                {{ !empty($meta['pay_3rd']) ? 'BDT ' . number_format(floatval($meta['pay_3rd']), 2) : 'BDT 0.00' }}
+                                            </div>
+                                        </div>
+                                        <div class="p-3 bg-white rounded-lg border border-rose-200 bg-rose-50/30">
+                                            <span class="text-2xs font-semibold text-rose-700 block uppercase">{{ __('Remaining Due') }}</span>
+                                            <div class="font-bold font-mono text-rose-600 text-sm mt-0.5">
+                                                BDT {{ number_format($order->due_amount, 2) }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                             @elseif($order->order_type === 'ads')
                                 <dl class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                                    <div class="p-3 bg-gray-50 rounded-xl sm:col-span-2">
+                                    <div class="p-3 bg-gray-50 rounded-xl sm:col-span-4">
                                         <dt class="text-gray-500 font-semibold">{{ __('Ads Post Link') }}</dt>
                                         <dd class="mt-0.5 truncate">
                                             @if(!empty($meta['ads_post_link']))
-                                                <a href="{{ $meta['ads_post_link'] }}" target="_blank" class="text-indigo-600 hover:underline font-bold">🔗 {{ $meta['ads_post_link'] }}</a>
+                                                <a href="{{ $meta['ads_post_link'] }}" target="_blank" class="text-amber-700 hover:underline font-bold flex items-center gap-1.5">
+                                                    <span>🔗</span> <span class="truncate">{{ $meta['ads_post_link'] }}</span> ↗
+                                                </a>
                                             @else
                                                 <span class="text-gray-400">-</span>
                                             @endif
                                         </dd>
                                     </div>
                                     <div class="p-3 bg-gray-50 rounded-xl">
-                                        <dt class="text-gray-500 font-semibold">{{ __('Dollar Budget') }}</dt>
-                                        <dd class="font-bold font-mono text-amber-700 mt-0.5">${{ number_format(floatval($meta['total_dollar'] ?? 0), 2) }}</dd>
+                                        <dt class="text-gray-500 font-semibold">{{ __('Total Budget ($)') }}</dt>
+                                        <dd class="font-bold font-mono text-amber-700 mt-0.5 text-sm">${{ number_format(floatval($meta['total_dollar'] ?? 0), 2) }}</dd>
                                     </div>
                                     <div class="p-3 bg-gray-50 rounded-xl">
-                                        <dt class="text-gray-500 font-semibold">{{ __('Daily Cost') }}</dt>
-                                        <dd class="font-bold font-mono text-gray-900 mt-0.5">${{ number_format(floatval($meta['daily_cost'] ?? 0), 2) }}</dd>
+                                        <dt class="text-gray-500 font-semibold">{{ __('Daily Cost ($)') }}</dt>
+                                        <dd class="font-bold font-mono text-gray-900 mt-0.5 text-sm">${{ number_format(floatval($meta['daily_cost'] ?? 0), 2) }}</dd>
                                     </div>
                                     <div class="p-3 bg-gray-50 rounded-xl">
                                         <dt class="text-gray-500 font-semibold">{{ __('Total Days') }}</dt>
-                                        <dd class="font-bold font-mono text-gray-900 mt-0.5">{{ $meta['total_days'] ?? '-' }} days</dd>
-                                    </div>
-                                    <div class="p-3 bg-gray-50 rounded-xl">
-                                        <dt class="text-gray-500 font-semibold">{{ __('Dollar Due') }}</dt>
-                                        <dd class="font-bold font-mono text-rose-600 mt-0.5">${{ number_format(floatval($meta['dollar_due'] ?? 0), 2) }}</dd>
+                                        <dd class="font-bold font-mono text-gray-900 mt-0.5 text-sm">{{ $meta['total_days'] ?? '-' }} days</dd>
                                     </div>
                                     <div class="p-3 bg-gray-50 rounded-xl">
                                         <dt class="text-gray-500 font-semibold">{{ __('Today Check') }}</dt>
-                                        <dd class="font-bold mt-0.5">{{ $meta['today_check'] ?? 'Pending' }}</dd>
+                                        <dd class="mt-0.5 font-bold">
+                                            <span class="px-2 py-0.5 rounded text-xs {{ ($meta['today_check'] ?? 'Pending') === 'Checked' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800' }}">
+                                                {{ ($meta['today_check'] ?? 'Pending') === 'Checked' ? '✅ Checked' : '⏳ Pending' }}
+                                            </span>
+                                        </dd>
+                                    </div>
+                                    <div class="p-3 bg-gray-50 rounded-xl">
+                                        <dt class="text-gray-500 font-semibold">{{ __('Previous Dollar ($)') }}</dt>
+                                        <dd class="font-bold font-mono text-gray-700 mt-0.5">${{ number_format(floatval($meta['previous_dollar'] ?? 0), 2) }}</dd>
+                                    </div>
+                                    <div class="p-3 bg-gray-50 rounded-xl">
+                                        <dt class="text-gray-500 font-semibold">{{ __('Running Dollar ($)') }}</dt>
+                                        <dd class="font-bold font-mono text-indigo-700 mt-0.5">${{ number_format(floatval($meta['running_dollar'] ?? 0), 2) }}</dd>
+                                    </div>
+                                    <div class="p-3 bg-gray-50 rounded-xl">
+                                        <dt class="text-gray-500 font-semibold">{{ __('Total $ Cost') }}</dt>
+                                        <dd class="font-bold font-mono text-gray-900 mt-0.5">${{ number_format(floatval($meta['total_dollar_cost'] ?? 0), 2) }}</dd>
+                                    </div>
+                                    <div class="p-3 bg-gray-50 rounded-xl">
+                                        <dt class="text-gray-500 font-semibold">{{ __('Dollar Due ($)') }}</dt>
+                                        <dd class="font-bold font-mono text-rose-600 mt-0.5 text-sm">${{ number_format(floatval($meta['dollar_due'] ?? 0), 2) }}</dd>
                                     </div>
                                 </dl>
 
@@ -276,16 +360,77 @@
                                     </div>
                                     <div class="p-3 bg-gray-50 rounded-xl">
                                         <dt class="text-gray-500 font-semibold">{{ __('Subscription Fee') }}</dt>
-                                        <dd class="font-bold font-mono text-blue-700 mt-0.5">{{ !empty($meta['subscription_fee']) ? 'BDT ' . number_format(floatval($meta['subscription_fee'])) : '-' }}</dd>
+                                        <dd class="font-bold font-mono text-blue-700 mt-0.5">{{ !empty($meta['subscription_fee']) ? 'BDT ' . number_format(floatval($meta['subscription_fee']), 2) : '-' }}</dd>
                                     </div>
                                     <div class="p-3 bg-gray-50 rounded-xl">
                                         <dt class="text-gray-500 font-semibold">{{ __('Working Priority') }}</dt>
-                                        <dd class="font-bold text-gray-900 mt-0.5">{{ $meta['working_priority'] ?? 'Normal' }}</dd>
+                                        <dd class="font-bold mt-0.5">
+                                            <span class="px-2 py-0.5 rounded text-xs {{ ($meta['working_priority'] ?? 'Normal') === 'Urgent' ? 'bg-rose-100 text-rose-800' : (($meta['working_priority'] ?? 'Normal') === 'High' ? 'bg-amber-100 text-amber-800' : 'bg-gray-100 text-gray-800') }}">
+                                                {{ $meta['working_priority'] ?? 'Normal' }}
+                                            </span>
+                                        </dd>
+                                    </div>
+                                    <div class="p-3 bg-gray-50 rounded-xl">
+                                        <dt class="text-gray-500 font-semibold">{{ __('Renew Status') }}</dt>
+                                        <dd class="font-bold mt-0.5">
+                                            <span class="px-2 py-0.5 rounded text-xs {{ ($meta['renew_status'] ?? 'Active') === 'Active' ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-700' }}">
+                                                {{ $meta['renew_status'] ?? 'Active' }}
+                                            </span>
+                                        </dd>
+                                    </div>
+                                    <div class="p-3 bg-gray-50 rounded-xl">
+                                        <dt class="text-gray-500 font-semibold">{{ __('Developed Assign') }}</dt>
+                                        <dd class="font-bold text-gray-900 mt-0.5">{{ $meta['developed_assign'] ?? '-' }}</dd>
+                                    </div>
+                                    <div class="p-3 bg-gray-50 rounded-xl">
+                                        <dt class="text-gray-500 font-semibold">{{ __('Customize Assign') }}</dt>
+                                        <dd class="font-bold text-gray-900 mt-0.5">{{ $meta['customize_assign'] ?? '-' }}</dd>
+                                    </div>
+                                    <div class="p-3 bg-gray-50 rounded-xl sm:col-span-3">
+                                        <dt class="text-gray-500 font-semibold">{{ __('Domain / Live URL') }}</dt>
+                                        <dd class="mt-0.5 truncate">
+                                            @if(!empty($meta['domain']))
+                                                <a href="{{ str_starts_with($meta['domain'], 'http') ? $meta['domain'] : 'https://' . $meta['domain'] }}" target="_blank" class="text-blue-600 hover:underline font-bold flex items-center gap-1.5">
+                                                    <span>🌐</span> <span class="truncate">{{ $meta['domain'] }}</span> ↗
+                                                </a>
+                                            @else
+                                                <span class="text-gray-400">-</span>
+                                            @endif
+                                        </dd>
                                     </div>
                                 </dl>
 
-                                @if(!empty($meta['official_admin_link']) || !empty($meta['client_admin_link']))
-                                    <div class="p-4 bg-gray-50/70 border border-gray-200 rounded-xl space-y-2 text-xs">
+                                <!-- 7-Step Milestones & Installments Breakdown for Software & Web -->
+                                <div class="mt-4 p-4 bg-blue-50/50 rounded-xl border border-blue-200 space-y-3">
+                                    <div class="flex items-center justify-between">
+                                        <h4 class="text-xs font-bold text-blue-950 uppercase tracking-wider flex items-center gap-1.5">
+                                            <span>💳</span> {{ __('Payment Installments (1st to 7th Pay Breakdown)') }}
+                                        </h4>
+                                        <span class="text-2xs font-semibold text-blue-700 bg-blue-100/70 px-2 py-0.5 rounded">7-Step Milestones</span>
+                                    </div>
+                                    <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2 text-xs">
+                                        @foreach(['1st', '2nd', '3rd', '4th', '5th', '6th', '7th'] as $step)
+                                            @php $amt = floatval($meta["pay_{$step}"] ?? 0); @endphp
+                                            <div class="p-2.5 bg-white rounded-lg border {{ $amt > 0 ? 'border-emerald-200 bg-emerald-50/20' : 'border-gray-200' }}">
+                                                <span class="text-2xs font-semibold {{ $amt > 0 ? 'text-emerald-700' : 'text-gray-400' }} block uppercase">{{ $step }} Pay</span>
+                                                <div class="font-bold font-mono {{ $amt > 0 ? 'text-emerald-800' : 'text-gray-400' }} text-xs mt-0.5">
+                                                    {{ $amt > 0 ? 'BDT ' . number_format($amt) : '-' }}
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                    <div class="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-white rounded-lg border border-blue-100 text-xs gap-2">
+                                        <span class="text-gray-600">
+                                            {{ __('Total Paid:') }} <strong class="text-emerald-700 font-mono font-bold">BDT {{ number_format($order->paid_amount, 2) }}</strong>
+                                        </span>
+                                        <span class="text-gray-600">
+                                            {{ __('Remaining Due:') }} <strong class="text-rose-600 font-mono font-bold">BDT {{ number_format($order->due_amount, 2) }}</strong>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                @if(!empty($meta['official_admin_link']) || !empty($meta['client_admin_link']) || !empty($meta['client_other_credentials']))
+                                    <div class="p-4 bg-gray-50/70 border border-gray-200 rounded-xl space-y-2 text-xs mt-4">
                                         <div class="font-bold text-gray-800 flex items-center gap-1">
                                             <span>🔐</span> {{ __('Stored Portals & Credentials') }}
                                         </div>
@@ -293,17 +438,29 @@
                                             @if(!empty($meta['official_admin_link']))
                                                 <div class="p-2.5 bg-white rounded-lg border border-gray-200">
                                                     <span class="text-2xs font-bold text-indigo-700 uppercase block mb-1">{{ __('Official Admin Access') }}</span>
-                                                    <div class="font-mono text-2xs truncate">URL: {{ $meta['official_admin_link'] }}</div>
-                                                    <div class="font-mono text-2xs">User: {{ $meta['official_user_id'] ?? '-' }}</div>
-                                                    <div class="font-mono text-2xs text-gray-600">Pass: {{ $meta['official_password'] ?? '-' }}</div>
+                                                    <div class="font-mono text-2xs truncate">
+                                                        <span class="text-gray-500">URL:</span> 
+                                                        <a href="{{ str_starts_with($meta['official_admin_link'], 'http') ? $meta['official_admin_link'] : 'https://' . $meta['official_admin_link'] }}" target="_blank" class="text-indigo-600 hover:underline">{{ $meta['official_admin_link'] }} ↗</a>
+                                                    </div>
+                                                    <div class="font-mono text-2xs mt-0.5"><span class="text-gray-500">User:</span> {{ $meta['official_user_id'] ?? '-' }}</div>
+                                                    <div class="font-mono text-2xs text-gray-600 mt-0.5"><span class="text-gray-500">Pass:</span> {{ $meta['official_password'] ?? '-' }}</div>
                                                 </div>
                                             @endif
                                             @if(!empty($meta['client_admin_link']))
                                                 <div class="p-2.5 bg-white rounded-lg border border-gray-200">
                                                     <span class="text-2xs font-bold text-emerald-700 uppercase block mb-1">{{ __('Client Admin Access') }}</span>
-                                                    <div class="font-mono text-2xs truncate">URL: {{ $meta['client_admin_link'] }}</div>
-                                                    <div class="font-mono text-2xs">User: {{ $meta['client_user_id'] ?? '-' }}</div>
-                                                    <div class="font-mono text-2xs text-gray-600">Pass: {{ $meta['client_password'] ?? '-' }}</div>
+                                                    <div class="font-mono text-2xs truncate">
+                                                        <span class="text-gray-500">URL:</span> 
+                                                        <a href="{{ str_starts_with($meta['client_admin_link'], 'http') ? $meta['client_admin_link'] : 'https://' . $meta['client_admin_link'] }}" target="_blank" class="text-emerald-600 hover:underline">{{ $meta['client_admin_link'] }} ↗</a>
+                                                    </div>
+                                                    <div class="font-mono text-2xs mt-0.5"><span class="text-gray-500">User:</span> {{ $meta['client_user_id'] ?? '-' }}</div>
+                                                    <div class="font-mono text-2xs text-gray-600 mt-0.5"><span class="text-gray-500">Pass:</span> {{ $meta['client_password'] ?? '-' }}</div>
+                                                </div>
+                                            @endif
+                                            @if(!empty($meta['client_other_credentials']))
+                                                <div class="p-2.5 bg-white rounded-lg border border-gray-200 sm:col-span-2">
+                                                    <span class="text-2xs font-bold text-gray-700 uppercase block mb-1">{{ __('Other Client Credentials (cPanel / DB / Hosting)') }}</span>
+                                                    <div class="font-mono text-2xs text-gray-700 whitespace-pre-line bg-gray-50 p-2 rounded border border-gray-100">{{ $meta['client_other_credentials'] }}</div>
                                                 </div>
                                             @endif
                                         </div>

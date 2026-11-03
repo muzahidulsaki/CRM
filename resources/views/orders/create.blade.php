@@ -165,6 +165,8 @@
                     </div>
 
                     <input type="hidden" name="order_type" :value="orderType">
+                    <input type="hidden" name="total_amount" :value="currentTotal()">
+                    <input type="hidden" name="paid_amount" :value="currentPaid()">
 
                     <!-- Common Title & Category -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -208,10 +210,10 @@
                     <!-- TAB 1: CREATIVE ORDER FORMAT (Excel Sheet) -->
                     <!-- ========================================== -->
                     <div x-show="orderType === 'creative'" class="space-y-4 pt-2">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Order Source') }}</label>
-                                <select name="order_source" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
+                                <select name="order_source" :disabled="orderType !== 'creative'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
                                     <option value="Repeated">Repeated Client</option>
                                     <option value="Local">Local</option>
                                     <option value="Referral">Referral</option>
@@ -221,57 +223,46 @@
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Activity Status') }}</label>
-                                <select name="activity_status" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
-                                    <option value="Open">Open</option>
+                                <select name="activity_status" :disabled="orderType !== 'creative'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
                                     <option value="Active">Active</option>
+                                    <option value="Open">Open</option>
                                     <option value="Closed">Closed</option>
                                 </select>
                             </div>
 
                             <div>
-                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Working Status') }}</label>
-                                <select name="status" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
-                                    <option value="Confirmed">Confirmed</option>
-                                    <option value="Working">Processing / Working</option>
-                                    <option value="Under Review">Under Review</option>
-                                    <option value="Completed">Completed</option>
-                                    <option value="Delivered">Delivered</option>
-                                </select>
-                            </div>
-
-                            <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Language') }}</label>
-                                <input type="text" name="meta[language]" placeholder="e.g. Bangla, Arabic, English" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
+                                <input type="text" name="meta[language]" :disabled="orderType !== 'creative'" placeholder="e.g. Bangla, Arabic, English" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Script / Idea') }}</label>
-                                <input type="text" name="meta[script_idea]" placeholder="e.g. Confirmed, Client Provided" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
+                                <input type="text" name="meta[script_idea]" :disabled="orderType !== 'creative'" placeholder="e.g. Confirmed, Client Provided" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Script Code') }}</label>
-                                <input type="text" name="meta[script_code]" placeholder="e.g. SCR-901" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500 font-mono">
+                                <input type="text" name="meta[script_code]" :disabled="orderType !== 'creative'" placeholder="e.g. SCR-901" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500 font-mono">
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Voice / Design') }}</label>
-                                <input type="text" name="meta[voice_design]" placeholder="e.g. Confirmed, Female VO" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
+                                <input type="text" name="meta[voice_design]" :disabled="orderType !== 'creative'" placeholder="e.g. Confirmed, Female VO" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Video Duration (Second)') }}</label>
-                                <input type="number" name="meta[second]" placeholder="e.g. 60" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500 font-mono">
+                                <input type="number" name="meta[second]" :disabled="orderType !== 'creative'" placeholder="e.g. 60" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500 font-mono">
                             </div>
 
                             <div class="sm:col-span-2">
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Voice Link / Audio URL') }}</label>
-                                <input type="text" name="meta[voice_link]" placeholder="Google Drive audio link or URL" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
+                                <input type="text" name="meta[voice_link]" :disabled="orderType !== 'creative'" placeholder="Google Drive audio link or URL" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
                             </div>
 
-                            <div class="sm:col-span-2">
+                            <div class="sm:col-span-3">
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Reference Link / Asset Drive') }}</label>
-                                <input type="text" name="meta[reference_link]" placeholder="https://drive.google.com/..." class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
+                                <input type="text" name="meta[reference_link]" :disabled="orderType !== 'creative'" placeholder="https://drive.google.com/..." class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
                             </div>
                         </div>
 
@@ -281,19 +272,19 @@
                             <div class="grid grid-cols-1 sm:grid-cols-5 gap-3">
                                 <div>
                                     <label class="block text-2xs font-semibold text-gray-600 uppercase mb-1">{{ __('Initial Total (BDT)') }} <span class="text-rose-500">*</span></label>
-                                    <input type="number" step="0.01" name="total_amount" x-model.number="creativeTotal" required class="w-full text-sm font-bold font-mono rounded-lg border-gray-300 focus:ring-indigo-500">
+                                    <input type="number" step="0.01" x-model.number="creativeTotal" placeholder="0.00" class="w-full text-sm font-bold font-mono rounded-lg border-gray-300 focus:ring-indigo-500">
                                 </div>
                                 <div>
                                     <label class="block text-2xs font-semibold text-gray-600 uppercase mb-1">{{ __('1st Pay (BDT)') }}</label>
-                                    <input type="number" step="0.01" name="meta[pay_1st]" x-model.number="creativePay1" class="w-full text-sm font-mono rounded-lg border-gray-300 focus:ring-indigo-500">
+                                    <input type="number" step="0.01" name="meta[pay_1st]" :disabled="orderType !== 'creative'" x-model.number="creativePay1" placeholder="0.00" class="w-full text-sm font-mono rounded-lg border-gray-300 focus:ring-indigo-500">
                                 </div>
                                 <div>
                                     <label class="block text-2xs font-semibold text-gray-600 uppercase mb-1">{{ __('2nd Pay (BDT)') }}</label>
-                                    <input type="number" step="0.01" name="meta[pay_2nd]" x-model.number="creativePay2" class="w-full text-sm font-mono rounded-lg border-gray-300 focus:ring-indigo-500">
+                                    <input type="number" step="0.01" name="meta[pay_2nd]" :disabled="orderType !== 'creative'" x-model.number="creativePay2" placeholder="0.00" class="w-full text-sm font-mono rounded-lg border-gray-300 focus:ring-indigo-500">
                                 </div>
                                 <div>
                                     <label class="block text-2xs font-semibold text-gray-600 uppercase mb-1">{{ __('3rd Pay (BDT)') }}</label>
-                                    <input type="number" step="0.01" name="meta[pay_3rd]" x-model.number="creativePay3" class="w-full text-sm font-mono rounded-lg border-gray-300 focus:ring-indigo-500">
+                                    <input type="number" step="0.01" name="meta[pay_3rd]" :disabled="orderType !== 'creative'" x-model.number="creativePay3" placeholder="0.00" class="w-full text-sm font-mono rounded-lg border-gray-300 focus:ring-indigo-500">
                                 </div>
                                 <div class="bg-white p-2.5 rounded-lg border border-indigo-200 flex flex-col justify-center">
                                     <div class="text-2xs font-bold text-gray-500 uppercase">{{ __('Calculated Due') }}</div>
@@ -310,12 +301,12 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                             <div class="sm:col-span-2">
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Ads Post Link') }}</label>
-                                <input type="text" name="meta[ads_post_link]" placeholder="https://facebook.com/post/..." class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500">
+                                <input type="text" name="meta[ads_post_link]" :disabled="orderType !== 'ads'" placeholder="https://facebook.com/post/..." class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500">
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Order Source') }}</label>
-                                <select name="order_source" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500">
+                                <select name="order_source" :disabled="orderType !== 'ads'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500">
                                     <option value="Repeated">Repeated</option>
                                     <option value="Local">Local</option>
                                     <option value="Referral">Referral</option>
@@ -324,7 +315,7 @@
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Campaign Activity') }}</label>
-                                <select name="activity_status" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500">
+                                <select name="activity_status" :disabled="orderType !== 'ads'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500">
                                     <option value="Active">Active</option>
                                     <option value="Completed">Completed</option>
                                     <option value="Paused">Paused</option>
@@ -333,22 +324,22 @@
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Daily Cost ($)') }}</label>
-                                <input type="number" step="0.01" name="meta[daily_cost]" x-model.number="adsDailyCost" placeholder="e.g. 5.00" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500 font-mono">
+                                <input type="number" step="0.01" name="meta[daily_cost]" :disabled="orderType !== 'ads'" x-model.number="adsDailyCost" placeholder="e.g. 5.00" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500 font-mono">
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Total Days') }}</label>
-                                <input type="number" name="meta[total_days]" x-model.number="adsTotalDays" placeholder="e.g. 15" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500 font-mono">
+                                <input type="number" name="meta[total_days]" :disabled="orderType !== 'ads'" x-model.number="adsTotalDays" placeholder="e.g. 15" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500 font-mono">
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Total Dollar ($ Budget)') }}</label>
-                                <input type="number" step="0.01" name="meta[total_dollar]" x-model.number="adsTotalDollar" placeholder="e.g. 75.00" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500 font-mono font-bold">
+                                <input type="number" step="0.01" name="meta[total_dollar]" :disabled="orderType !== 'ads'" x-model.number="adsTotalDollar" placeholder="e.g. 75.00" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500 font-mono font-bold">
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Today Check Status') }}</label>
-                                <select name="meta[today_check]" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500 font-semibold">
+                                <select name="meta[today_check]" :disabled="orderType !== 'ads'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500 font-semibold">
                                     <option value="Checked">✅ Checked</option>
                                     <option value="Pending">⏳ Pending</option>
                                 </select>
@@ -356,22 +347,22 @@
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Previous Dollar ($)') }}</label>
-                                <input type="number" step="0.01" name="meta[previous_dollar]" placeholder="0.00" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500 font-mono">
+                                <input type="number" step="0.01" name="meta[previous_dollar]" :disabled="orderType !== 'ads'" placeholder="0.00" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500 font-mono">
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Running Dollar ($)') }}</label>
-                                <input type="number" step="0.01" name="meta[running_dollar]" placeholder="0.00" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500 font-mono">
+                                <input type="number" step="0.01" name="meta[running_dollar]" :disabled="orderType !== 'ads'" placeholder="0.00" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500 font-mono">
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Total $ Cost') }}</label>
-                                <input type="number" step="0.01" name="meta[total_dollar_cost]" placeholder="0.00" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500 font-mono">
+                                <input type="number" step="0.01" name="meta[total_dollar_cost]" :disabled="orderType !== 'ads'" placeholder="0.00" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500 font-mono">
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Dollar Due ($)') }}</label>
-                                <input type="number" step="0.01" name="meta[dollar_due]" placeholder="0.00" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500 font-mono text-rose-600 font-bold">
+                                <input type="number" step="0.01" name="meta[dollar_due]" :disabled="orderType !== 'ads'" placeholder="0.00" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500 font-mono text-rose-600 font-bold">
                             </div>
                         </div>
 
@@ -379,11 +370,11 @@
                         <div class="p-4 bg-amber-50/50 rounded-xl border border-amber-200 grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
                             <div>
                                 <label class="block text-2xs font-semibold text-gray-600 uppercase mb-1">{{ __('Total Amount (BDT)') }} <span class="text-rose-500">*</span></label>
-                                <input type="number" step="0.01" name="total_amount" x-model.number="adsTotalAmount" required class="w-full text-sm font-bold font-mono rounded-lg border-gray-300 focus:ring-amber-500">
+                                <input type="number" step="0.01" x-model.number="adsTotalAmount" placeholder="0.00" class="w-full text-sm font-bold font-mono rounded-lg border-gray-300 focus:ring-amber-500">
                             </div>
                             <div>
                                 <label class="block text-2xs font-semibold text-gray-600 uppercase mb-1">{{ __('Paid Amount (BDT)') }}</label>
-                                <input type="number" step="0.01" name="paid_amount" x-model.number="adsPaidAmount" class="w-full text-sm font-mono rounded-lg border-gray-300 focus:ring-amber-500">
+                                <input type="number" step="0.01" x-model.number="adsPaidAmount" placeholder="0.00" class="w-full text-sm font-mono rounded-lg border-gray-300 focus:ring-amber-500">
                             </div>
                             <div class="bg-white p-2.5 rounded-lg border border-amber-300 flex flex-col justify-center">
                                 <div class="text-2xs font-bold text-gray-500 uppercase">{{ __('Calculated Due') }}</div>
@@ -399,7 +390,7 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Order Source') }}</label>
-                                <select name="order_source" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500">
+                                <select name="order_source" :disabled="orderType !== 'web_software'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500">
                                     <option value="Direct">Direct</option>
                                     <option value="Repeated">Repeated</option>
                                     <option value="Referral">Referral</option>
@@ -408,7 +399,7 @@
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Working Priority') }}</label>
-                                <select name="meta[working_priority]" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500">
+                                <select name="meta[working_priority]" :disabled="orderType !== 'web_software'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500">
                                     <option value="Normal">Normal</option>
                                     <option value="High">High</option>
                                     <option value="Urgent">Urgent</option>
@@ -417,7 +408,7 @@
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Subscription System') }}</label>
-                                <select name="meta[subscription_system]" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500">
+                                <select name="meta[subscription_system]" :disabled="orderType !== 'web_software'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500">
                                     <option value="Monthly">Monthly Subscription</option>
                                     <option value="Yearly">Yearly Renewal</option>
                                     <option value="One-time">One-time / No Subscription</option>
@@ -426,12 +417,12 @@
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Subscription / Renew Fee') }}</label>
-                                <input type="number" step="0.01" name="meta[subscription_fee]" placeholder="e.g. 2000" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500 font-mono">
+                                <input type="number" step="0.01" name="meta[subscription_fee]" :disabled="orderType !== 'web_software'" placeholder="e.g. 2000" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500 font-mono">
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Renew Status') }}</label>
-                                <select name="meta[renew_status]" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500">
+                                <select name="meta[renew_status]" :disabled="orderType !== 'web_software'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500">
                                     <option value="Active">Active</option>
                                     <option value="Pending">Pending</option>
                                     <option value="Expired">Expired</option>
@@ -440,17 +431,17 @@
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Developed Assign') }}</label>
-                                <input type="text" name="meta[developed_assign]" placeholder="Developer Name" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500">
+                                <input type="text" name="meta[developed_assign]" :disabled="orderType !== 'web_software'" placeholder="Developer Name" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500">
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Customize Assign') }}</label>
-                                <input type="text" name="meta[customize_assign]" placeholder="Customizer / PM Name" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500">
+                                <input type="text" name="meta[customize_assign]" :disabled="orderType !== 'web_software'" placeholder="Customizer / PM Name" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500">
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Domain / Live URL') }}</label>
-                                <input type="text" name="meta[domain]" placeholder="https://clientdomain.com" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500">
+                                <input type="text" name="meta[domain]" :disabled="orderType !== 'web_software'" placeholder="https://clientdomain.com" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500">
                             </div>
                         </div>
 
@@ -460,35 +451,35 @@
                             <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
                                 <div class="col-span-2 sm:col-span-2 lg:col-span-1">
                                     <label class="block text-2xs font-semibold text-gray-700 uppercase mb-1">{{ __('Initial Total') }} *</label>
-                                    <input type="number" step="0.01" name="total_amount" x-model.number="softTotal" required class="w-full text-xs font-bold font-mono rounded-lg border-gray-300 focus:ring-blue-500">
+                                    <input type="number" step="0.01" x-model.number="softTotal" placeholder="0.00" class="w-full text-xs font-bold font-mono rounded-lg border-gray-300 focus:ring-blue-500">
                                 </div>
                                 <div>
                                     <label class="block text-2xs font-semibold text-gray-600 uppercase mb-1">1st Pay</label>
-                                    <input type="number" step="0.01" name="meta[pay_1st]" x-model.number="softPay[1]" class="w-full text-xs font-mono rounded-lg border-gray-300 focus:ring-blue-500">
+                                    <input type="number" step="0.01" name="meta[pay_1st]" :disabled="orderType !== 'web_software'" x-model.number="softPay[1]" placeholder="0.00" class="w-full text-xs font-mono rounded-lg border-gray-300 focus:ring-blue-500">
                                 </div>
                                 <div>
                                     <label class="block text-2xs font-semibold text-gray-600 uppercase mb-1">2nd Pay</label>
-                                    <input type="number" step="0.01" name="meta[pay_2nd]" x-model.number="softPay[2]" class="w-full text-xs font-mono rounded-lg border-gray-300 focus:ring-blue-500">
+                                    <input type="number" step="0.01" name="meta[pay_2nd]" :disabled="orderType !== 'web_software'" x-model.number="softPay[2]" placeholder="0.00" class="w-full text-xs font-mono rounded-lg border-gray-300 focus:ring-blue-500">
                                 </div>
                                 <div>
                                     <label class="block text-2xs font-semibold text-gray-600 uppercase mb-1">3rd Pay</label>
-                                    <input type="number" step="0.01" name="meta[pay_3rd]" x-model.number="softPay[3]" class="w-full text-xs font-mono rounded-lg border-gray-300 focus:ring-blue-500">
+                                    <input type="number" step="0.01" name="meta[pay_3rd]" :disabled="orderType !== 'web_software'" x-model.number="softPay[3]" placeholder="0.00" class="w-full text-xs font-mono rounded-lg border-gray-300 focus:ring-blue-500">
                                 </div>
                                 <div>
                                     <label class="block text-2xs font-semibold text-gray-600 uppercase mb-1">4th Pay</label>
-                                    <input type="number" step="0.01" name="meta[pay_4th]" x-model.number="softPay[4]" class="w-full text-xs font-mono rounded-lg border-gray-300 focus:ring-blue-500">
+                                    <input type="number" step="0.01" name="meta[pay_4th]" :disabled="orderType !== 'web_software'" x-model.number="softPay[4]" placeholder="0.00" class="w-full text-xs font-mono rounded-lg border-gray-300 focus:ring-blue-500">
                                 </div>
                                 <div>
                                     <label class="block text-2xs font-semibold text-gray-600 uppercase mb-1">5th Pay</label>
-                                    <input type="number" step="0.01" name="meta[pay_5th]" x-model.number="softPay[5]" class="w-full text-xs font-mono rounded-lg border-gray-300 focus:ring-blue-500">
+                                    <input type="number" step="0.01" name="meta[pay_5th]" :disabled="orderType !== 'web_software'" x-model.number="softPay[5]" placeholder="0.00" class="w-full text-xs font-mono rounded-lg border-gray-300 focus:ring-blue-500">
                                 </div>
                                 <div>
                                     <label class="block text-2xs font-semibold text-gray-600 uppercase mb-1">6th Pay</label>
-                                    <input type="number" step="0.01" name="meta[pay_6th]" x-model.number="softPay[6]" class="w-full text-xs font-mono rounded-lg border-gray-300 focus:ring-blue-500">
+                                    <input type="number" step="0.01" name="meta[pay_6th]" :disabled="orderType !== 'web_software'" x-model.number="softPay[6]" placeholder="0.00" class="w-full text-xs font-mono rounded-lg border-gray-300 focus:ring-blue-500">
                                 </div>
                                 <div>
                                     <label class="block text-2xs font-semibold text-gray-600 uppercase mb-1">7th Pay</label>
-                                    <input type="number" step="0.01" name="meta[pay_7th]" x-model.number="softPay[7]" class="w-full text-xs font-mono rounded-lg border-gray-300 focus:ring-blue-500">
+                                    <input type="number" step="0.01" name="meta[pay_7th]" :disabled="orderType !== 'web_software'" x-model.number="softPay[7]" placeholder="0.00" class="w-full text-xs font-mono rounded-lg border-gray-300 focus:ring-blue-500">
                                 </div>
                             </div>
 
@@ -506,33 +497,33 @@
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                 <div>
                                     <label class="block text-2xs font-semibold text-gray-600 uppercase mb-1">{{ __('Official Admin Link') }}</label>
-                                    <input type="text" name="meta[official_admin_link]" placeholder="https://crm.../admin" class="w-full text-xs font-mono rounded-lg border-gray-300">
+                                    <input type="text" name="meta[official_admin_link]" :disabled="orderType !== 'web_software'" placeholder="https://crm.../admin" class="w-full text-xs font-mono rounded-lg border-gray-300">
                                 </div>
                                 <div>
                                     <label class="block text-2xs font-semibold text-gray-600 uppercase mb-1">{{ __('Official User ID') }}</label>
-                                    <input type="text" name="meta[official_user_id]" placeholder="admin_user" class="w-full text-xs font-mono rounded-lg border-gray-300">
+                                    <input type="text" name="meta[official_user_id]" :disabled="orderType !== 'web_software'" placeholder="admin_user" class="w-full text-xs font-mono rounded-lg border-gray-300">
                                 </div>
                                 <div>
                                     <label class="block text-2xs font-semibold text-gray-600 uppercase mb-1">{{ __('Official Password') }}</label>
-                                    <input type="text" name="meta[official_password]" placeholder="Secret password" class="w-full text-xs font-mono rounded-lg border-gray-300">
+                                    <input type="text" name="meta[official_password]" :disabled="orderType !== 'web_software'" placeholder="Secret password" class="w-full text-xs font-mono rounded-lg border-gray-300">
                                 </div>
 
                                 <div>
                                     <label class="block text-2xs font-semibold text-gray-600 uppercase mb-1">{{ __('Client Admin Link') }}</label>
-                                    <input type="text" name="meta[client_admin_link]" placeholder="https://client.../wp-admin" class="w-full text-xs font-mono rounded-lg border-gray-300">
+                                    <input type="text" name="meta[client_admin_link]" :disabled="orderType !== 'web_software'" placeholder="https://client.../wp-admin" class="w-full text-xs font-mono rounded-lg border-gray-300">
                                 </div>
                                 <div>
                                     <label class="block text-2xs font-semibold text-gray-600 uppercase mb-1">{{ __('Client User ID') }}</label>
-                                    <input type="text" name="meta[client_user_id]" placeholder="client_admin" class="w-full text-xs font-mono rounded-lg border-gray-300">
+                                    <input type="text" name="meta[client_user_id]" :disabled="orderType !== 'web_software'" placeholder="client_admin" class="w-full text-xs font-mono rounded-lg border-gray-300">
                                 </div>
                                 <div>
                                     <label class="block text-2xs font-semibold text-gray-600 uppercase mb-1">{{ __('Client Password') }}</label>
-                                    <input type="text" name="meta[client_password]" placeholder="Client secret password" class="w-full text-xs font-mono rounded-lg border-gray-300">
+                                    <input type="text" name="meta[client_password]" :disabled="orderType !== 'web_software'" placeholder="Client secret password" class="w-full text-xs font-mono rounded-lg border-gray-300">
                                 </div>
 
                                 <div class="sm:col-span-3">
                                     <label class="block text-2xs font-semibold text-gray-600 uppercase mb-1">{{ __('Client Others User ID & Password') }}</label>
-                                    <input type="text" name="meta[client_other_credentials]" placeholder="cPanel, DB, Hosting or extra staff credentials..." class="w-full text-xs font-mono rounded-lg border-gray-300">
+                                    <input type="text" name="meta[client_other_credentials]" :disabled="orderType !== 'web_software'" placeholder="cPanel, DB, Hosting or extra staff credentials..." class="w-full text-xs font-mono rounded-lg border-gray-300">
                                 </div>
                             </div>
                         </div>
@@ -546,7 +537,7 @@
                         {{ __('Schedule, Project Assignment & Auto-Initialization') }}
                     </h3>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Order Date') }} <span class="text-rose-500">*</span></label>
                             <input type="date" name="order_date" required value="{{ date('Y-m-d') }}" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
@@ -555,6 +546,17 @@
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Expected Delivery Date') }}</label>
                             <input type="date" name="expected_delivery_date" value="{{ date('Y-m-d', strtotime('+15 days')) }}" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Order Status') }} <span class="text-rose-500">*</span></label>
+                            <select name="status" required class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
+                                <option value="Confirmed" selected>{{ __('Confirmed') }}</option>
+                                <option value="Working">{{ __('Working / In Progress') }}</option>
+                                <option value="Under Review">{{ __('Under Review') }}</option>
+                                <option value="Completed">{{ __('Completed') }}</option>
+                                <option value="Delivered">{{ __('Delivered') }}</option>
+                            </select>
                         </div>
 
                         <div>
@@ -675,6 +677,26 @@
                         sum += parseFloat(this.softPay[i] || 0);
                     }
                     return sum;
+                },
+
+                currentTotal() {
+                    if (this.orderType === 'creative') return parseFloat(this.creativeTotal) || 0;
+                    if (this.orderType === 'ads') return parseFloat(this.adsTotalAmount) || 0;
+                    if (this.orderType === 'web_software') return parseFloat(this.softTotal) || 0;
+                    return 0;
+                },
+
+                currentPaid() {
+                    if (this.orderType === 'creative') {
+                        return (parseFloat(this.creativePay1) || 0) + (parseFloat(this.creativePay2) || 0) + (parseFloat(this.creativePay3) || 0);
+                    }
+                    if (this.orderType === 'ads') {
+                        return parseFloat(this.adsPaidAmount) || 0;
+                    }
+                    if (this.orderType === 'web_software') {
+                        return this.softTotalPaid();
+                    }
+                    return 0;
                 }
             };
         }
