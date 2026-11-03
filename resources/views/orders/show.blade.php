@@ -250,6 +250,22 @@
                                             @endif
                                         </dd>
                                     </div>
+                                    <div class="p-3 bg-gray-50 rounded-xl">
+                                        <dt class="text-gray-500 font-semibold">{{ __('Service Provider') }}</dt>
+                                        <dd class="font-bold text-gray-900 mt-0.5">{{ $meta['service_provider'] ?? '-' }}</dd>
+                                    </div>
+                                    <div class="p-3 bg-gray-50 rounded-xl">
+                                        <dt class="text-gray-500 font-semibold">{{ __('Starting Date') }}</dt>
+                                        <dd class="font-bold font-mono text-gray-900 mt-0.5">{{ $meta['starting_date'] ?? $order->start_date?->format('d M, Y') ?? '-' }}</dd>
+                                    </div>
+                                    <div class="p-3 bg-gray-50 rounded-xl">
+                                        <dt class="text-gray-500 font-semibold">{{ __('Complete Date') }}</dt>
+                                        <dd class="font-bold font-mono text-gray-900 mt-0.5">{{ $meta['complete_date'] ?? '-' }}</dd>
+                                    </div>
+                                    <div class="p-3 bg-gray-50 rounded-xl sm:col-span-3">
+                                        <dt class="text-gray-500 font-semibold">{{ __('Why Not Delivery') }}</dt>
+                                        <dd class="font-bold text-rose-700 mt-0.5">{{ $meta['why_not_delivery'] ?? '-' }}</dd>
+                                    </div>
                                     <div class="p-3 bg-gray-50 rounded-xl sm:col-span-3">
                                         <dt class="text-gray-500 font-semibold">{{ __('Reference Link / Asset Drive') }}</dt>
                                         <dd class="mt-0.5 truncate">
@@ -552,7 +568,7 @@
                             @csrf
                             @method('PATCH')
                             <select name="status" class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
-                                @foreach(['Pending', 'Confirmed', 'Project Started', 'Working', 'Under Review', 'Completed', 'Delivered', 'Cancelled'] as $st)
+                                @foreach(['Pending', 'Working', 'Re-working', 'Pused', 'Complete', 'Checked', 'Delivery', 'Active', 'Cancel', 'Delay'] as $st)
                                     <option value="{{ $st }}" {{ $order->status === $st ? 'selected' : '' }}>{{ __($st) }}</option>
                                 @endforeach
                             </select>

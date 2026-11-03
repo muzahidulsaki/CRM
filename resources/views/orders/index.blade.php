@@ -117,7 +117,7 @@
                         <label class="block text-xs font-medium text-gray-700 mb-1">{{ __('Order Status') }}</label>
                         <select name="status" class="w-full text-sm rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
                             <option value="">{{ __('All Statuses') }}</option>
-                            @foreach(['Pending', 'Confirmed', 'Project Started', 'Working', 'Under Review', 'Completed', 'Delivered', 'Cancelled'] as $st)
+                            @foreach(['Pending', 'Working', 'Re-working', 'Pused', 'Complete', 'Checked', 'Delivery', 'Active', 'Cancel', 'Delay'] as $st)
                                 <option value="{{ $st }}" {{ request('status') == $st ? 'selected' : '' }}>{{ __($st) }}</option>
                             @endforeach
                         </select>
@@ -181,6 +181,9 @@
                                         <td class="py-3 px-3">
                                             <div class="font-semibold text-gray-900">{{ $order->service_category }}</div>
                                             <div class="text-2xs text-gray-500 truncate max-w-[150px]">{{ $order->title }}</div>
+                                            @if(!empty($meta['service_provider']))
+                                                <div class="text-[10px] text-indigo-600 font-semibold mt-0.5">👤 {{ $meta['service_provider'] }}</div>
+                                            @endif
                                         </td>
                                         <td class="py-3 px-3 whitespace-nowrap">
                                             <div class="font-mono font-bold text-indigo-700">{{ $meta['script_code'] ?? '-' }}</div>

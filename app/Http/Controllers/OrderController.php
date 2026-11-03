@@ -187,7 +187,7 @@ class OrderController extends Controller
             'expected_delivery_date' => ['nullable', 'date', 'after_or_equal:order_date'],
             'sales_person_id' => ['nullable', 'exists:users,id'],
             'project_manager_id' => ['nullable', 'exists:users,id'],
-            'status' => ['required', 'in:Pending,Confirmed,Project Started,Working,Under Review,Completed,Delivered,Cancelled'],
+            'status' => ['required', 'string', 'max:50'],
         ]);
 
         $orderCode = OrderService::generateOrderCode();
@@ -224,7 +224,7 @@ class OrderController extends Controller
             'project_manager_id' => $request->input('project_manager_id'),
             'service_category' => $request->input('service_category'),
             'order_type' => $orderType,
-            'order_source' => $request->input('order_source', 'Repeated'),
+            'order_source' => $request->input('order_source', 'Direct'),
             'activity_status' => $request->input('activity_status', 'Active'),
             'title' => $request->input('title'),
             'description' => $request->input('description'),
@@ -233,8 +233,9 @@ class OrderController extends Controller
             'due_amount' => $due,
             'payment_terms' => $request->input('payment_terms'),
             'order_date' => $request->input('order_date'),
+            'start_date' => $meta['starting_date'] ?? $request->input('start_date', $request->input('order_date')),
             'expected_delivery_date' => $request->input('expected_delivery_date'),
-            'status' => $request->input('status', 'Confirmed'),
+            'status' => $request->input('status', 'Pending'),
             'notes' => $request->input('notes'),
             'meta' => $meta,
         ]);
@@ -300,7 +301,7 @@ class OrderController extends Controller
             'paid_amount' => ['nullable', 'numeric', 'min:0'],
             'order_date' => ['required', 'date'],
             'expected_delivery_date' => ['nullable', 'date'],
-            'status' => ['required', 'in:Pending,Confirmed,Project Started,Working,Under Review,Completed,Delivered,Cancelled'],
+            'status' => ['required', 'string', 'max:50'],
         ]);
 
         $total = floatval($request->input('total_amount'));
@@ -343,7 +344,7 @@ class OrderController extends Controller
     public function updateStatus(Request $request, Order $order): RedirectResponse
     {
         $request->validate([
-            'status' => ['required', 'in:Pending,Confirmed,Project Started,Working,Under Review,Completed,Delivered,Cancelled'],
+            'status' => ['required', 'string', 'max:50'],
         ]);
 
         $old = $order->status;

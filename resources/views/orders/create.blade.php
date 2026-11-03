@@ -235,10 +235,10 @@
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Order Source') }}</label>
                                 <select name="order_source" :disabled="orderType !== 'creative'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
-                                    <option value="Repeated">Repeated Client</option>
-                                    <option value="Local">Local</option>
+                                    <option value="Direct">Direct</option>
+                                    <option value="Repeat">Repeat</option>
                                     <option value="Referral">Referral</option>
-                                    <option value="Cold Outreach">Cold Outreach</option>
+                                    <option value="Local">Local</option>
                                 </select>
                             </div>
 
@@ -249,6 +249,26 @@
                                     <option value="Open">Open</option>
                                     <option value="Closed">Closed</option>
                                 </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Service Provider') }}</label>
+                                <input type="text" name="meta[service_provider]" :disabled="orderType !== 'creative'" placeholder="e.g. Mahfuz, Jahid Hasan" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Starting Date') }}</label>
+                                <input type="date" name="meta[starting_date]" :disabled="orderType !== 'creative'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Complete Date') }}</label>
+                                <input type="date" name="meta[complete_date]" :disabled="orderType !== 'creative'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Why Not Delivery') }}</label>
+                                <input type="text" name="meta[why_not_delivery]" :disabled="orderType !== 'creative'" placeholder="e.g. Due Payment, Client Response Pending" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
                             </div>
 
                             <div>
@@ -328,9 +348,10 @@
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Order Source') }}</label>
                                 <select name="order_source" :disabled="orderType !== 'ads'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500">
-                                    <option value="Repeated">Repeated</option>
-                                    <option value="Local">Local</option>
+                                    <option value="Direct">Direct</option>
+                                    <option value="Repeat">Repeat</option>
                                     <option value="Referral">Referral</option>
+                                    <option value="Local">Local</option>
                                 </select>
                             </div>
 
@@ -413,8 +434,9 @@
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Order Source') }}</label>
                                 <select name="order_source" :disabled="orderType !== 'web_software'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500">
                                     <option value="Direct">Direct</option>
-                                    <option value="Repeated">Repeated</option>
+                                    <option value="Repeat">Repeat</option>
                                     <option value="Referral">Referral</option>
+                                    <option value="Local">Local</option>
                                 </select>
                             </div>
 
@@ -572,11 +594,9 @@
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Order Status') }} <span class="text-rose-500">*</span></label>
                             <select name="status" required class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
-                                <option value="Confirmed" selected>{{ __('Confirmed') }}</option>
-                                <option value="Working">{{ __('Working / In Progress') }}</option>
-                                <option value="Under Review">{{ __('Under Review') }}</option>
-                                <option value="Completed">{{ __('Completed') }}</option>
-                                <option value="Delivered">{{ __('Delivered') }}</option>
+                                @foreach(['Pending', 'Working', 'Re-working', 'Pused', 'Complete', 'Checked', 'Delivery', 'Active', 'Cancel', 'Delay'] as $st)
+                                    <option value="{{ $st }}" {{ old('status', 'Pending') === $st ? 'selected' : '' }}>{{ $st }}</option>
+                                @endforeach
                             </select>
                         </div>
 

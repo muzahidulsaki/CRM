@@ -80,7 +80,7 @@
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">{{ __('Status') }} <span class="text-rose-500">*</span></label>
                         <select name="status" required class="w-full text-sm rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
-                            @foreach(['Pending', 'Confirmed', 'Project Started', 'Working', 'Under Review', 'Completed', 'Delivered', 'Cancelled'] as $st)
+                            @foreach(['Pending', 'Working', 'Re-working', 'Pused', 'Complete', 'Checked', 'Delivery', 'Active', 'Cancel', 'Delay', 'Confirmed', 'Under Review'] as $st)
                                 <option value="{{ $st }}" {{ old('status', $order->status) == $st ? 'selected' : '' }}>{{ __($st) }}</option>
                             @endforeach
                         </select>

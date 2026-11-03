@@ -142,7 +142,7 @@ class LeadController extends Controller
             }
         }
 
-        $leads = $query->orderBy('updated_at', 'desc')->paginate(15)->withQueryString();
+        $leads = $query->orderBy('id', 'desc')->paginate(15)->withQueryString();
 
         // Metrics for summary badges
         $today = now()->format('Y-m-d');
