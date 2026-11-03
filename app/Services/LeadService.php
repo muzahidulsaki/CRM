@@ -73,38 +73,49 @@ class LeadService
     }
 
     /**
-     * Check if a contact already exists in Leads or Customers
-     * Returns array with duplicate status and matched record
+     * Helper to find existing record by a single contact field value (Customer or Lead)
      */
-    public static function checkDuplicate(?string $phone, ?string $whatsapp = null, ?string $email = null, ?int $excludeLeadId = null): array
+    protected static function findContactMatch(string $field, ?string $value, ?int $excludeLeadId = null): ?array
     {
-        $normPhone = PhoneHelper::normalize($phone);
-        $normWhatsapp = PhoneHelper::normalize($whatsapp);
-        $cleanEmail = !empty($email) ? strtolower(trim($email)) : null;
+        if (empty($value)) {
+            return null;
+        }
 
-        // 1. Check existing Customers first
-        $customerQuery = Customer::query();
-        $customerQuery->where(function ($q) use ($normPhone, $normWhatsapp, $cleanEmail) {
-            if ($normPhone) {
-                $q->orWhere('normalized_phone', $normPhone);
-                $q->orWhere('normalized_whatsapp', $normPhone);
-            }
-            if ($normWhatsapp) {
-                $q->orWhere('normalized_whatsapp', $normWhatsapp);
-                $q->orWhere('normalized_phone', $normWhatsapp);
-            }
+        $trimmed = trim($value);
+        if (strlen($trimmed) < 4) {
+            return null;
+        }
+
+        $norm = PhoneHelper::normalize($trimmed);
+        $cleanEmail = ($field === 'email') ? strtolower($trimmed) : null;
+
+        // 1. Check existing Customers
+        $custQuery = Customer::query();
+        if ($field === 'email') {
             if ($cleanEmail) {
-                $q->orWhere('email', $cleanEmail);
+                $custQuery->where('email', $cleanEmail);
+            } else {
+                return null;
             }
-        });
+        } else {
+            $custQuery->where(function ($q) use ($norm, $trimmed) {
+                if ($norm) {
+                    $q->where('normalized_phone', $norm)
+                      ->orWhere('normalized_whatsapp', $norm);
+                }
+                $q->orWhere('phone', $trimmed)
+                  ->orWhere('whatsapp', $trimmed);
+            });
+        }
 
-        $matchedCustomer = $customerQuery->first();
+        $matchedCustomer = $custQuery->first();
         if ($matchedCustomer) {
             return [
-                'is_duplicate' => true,
                 'type' => 'customer',
                 'record' => $matchedCustomer,
-                'message' => "An existing customer ({$matchedCustomer->customer_code}: {$matchedCustomer->name}) was found with this phone or email.",
+                'code' => $matchedCustomer->customer_code,
+                'name' => $matchedCustomer->name,
+                'desc' => "Customer {$matchedCustomer->customer_code}: {$matchedCustomer->name}",
             ];
         }
 
@@ -114,35 +125,93 @@ class LeadService
             $leadQuery->where('id', '!=', $excludeLeadId);
         }
 
-        $leadQuery->where(function ($q) use ($normPhone, $normWhatsapp, $cleanEmail) {
-            if ($normPhone) {
-                $q->orWhere('normalized_phone', $normPhone);
-                $q->orWhere('normalized_whatsapp', $normPhone);
-            }
-            if ($normWhatsapp) {
-                $q->orWhere('normalized_whatsapp', $normWhatsapp);
-                $q->orWhere('normalized_phone', $normWhatsapp);
-            }
-            if ($cleanEmail) {
-                $q->orWhere('email', $cleanEmail);
-            }
-        });
+        if ($field === 'email') {
+            $leadQuery->where('email', $cleanEmail);
+        } else {
+            $leadQuery->where(function ($q) use ($norm, $trimmed) {
+                if ($norm) {
+                    $q->where('normalized_phone', $norm)
+                      ->orWhere('normalized_whatsapp', $norm);
+                }
+                $q->orWhere('phone', $trimmed)
+                  ->orWhere('whatsapp', $trimmed)
+                  ->orWhere('imo_number', $trimmed);
+            });
+        }
 
         $matchedLead = $leadQuery->first();
         if ($matchedLead) {
             return [
-                'is_duplicate' => true,
                 'type' => 'lead',
                 'record' => $matchedLead,
-                'message' => "An existing lead ({$matchedLead->lead_code}: {$matchedLead->name}, Status: {$matchedLead->lead_status}) already exists with this phone or email.",
+                'code' => $leadQuery->where('id', $matchedLead->id)->value('lead_code') ?? $matchedLead->lead_code,
+                'name' => $matchedLead->name,
+                'desc' => "Lead {$matchedLead->lead_code}: {$matchedLead->name}",
             ];
         }
 
+        return null;
+    }
+
+    /**
+     * Check if a contact already exists in Leads or Customers
+     * Returns array with duplicate status, matched record, and field-specific errors
+     */
+    public static function checkDuplicate(?string $phone, ?string $whatsapp = null, ?string $email = null, ?int $excludeLeadId = null, ?string $imo = null): array
+    {
+        $fieldErrors = [];
+        $firstMatch = null;
+
+        if (!empty($phone)) {
+            $match = self::findContactMatch('phone', $phone, $excludeLeadId);
+            if ($match) {
+                $fieldErrors['phone'] = "This phone number is already used in {$match['desc']}!";
+                $firstMatch = $firstMatch ?? $match;
+            }
+        }
+
+        if (!empty($whatsapp)) {
+            $match = self::findContactMatch('whatsapp', $whatsapp, $excludeLeadId);
+            if ($match) {
+                $fieldErrors['whatsapp'] = "This WhatsApp number is already used in {$match['desc']}!";
+                $firstMatch = $firstMatch ?? $match;
+            }
+        }
+
+        if (!empty($imo)) {
+            $match = self::findContactMatch('imo_number', $imo, $excludeLeadId);
+            if ($match) {
+                $fieldErrors['imo_number'] = "This Imo number is already used in {$match['desc']}!";
+                $firstMatch = $firstMatch ?? $match;
+            }
+        }
+
+        if (!empty($email)) {
+            $match = self::findContactMatch('email', $email, $excludeLeadId);
+            if ($match) {
+                $fieldErrors['email'] = "This email address is already used in {$match['desc']}!";
+                $firstMatch = $firstMatch ?? $match;
+            }
+        }
+
+        $isDuplicate = !empty($fieldErrors);
+
+        if ($isDuplicate && $firstMatch) {
+            $type = $firstMatch['type'];
+            $record = $firstMatch['record'];
+            $message = "An existing {$type} ({$firstMatch['code']}: {$firstMatch['name']}) already exists with these contact details.";
+        } else {
+            $type = null;
+            $record = null;
+            $message = null;
+        }
+
         return [
-            'is_duplicate' => false,
-            'type' => null,
-            'record' => null,
-            'message' => null,
+            'is_duplicate' => $isDuplicate,
+            'type' => $type,
+            'record' => $record,
+            'message' => $message,
+            'field_errors' => $fieldErrors,
         ];
     }
 

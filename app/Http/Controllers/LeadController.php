@@ -195,10 +195,17 @@ class LeadController extends Controller
     {
         $phone = $request->input('phone');
         $whatsapp = $request->input('whatsapp');
+        $imo = $request->input('imo_number', $request->input('imo'));
         $email = $request->input('email');
         $excludeId = $request->input('exclude_id');
 
-        $result = LeadService::checkDuplicate($phone, $whatsapp, $email, $excludeId ? intval($excludeId) : null);
+        $result = LeadService::checkDuplicate(
+            $phone,
+            $whatsapp,
+            $email,
+            $excludeId ? intval($excludeId) : null,
+            $imo
+        );
 
         return response()->json($result);
     }
@@ -228,19 +235,20 @@ class LeadController extends Controller
             'next_followup_date' => ['nullable', 'date'],
         ]);
 
-        // Duplicate Check
-        if (!$request->boolean('allow_duplicate')) {
-            $duplicateCheck = LeadService::checkDuplicate(
-                $request->input('phone'),
-                $request->input('whatsapp'),
-                $request->input('email')
-            );
+        // Strict Duplicate Check (Mobile Number, WhatsApp Number, Imo Number & Email Address)
+        $duplicateCheck = LeadService::checkDuplicate(
+            $request->input('phone'),
+            $request->input('whatsapp'),
+            $request->input('email'),
+            null,
+            $request->input('imo_number')
+        );
 
-            if ($duplicateCheck['is_duplicate']) {
-                return back()
-                    ->withInput()
-                    ->with('duplicate_warning', $duplicateCheck);
-            }
+        if ($duplicateCheck['is_duplicate']) {
+            return back()
+                ->withInput()
+                ->withErrors($duplicateCheck['field_errors'] ?? [])
+                ->with('duplicate_warning', $duplicateCheck);
         }
 
         $leadCode = LeadService::generateLeadCode();
