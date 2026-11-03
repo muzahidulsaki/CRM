@@ -142,7 +142,17 @@ class LeadController extends Controller
             }
         }
 
-        $leads = $query->orderBy('id', 'desc')->paginate(15)->withQueryString();
+        $perPageInput = $request->input('per_page', 15);
+        if (strtolower((string)$perPageInput) === 'all') {
+            $totalCount = (clone $query)->count();
+            $perPageCount = max(1, $totalCount);
+        } elseif (is_numeric($perPageInput) && intval($perPageInput) > 0) {
+            $perPageCount = min(1000, intval($perPageInput));
+        } else {
+            $perPageCount = 15;
+        }
+
+        $leads = $query->orderBy('id', 'desc')->paginate($perPageCount)->withQueryString();
 
         // Metrics for summary badges
         $today = now()->format('Y-m-d');
@@ -445,7 +455,7 @@ class LeadController extends Controller
             );
         }
 
-        return redirect()->route('leads.show', $lead)
+        return redirect()->route('leads.index')
             ->with('success', "Lead {$lead->lead_code} updated successfully.");
     }
 

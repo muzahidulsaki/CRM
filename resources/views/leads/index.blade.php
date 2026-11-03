@@ -80,6 +80,7 @@
             <!-- Filter & Search Bar with New Filters -->
             <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm space-y-4">
                 <form method="GET" action="{{ route('leads.index') }}">
+                    <input type="hidden" name="per_page" value="{{ request('per_page', 15) }}">
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
                         <!-- Search input -->
                         <div class="lg:col-span-2">
@@ -197,6 +198,41 @@
 
             <!-- Leads Table Matching Excel Columns & Existing Order Count -->
             <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                <!-- Table Top Header: Total Count & Per Page Selector (10 / 50 / 100 / All) -->
+                <div class="px-5 py-3 border-b border-gray-100 flex flex-wrap items-center justify-between gap-3 bg-gray-50/70">
+                    <div class="flex items-center gap-2 text-xs text-gray-600">
+                        <span class="font-semibold">{{ __('Total Found:') }}</span>
+                        <strong class="font-mono font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100">
+                            {{ $leads->total() }} {{ __('Leads') }}
+                        </strong>
+                        <span class="text-gray-400">|</span>
+                        <span>
+                            @if(request('per_page') === 'all')
+                                {{ __('Showing all :total results on one page', ['total' => $leads->total()]) }}
+                            @else
+                                {{ __('Showing') }} <strong class="font-mono text-gray-900">{{ $leads->firstItem() ?? 0 }} - {{ $leads->lastItem() ?? 0 }}</strong> {{ __('of') }} <strong class="font-mono text-gray-900">{{ $leads->total() }}</strong>
+                            @endif
+                        </span>
+                    </div>
+
+                    <!-- Per Page Switcher (10 / 50 / 100 / All) -->
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold text-gray-600 uppercase tracking-wider">{{ __('Show:') }}</span>
+                        <div class="inline-flex rounded-lg border border-gray-200 bg-white p-0.5 shadow-2xs">
+                            @foreach([10, 50, 100, 'all'] as $opt)
+                                @php
+                                    $currentPerPage = request('per_page', '15');
+                                    $isActive = ($currentPerPage == (string)$opt);
+                                @endphp
+                                <a href="{{ request()->fullUrlWithQuery(['per_page' => $opt, 'page' => 1]) }}"
+                                   class="px-3 py-1 text-xs font-bold rounded-md transition {{ $isActive ? 'bg-indigo-600 text-white shadow-xs' : 'text-gray-600 hover:text-indigo-600 hover:bg-gray-100' }}">
+                                    {{ $opt === 'all' ? __('All') : $opt }}
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
                 <div class="overflow-x-auto min-h-[320px]">
                     <table class="min-w-full divide-y divide-gray-200 text-left text-xs">
                         <thead class="bg-gray-50/90 text-gray-600 font-bold uppercase tracking-wider">
