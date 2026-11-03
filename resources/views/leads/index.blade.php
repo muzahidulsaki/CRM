@@ -80,7 +80,7 @@
             <!-- Filter & Search Bar with New Filters -->
             <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm space-y-4">
                 <form method="GET" action="{{ route('leads.index') }}">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
                         <!-- Search input -->
                         <div class="lg:col-span-2">
                             <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">{{ __('Search (Name, Phone, WhatsApp, Code, Token)') }}</label>
@@ -88,6 +88,17 @@
                                 <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ __('Search PS10001, phone, name, email...') }}" class="w-full text-sm border-gray-300 rounded-lg pl-9 focus:ring-indigo-500 focus:border-indigo-500">
                                 <svg class="w-4 h-4 text-gray-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                             </div>
+                        </div>
+
+                        <!-- Business Category Filter -->
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">{{ __('Business Category') }}</label>
+                            <select name="business_type" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">{{ __('All Categories') }}</option>
+                                @foreach($businessCategories as $cat)
+                                    <option value="{{ $cat }}" {{ (request('business_type') == $cat || request('business_category') == $cat) ? 'selected' : '' }}>{{ $cat }}</option>
+                                @endforeach
+                            </select>
                         </div>
 
                         <!-- Status -->

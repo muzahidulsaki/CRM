@@ -46,7 +46,7 @@
                             <input list="lead_sources_list" name="lead_source" value="{{ old('lead_source', $lead->lead_source) }}" required class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
                             <datalist id="lead_sources_list">
                                 @foreach($leadSources as $source)
-                                    <option value="{{ $source }}">
+                                    <option value="{{ $source }}"></option>
                                 @endforeach
                             </datalist>
                             @error('lead_source') <span class="text-rose-600 text-xs">{{ $message }}</span> @enderror
@@ -57,7 +57,7 @@
                             <input list="business_categories_list" name="business_type" value="{{ old('business_type', $lead->business_type) }}" required class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
                             <datalist id="business_categories_list">
                                 @foreach($businessCategories as $cat)
-                                    <option value="{{ $cat }}">
+                                    <option value="{{ $cat }}"></option>
                                 @endforeach
                             </datalist>
                             @error('business_type') <span class="text-rose-600 text-xs">{{ $message }}</span> @enderror
@@ -243,7 +243,7 @@
 
                         <datalist id="countries_list">
                             @foreach($countries as $cnt)
-                                <option value="{{ $cnt }}">
+                                <option value="{{ $cnt }}"></option>
                             @endforeach
                         </datalist>
                     </div>
@@ -329,7 +329,7 @@
                             <input list="interested_products_list" name="interested_products" value="{{ old('interested_products', $lead->interested_products ?? $lead->interested_service) }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
                             <datalist id="interested_products_list">
                                 @foreach($interestedProductsList as $prod)
-                                    <option value="{{ $prod }}">
+                                    <option value="{{ $prod }}"></option>
                                 @endforeach
                             </datalist>
                         </div>

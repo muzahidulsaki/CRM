@@ -48,8 +48,12 @@ class LeadController extends Controller
             $query->where('lead_temperature', $temperature);
         }
 
-        if ($source = $request->input('source')) {
+        if ($source = $request->input('source', $request->input('lead_source'))) {
             $query->where('lead_source', $source);
+        }
+
+        if ($businessCategory = $request->input('business_type', $request->input('business_category'))) {
+            $query->where('business_type', $businessCategory);
         }
 
         if ($service = $request->input('service')) {
@@ -155,10 +159,18 @@ class LeadController extends Controller
 
         $dropdowns = $this->getFormDropdowns();
 
+        $dbCategories = Lead::whereNotNull('business_type')
+            ->where('business_type', '!=', '')
+            ->distinct()
+            ->pluck('business_type')
+            ->toArray();
+        $businessCategories = array_values(array_unique(array_merge($dropdowns['businessCategories'], $dbCategories)));
+
         return view('leads.index', array_merge([
             'leads' => $leads,
             'metrics' => $metrics,
             'leadSources' => $dropdowns['leadSources'],
+            'businessCategories' => $businessCategories,
             'serviceCategories' => Setting::get('service_categories', []),
             'users' => $dropdowns['users'],
             'whyNotOrderOptions' => $dropdowns['whyNotOrderOptions'],
@@ -258,7 +270,7 @@ class LeadController extends Controller
             userId: auth()->id()
         );
 
-        return redirect()->route('leads.show', $lead)
+        return redirect()->route('leads.index')
             ->with('success', "Lead {$lead->lead_code} created successfully.");
     }
 
