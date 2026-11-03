@@ -497,6 +497,32 @@
                             </div>
                         @endif
 
+                        @php
+                            $mDue = floatval($meta['monthly_due'] ?? (($meta['subscription_system'] ?? '') === 'Monthly' ? ($meta['subscription_fee'] ?? 0) : 0));
+                            $yDue = floatval($meta['yearly_due'] ?? (($meta['subscription_system'] ?? '') === 'Yearly' ? ($meta['subscription_fee'] ?? 0) : 0));
+                        @endphp
+
+                        @if($mDue > 0 || $yDue > 0)
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                @if($mDue > 0)
+                                    <div class="p-3 bg-amber-50/70 rounded-xl border border-amber-200 flex items-center justify-between">
+                                        <span class="text-xs font-semibold text-amber-900 flex items-center gap-1.5">
+                                            <span>🗓️</span> {{ __('Monthly Due (Service/Retainer)') }}:
+                                        </span>
+                                        <strong class="font-mono text-amber-800 font-bold">BDT {{ number_format($mDue, 2) }}</strong>
+                                    </div>
+                                @endif
+                                @if($yDue > 0)
+                                    <div class="p-3 bg-purple-50/70 rounded-xl border border-purple-200 flex items-center justify-between">
+                                        <span class="text-xs font-semibold text-purple-900 flex items-center gap-1.5">
+                                            <span>📅</span> {{ __('Yearly Due (Domain/Hosting Renew)') }}:
+                                        </span>
+                                        <strong class="font-mono text-purple-800 font-bold">BDT {{ number_format($yDue, 2) }}</strong>
+                                    </div>
+                                @endif
+                            </div>
+                        @endif
+
                         <!-- Inline New Payment Recording Box -->
                         <div x-show="showPayModal" x-cloak class="p-4 bg-indigo-50/70 rounded-xl border border-indigo-200 shadow-sm space-y-3">
                             <div class="flex items-center justify-between border-b border-indigo-100 pb-2">

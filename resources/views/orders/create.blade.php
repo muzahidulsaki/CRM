@@ -468,6 +468,11 @@
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Dollar Due ($)') }}</label>
                                 <input type="number" step="0.01" name="meta[dollar_due]" :disabled="orderType !== 'ads'" placeholder="0.00" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500 font-mono text-rose-600 font-bold">
                             </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Monthly Retainer / Due (BDT)') }}</label>
+                                <input type="number" step="0.01" name="meta[monthly_due]" :disabled="orderType !== 'ads'" placeholder="0.00" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500 font-mono">
+                            </div>
                         </div>
 
                         <!-- Ads BDT Budget & Paid -->
@@ -523,6 +528,16 @@
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Subscription / Renew Fee') }}</label>
                                 <input type="number" step="0.01" name="meta[subscription_fee]" :disabled="orderType !== 'web_software'" placeholder="e.g. 2000" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500 font-mono">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Monthly Due (BDT)') }}</label>
+                                <input type="number" step="0.01" name="meta[monthly_due]" :disabled="orderType !== 'web_software'" placeholder="0.00" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500 font-mono">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Yearly Due (BDT)') }}</label>
+                                <input type="number" step="0.01" name="meta[yearly_due]" :disabled="orderType !== 'web_software'" placeholder="0.00" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500 font-mono">
                             </div>
 
                             <div>

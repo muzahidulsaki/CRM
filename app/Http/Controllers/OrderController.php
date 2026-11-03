@@ -50,14 +50,62 @@ class OrderController extends Controller
             }
         }
 
+        if ($dueType = $request->input('due_type')) {
+            if ($dueType === 'initial') {
+                $query->where('due_amount', '>', 0);
+            } elseif ($dueType === 'monthly') {
+                $query->where(function ($q) {
+                    $q->where('meta->monthly_due', '>', 0)
+                      ->orWhere(function ($sub) {
+                          $sub->where('meta->subscription_system', 'Monthly')
+                              ->where('meta->subscription_fee', '>', 0);
+                      });
+                });
+            } elseif ($dueType === 'yearly') {
+                $query->where(function ($q) {
+                    $q->where('meta->yearly_due', '>', 0)
+                      ->orWhere(function ($sub) {
+                          $sub->where('meta->subscription_system', 'Yearly')
+                              ->where('meta->subscription_fee', '>', 0);
+                      });
+                });
+            }
+        }
+
         $orders = $query->orderBy('id', 'desc')->paginate(15)->withQueryString();
+
+        $activeOrders = Order::where('status', '!=', 'Cancelled')->get();
+        $initialDue = floatval($activeOrders->sum('due_amount'));
+        $monthlyDue = floatval($activeOrders->sum(function ($order) {
+            $m = $order->meta ?? [];
+            if (isset($m['monthly_due']) && is_numeric($m['monthly_due']) && floatval($m['monthly_due']) > 0) {
+                return floatval($m['monthly_due']);
+            }
+            if (($m['subscription_system'] ?? '') === 'Monthly' && !empty($m['subscription_fee'])) {
+                return floatval($m['subscription_fee']);
+            }
+            return 0;
+        }));
+        $yearlyDue = floatval($activeOrders->sum(function ($order) {
+            $m = $order->meta ?? [];
+            if (isset($m['yearly_due']) && is_numeric($m['yearly_due']) && floatval($m['yearly_due']) > 0) {
+                return floatval($m['yearly_due']);
+            }
+            if (($m['subscription_system'] ?? '') === 'Yearly' && !empty($m['subscription_fee'])) {
+                return floatval($m['subscription_fee']);
+            }
+            return 0;
+        }));
 
         $metrics = [
             'total' => Order::count(),
             'active' => Order::whereIn('status', ['Confirmed', 'Project Started', 'Working', 'Under Review'])->count(),
             'completed' => Order::whereIn('status', ['Completed', 'Delivered'])->count(),
             'total_sales' => Order::where('status', '!=', 'Cancelled')->sum('total_amount'),
-            'total_due' => Order::where('status', '!=', 'Cancelled')->sum('due_amount'),
+            'total_due' => $initialDue,
+            'initial_due' => $initialDue,
+            'monthly_due' => $monthlyDue,
+            'yearly_due' => $yearlyDue,
             'creative_count' => Order::where('order_type', 'creative')->count(),
             'ads_count' => Order::where('order_type', 'ads')->count(),
             'soft_count' => Order::where('order_type', 'web_software')->count(),

@@ -233,9 +233,9 @@
                     </div>
                 </div>
 
-                <div class="overflow-x-auto min-h-[320px]">
-                    <table class="min-w-full divide-y divide-gray-200 text-left text-xs">
-                        <thead class="bg-gray-50/90 text-gray-600 font-bold uppercase tracking-wider">
+                <div class="leads-table-container" style="max-height: 580px; min-height: 300px; overflow: auto; position: relative;">
+                    <table class="text-left text-xs border-separate border-spacing-0" style="min-width: 1450px; width: 100%;">
+                        <thead class="text-gray-700 font-bold uppercase tracking-wider" style="position: sticky; top: 0; z-index: 20;">
                             <tr>
                                 <th class="py-3 px-3 whitespace-nowrap">{{ __('Lead ID / Token') }}</th>
                                 <th class="py-3 px-3 whitespace-nowrap">{{ __('Client & Business') }}</th>
@@ -245,7 +245,7 @@
                                 <th class="py-3 px-3 whitespace-nowrap">{{ __('Meeting Info') }}</th>
                                 <th class="py-3 px-3 whitespace-nowrap">{{ __('Product & Temp') }}</th>
                                 <th class="py-3 px-3 whitespace-nowrap">{{ __('Status / Why Not') }}</th>
-                                <th class="py-3 px-3 whitespace-nowrap bg-indigo-50/40 text-indigo-900 border-x border-indigo-100">
+                                <th class="py-3 px-3 whitespace-nowrap bg-indigo-sticky text-indigo-950 border-x border-indigo-200">
                                     {{ __('Existing Order Count') }}
                                 </th>
                                 <th class="py-3 px-3 text-right whitespace-nowrap">{{ __('Actions') }}</th>
@@ -510,4 +510,50 @@
 
         </div>
     </div>
+
+    <style>
+        .leads-table-container {
+            max-height: 580px !important;
+            min-height: 300px;
+            overflow-x: auto !important;
+            overflow-y: auto !important;
+            position: relative;
+            scrollbar-width: thin;
+            scrollbar-color: #94a3b8 #f1f5f9;
+        }
+        .leads-table-container::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        .leads-table-container::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 6px;
+        }
+        .leads-table-container::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 6px;
+        }
+        .leads-table-container::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+        .leads-table-container table {
+            min-width: 1450px !important;
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        .leads-table-container thead th {
+            position: sticky !important;
+            top: 0 !important;
+            z-index: 20 !important;
+            background-color: #f1f5f9 !important;
+            border-bottom: 2px solid #cbd5e1 !important;
+        }
+        .leads-table-container thead th.bg-indigo-sticky {
+            background-color: #e0e7ff !important;
+        }
+        .leads-table-container tbody td {
+            border-bottom: 1px solid #f1f5f9;
+        }
+    </style>
 </x-app-layout>

@@ -70,7 +70,7 @@
             </div>
 
             <!-- Order Metrics -->
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div class="bg-white p-4 rounded-xl border border-blue-200 bg-blue-50/30 shadow-sm text-center">
                     <div class="text-xs font-semibold text-blue-600 uppercase">{{ __('Active Orders') }}</div>
                     <div class="text-2xl font-bold text-blue-700 mt-1">{{ $metrics['active'] }}</div>
@@ -86,15 +86,75 @@
                     <div class="text-xl font-bold text-indigo-800 mt-1">{{ __('BDT') }} {{ number_format($metrics['total_sales']) }}</div>
                 </div>
 
-                <div class="bg-white p-4 rounded-xl border border-rose-200 bg-rose-50/40 shadow-sm text-center">
-                    <div class="text-xs font-semibold text-rose-600 uppercase">{{ __('Total Due') }}</div>
-                    <div class="text-xl font-bold text-rose-700 mt-1">{{ __('BDT') }} {{ number_format($metrics['total_due']) }}</div>
+                <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm text-center">
+                    <div class="text-xs font-semibold text-gray-600 uppercase">{{ __('Overall Total Due') }}</div>
+                    <div class="text-xl font-bold text-gray-900 mt-1">{{ __('BDT') }} {{ number_format($metrics['initial_due'] + $metrics['monthly_due'] + $metrics['yearly_due']) }}</div>
                 </div>
+            </div>
+
+            <!-- Due Payment Breakdown: Initial Due, Monthly Due & Yearly Due -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <!-- Initial Due Card -->
+                <a href="{{ route('orders.index', array_merge(request()->except('due_type', 'page'), ['due_type' => 'initial'])) }}"
+                   class="bg-white p-4 rounded-2xl border transition shadow-sm hover:shadow-md {{ request('due_type') === 'initial' ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/30' : 'border-rose-200 bg-rose-50/20 hover:border-rose-300' }}">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-1.5 text-xs font-bold text-rose-800 uppercase tracking-wider">
+                            <span>💳</span>
+                            <span>{{ __('Initial Due') }}</span>
+                        </div>
+                        <span class="text-2xs font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 uppercase tracking-wider font-mono">{{ __('Project Due') }}</span>
+                    </div>
+                    <div class="text-2xl font-black font-mono text-rose-600 mt-2">
+                        BDT {{ number_format($metrics['initial_due'], 2) }}
+                    </div>
+                    <div class="text-2xs text-rose-600/80 mt-1 font-medium flex items-center justify-between">
+                        <span>{{ __('Contract & delivery remaining due') }}</span>
+                        <span class="text-rose-600 font-bold">&rarr;</span>
+                    </div>
+                </a>
+
+                <!-- Monthly Due Card -->
+                <a href="{{ route('orders.index', array_merge(request()->except('due_type', 'page'), ['due_type' => 'monthly'])) }}"
+                   class="bg-white p-4 rounded-2xl border transition shadow-sm hover:shadow-md {{ request('due_type') === 'monthly' ? 'border-amber-500 ring-2 ring-amber-500/20 bg-amber-50/30' : 'border-amber-200 bg-amber-50/20 hover:border-amber-300' }}">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-1.5 text-xs font-bold text-amber-800 uppercase tracking-wider">
+                            <span>🗓️</span>
+                            <span>{{ __('Monthly Due') }}</span>
+                        </div>
+                        <span class="text-2xs font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 uppercase tracking-wider font-mono">{{ __('Monthly Service') }}</span>
+                    </div>
+                    <div class="text-2xl font-black font-mono text-amber-600 mt-2">
+                        BDT {{ number_format($metrics['monthly_due'], 2) }}
+                    </div>
+                    <div class="text-2xs text-amber-600/80 mt-1 font-medium flex items-center justify-between">
+                        <span>{{ __('Ads retainer, software & maintenance due') }}</span>
+                        <span class="text-amber-700 font-bold">&rarr;</span>
+                    </div>
+                </a>
+
+                <!-- Yearly Due Card -->
+                <a href="{{ route('orders.index', array_merge(request()->except('due_type', 'page'), ['due_type' => 'yearly'])) }}"
+                   class="bg-white p-4 rounded-2xl border transition shadow-sm hover:shadow-md {{ request('due_type') === 'yearly' ? 'border-purple-500 ring-2 ring-purple-500/20 bg-purple-50/30' : 'border-purple-200 bg-purple-50/20 hover:border-purple-300' }}">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-1.5 text-xs font-bold text-purple-800 uppercase tracking-wider">
+                            <span>📅</span>
+                            <span>{{ __('Yearly Due') }}</span>
+                        </div>
+                        <span class="text-2xs font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 uppercase tracking-wider font-mono">{{ __('Renewal Fee') }}</span>
+                    </div>
+                    <div class="text-2xl font-black font-mono text-purple-600 mt-2">
+                        BDT {{ number_format($metrics['yearly_due'], 2) }}
+                    </div>
+                    <div class="text-2xs text-purple-600/80 mt-1 font-medium flex items-center justify-between">
+                        <span>{{ __('Domain, hosting & annual license due') }}</span>
+                        <span class="text-purple-700 font-bold">&rarr;</span>
+                    </div>
+                </a>
             </div>
 
             <!-- Filters & Search -->
             <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
-                <form method="GET" action="{{ route('orders.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 items-end">
+                <form method="GET" action="{{ route('orders.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-end">
                     <input type="hidden" name="type" value="{{ $currentType }}">
 
                     <div>
@@ -114,6 +174,16 @@
                     </div>
 
                     <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">{{ __('Due Payment Filter') }}</label>
+                        <select name="due_type" class="w-full text-sm rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 font-semibold">
+                            <option value="">{{ __('All Due Statuses') }}</option>
+                            <option value="initial" {{ request('due_type') === 'initial' ? 'selected' : '' }}>💳 Initial Due Only</option>
+                            <option value="monthly" {{ request('due_type') === 'monthly' ? 'selected' : '' }}>🗓️ Monthly Due Only</option>
+                            <option value="yearly" {{ request('due_type') === 'yearly' ? 'selected' : '' }}>📅 Yearly Due Only</option>
+                        </select>
+                    </div>
+
+                    <div>
                         <label class="block text-xs font-medium text-gray-700 mb-1">{{ __('Order Status') }}</label>
                         <select name="status" class="w-full text-sm rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
                             <option value="">{{ __('All Statuses') }}</option>
@@ -127,7 +197,7 @@
                         <button type="submit" class="flex-1 py-2 px-4 bg-gray-900 text-white rounded-lg text-sm font-semibold hover:bg-gray-800 transition">
                             {{ __('Filter') }}
                         </button>
-                        @if(request()->anyFilled(['search', 'category', 'status']))
+                        @if(request()->anyFilled(['search', 'category', 'status', 'due_type']))
                             <a href="{{ route('orders.index', ['type' => $currentType]) }}" class="py-2 px-3 bg-gray-100 text-gray-600 rounded-lg text-sm font-medium hover:bg-gray-200 transition">
                                 {{ __('Reset') }}
                             </a>
