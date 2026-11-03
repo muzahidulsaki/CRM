@@ -30,6 +30,7 @@ class ClientPayment extends Model
 
     public const METHODS = [
         'Cash',
+        'Bank',
         'Bank Transfer',
         'bKash',
         'Nagad',

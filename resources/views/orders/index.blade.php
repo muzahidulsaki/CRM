@@ -275,6 +275,9 @@
                                         </td>
                                         <td class="py-3 px-3 whitespace-nowrap font-mono font-bold text-amber-800">
                                             ${{ number_format(floatval($meta['total_dollar'] ?? 0), 2) }}
+                                            @if(!empty($meta['lifetime_budget']))
+                                                <div class="text-[10px] text-gray-500 font-normal">Life: ${{ number_format(floatval($meta['lifetime_budget']), 2) }}</div>
+                                            @endif
                                         </td>
                                         <td class="py-3 px-3 whitespace-nowrap font-mono font-bold text-gray-900">
                                             {{ number_format($order->total_amount) }}

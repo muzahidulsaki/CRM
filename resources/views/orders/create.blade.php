@@ -307,29 +307,76 @@
                             </div>
                         </div>
 
-                        <!-- Creative Financials & 3-Step Payments -->
-                        <div class="p-4 bg-indigo-50/50 rounded-xl border border-indigo-100 space-y-3 mt-4">
-                            <h4 class="text-xs font-bold text-indigo-900 uppercase tracking-wider">{{ __('Creative Payment & Installments') }}</h4>
-                            <div class="grid grid-cols-1 sm:grid-cols-5 gap-3">
+                        <!-- Creative Financials & Dynamic Payments -->
+                        <div class="p-5 bg-indigo-50/50 rounded-2xl border border-indigo-100 space-y-4 mt-4">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-indigo-100 pb-3">
                                 <div>
-                                    <label class="block text-2xs font-semibold text-gray-600 uppercase mb-1">{{ __('Initial Total (BDT)') }} <span class="text-rose-500">*</span></label>
-                                    <input type="number" step="0.01" x-model.number="creativeTotal" placeholder="0.00" class="w-full text-sm font-bold font-mono rounded-lg border-gray-300 focus:ring-indigo-500">
+                                    <h4 class="text-xs font-bold text-indigo-950 uppercase tracking-wider flex items-center gap-1.5">
+                                        <span>💳</span> {{ __('Creative Payment & Dynamic Installments') }}
+                                    </h4>
+                                    <p class="text-2xs text-gray-500">{{ __('Enter date, amount, and source for each full or partial installment payment received') }}</p>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <div>
+                                        <label class="block text-2xs font-semibold text-gray-700 uppercase mb-1">{{ __('Initial Total (BDT)') }} <span class="text-rose-500">*</span></label>
+                                        <input type="number" step="0.01" x-model.number="creativeTotal" placeholder="0.00" class="w-40 text-sm font-bold font-mono rounded-lg border-gray-300 focus:ring-indigo-500">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Dynamic Payment Rows -->
+                            <div class="space-y-2.5">
+                                <label class="block text-2xs font-bold text-gray-600 uppercase">{{ __('Payment History / Installments (Date, Amount & Source)') }}</label>
+                                
+                                <template x-for="(pay, index) in creativePayments" :key="index">
+                                    <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 p-2.5 bg-white rounded-xl border border-indigo-100 shadow-2xs">
+                                        <span class="text-xs font-bold text-indigo-600 font-mono w-6 text-center" x-text="'#' + (index + 1)"></span>
+                                        
+                                        <!-- Payment Date -->
+                                        <div class="w-full sm:w-1/3">
+                                            <input type="date" :name="'creative_payments[' + index + '][payment_date]'" x-model="pay.payment_date" :disabled="orderType !== 'creative'" class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500">
+                                        </div>
+
+                                        <!-- Amount -->
+                                        <div class="w-full sm:w-1/3">
+                                            <div class="relative">
+                                                <span class="absolute left-2.5 top-2 text-xs text-gray-400 font-bold">BDT</span>
+                                                <input type="number" step="0.01" :name="'creative_payments[' + index + '][amount]'" x-model.number="pay.amount" placeholder="0.00" :disabled="orderType !== 'creative'" class="w-full text-xs font-mono font-bold pl-12 rounded-lg border-gray-300 focus:ring-indigo-500">
+                                            </div>
+                                        </div>
+
+                                        <!-- Payment Source -->
+                                        <div class="w-full sm:w-1/3">
+                                            <select :name="'creative_payments[' + index + '][payment_method]'" x-model="pay.payment_method" :disabled="orderType !== 'creative'" class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 font-semibold">
+                                                <option value="Cash">💵 Cash</option>
+                                                <option value="Bank">🏦 Bank</option>
+                                                <option value="bKash">📱 bKash</option>
+                                                <option value="Nagad">📱 Nagad</option>
+                                                <option value="Rocket">📱 Rocket</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Remove Row Button -->
+                                        <button type="button" @click="removeCreativePayment(index)" x-show="creativePayments.length > 1" class="p-1.5 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" title="{{ __('Remove') }}">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                        </button>
+                                    </div>
+                                </template>
+
+                                <button type="button" @click="addCreativePayment()" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-semibold transition mt-1 border border-indigo-200">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                                    <span>{{ __('+ Add Another Payment / Installment') }}</span>
+                                </button>
+                            </div>
+
+                            <!-- Live Calculation Bar -->
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-white rounded-xl border border-indigo-200 text-xs gap-3 mt-3">
+                                <div class="flex items-center gap-4">
+                                    <span class="text-gray-600">{{ __('Initial Total:') }} <strong class="text-indigo-900 font-mono font-bold" x-text="'BDT ' + (parseFloat(creativeTotal) || 0).toLocaleString()"></strong></span>
+                                    <span class="text-gray-600">{{ __('Total Paid:') }} <strong class="text-emerald-700 font-mono font-bold" x-text="'BDT ' + creativeTotalPaid().toLocaleString()"></strong></span>
                                 </div>
                                 <div>
-                                    <label class="block text-2xs font-semibold text-gray-600 uppercase mb-1">{{ __('1st Pay (BDT)') }}</label>
-                                    <input type="number" step="0.01" name="meta[pay_1st]" :disabled="orderType !== 'creative'" x-model.number="creativePay1" placeholder="0.00" class="w-full text-sm font-mono rounded-lg border-gray-300 focus:ring-indigo-500">
-                                </div>
-                                <div>
-                                    <label class="block text-2xs font-semibold text-gray-600 uppercase mb-1">{{ __('2nd Pay (BDT)') }}</label>
-                                    <input type="number" step="0.01" name="meta[pay_2nd]" :disabled="orderType !== 'creative'" x-model.number="creativePay2" placeholder="0.00" class="w-full text-sm font-mono rounded-lg border-gray-300 focus:ring-indigo-500">
-                                </div>
-                                <div>
-                                    <label class="block text-2xs font-semibold text-gray-600 uppercase mb-1">{{ __('3rd Pay (BDT)') }}</label>
-                                    <input type="number" step="0.01" name="meta[pay_3rd]" :disabled="orderType !== 'creative'" x-model.number="creativePay3" placeholder="0.00" class="w-full text-sm font-mono rounded-lg border-gray-300 focus:ring-indigo-500">
-                                </div>
-                                <div class="bg-white p-2.5 rounded-lg border border-indigo-200 flex flex-col justify-center">
-                                    <div class="text-2xs font-bold text-gray-500 uppercase">{{ __('Calculated Due') }}</div>
-                                    <div class="text-base font-bold text-rose-600 font-mono" x-text="'BDT ' + (creativeTotal - (creativePay1 + creativePay2 + creativePay3)).toLocaleString()"></div>
+                                    <span class="text-gray-600">{{ __('Calculated Due:') }} <strong class="text-rose-600 font-mono font-bold text-sm" x-text="'BDT ' + creativeDue().toLocaleString()"></strong></span>
                                 </div>
                             </div>
                         </div>
@@ -377,6 +424,21 @@
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Total Dollar ($ Budget)') }}</label>
                                 <input type="number" step="0.01" name="meta[total_dollar]" :disabled="orderType !== 'ads'" x-model.number="adsTotalDollar" placeholder="e.g. 75.00" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500 font-mono font-bold">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Lifetime Budget ($)') }}</label>
+                                <input type="number" step="0.01" name="meta[lifetime_budget]" :disabled="orderType !== 'ads'" placeholder="e.g. 150.00" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500 font-mono font-bold">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Starting Date') }}</label>
+                                <input type="date" name="meta[starting_date]" :disabled="orderType !== 'ads'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('End Date') }}</label>
+                                <input type="date" name="meta[end_date]" :disabled="orderType !== 'ads'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500">
                             </div>
 
                             <div>
@@ -464,12 +526,27 @@
                             </div>
 
                             <div>
+                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Next Renew Payment Date') }}</label>
+                                <input type="date" name="meta[next_renew_date]" :disabled="orderType !== 'web_software'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500">
+                            </div>
+
+                            <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Renew Status') }}</label>
                                 <select name="meta[renew_status]" :disabled="orderType !== 'web_software'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500">
                                     <option value="Active">Active</option>
                                     <option value="Pending">Pending</option>
                                     <option value="Expired">Expired</option>
                                 </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Purchase Date') }}</label>
+                                <input type="date" name="meta[purchase_date]" :disabled="orderType !== 'web_software'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Complete Date') }}</label>
+                                <input type="date" name="meta[complete_date]" :disabled="orderType !== 'web_software'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500">
                             </div>
 
                             <div>
@@ -488,47 +565,79 @@
                             </div>
                         </div>
 
-                        <!-- 7 Installments Breakdown (Excel Sheet Soft & Web) -->
-                        <div class="p-4 bg-blue-50/50 rounded-xl border border-blue-200 space-y-3 mt-4">
-                            <h4 class="text-xs font-bold text-blue-900 uppercase tracking-wider">{{ __('Payment Installments (1st to 7th Pay Breakdown)') }}</h4>
-                            <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
-                                <div class="col-span-2 sm:col-span-2 lg:col-span-1">
-                                    <label class="block text-2xs font-semibold text-gray-700 uppercase mb-1">{{ __('Initial Total') }} *</label>
-                                    <input type="number" step="0.01" x-model.number="softTotal" placeholder="0.00" class="w-full text-xs font-bold font-mono rounded-lg border-gray-300 focus:ring-blue-500">
-                                </div>
+                        <!-- Website & Software Payment & Dynamic Installments -->
+                        <div class="p-5 bg-blue-50/50 rounded-2xl border border-blue-200 space-y-4 mt-4">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-blue-200 pb-3">
                                 <div>
-                                    <label class="block text-2xs font-semibold text-gray-600 uppercase mb-1">1st Pay</label>
-                                    <input type="number" step="0.01" name="meta[pay_1st]" :disabled="orderType !== 'web_software'" x-model.number="softPay[1]" placeholder="0.00" class="w-full text-xs font-mono rounded-lg border-gray-300 focus:ring-blue-500">
+                                    <h4 class="text-xs font-bold text-blue-950 uppercase tracking-wider flex items-center gap-1.5">
+                                        <span>💳</span> {{ __('Software & Web Payment & Dynamic Installments') }}
+                                    </h4>
+                                    <p class="text-2xs text-gray-500">{{ __('Enter date, amount, and source for each full or partial installment payment received') }}</p>
                                 </div>
-                                <div>
-                                    <label class="block text-2xs font-semibold text-gray-600 uppercase mb-1">2nd Pay</label>
-                                    <input type="number" step="0.01" name="meta[pay_2nd]" :disabled="orderType !== 'web_software'" x-model.number="softPay[2]" placeholder="0.00" class="w-full text-xs font-mono rounded-lg border-gray-300 focus:ring-blue-500">
-                                </div>
-                                <div>
-                                    <label class="block text-2xs font-semibold text-gray-600 uppercase mb-1">3rd Pay</label>
-                                    <input type="number" step="0.01" name="meta[pay_3rd]" :disabled="orderType !== 'web_software'" x-model.number="softPay[3]" placeholder="0.00" class="w-full text-xs font-mono rounded-lg border-gray-300 focus:ring-blue-500">
-                                </div>
-                                <div>
-                                    <label class="block text-2xs font-semibold text-gray-600 uppercase mb-1">4th Pay</label>
-                                    <input type="number" step="0.01" name="meta[pay_4th]" :disabled="orderType !== 'web_software'" x-model.number="softPay[4]" placeholder="0.00" class="w-full text-xs font-mono rounded-lg border-gray-300 focus:ring-blue-500">
-                                </div>
-                                <div>
-                                    <label class="block text-2xs font-semibold text-gray-600 uppercase mb-1">5th Pay</label>
-                                    <input type="number" step="0.01" name="meta[pay_5th]" :disabled="orderType !== 'web_software'" x-model.number="softPay[5]" placeholder="0.00" class="w-full text-xs font-mono rounded-lg border-gray-300 focus:ring-blue-500">
-                                </div>
-                                <div>
-                                    <label class="block text-2xs font-semibold text-gray-600 uppercase mb-1">6th Pay</label>
-                                    <input type="number" step="0.01" name="meta[pay_6th]" :disabled="orderType !== 'web_software'" x-model.number="softPay[6]" placeholder="0.00" class="w-full text-xs font-mono rounded-lg border-gray-300 focus:ring-blue-500">
-                                </div>
-                                <div>
-                                    <label class="block text-2xs font-semibold text-gray-600 uppercase mb-1">7th Pay</label>
-                                    <input type="number" step="0.01" name="meta[pay_7th]" :disabled="orderType !== 'web_software'" x-model.number="softPay[7]" placeholder="0.00" class="w-full text-xs font-mono rounded-lg border-gray-300 focus:ring-blue-500">
+                                <div class="flex items-center gap-4">
+                                    <div>
+                                        <label class="block text-2xs font-semibold text-gray-700 uppercase mb-1">{{ __('Initial Total (BDT)') }} <span class="text-rose-500">*</span></label>
+                                        <input type="number" step="0.01" x-model.number="softTotal" placeholder="0.00" class="w-40 text-sm font-bold font-mono rounded-lg border-gray-300 focus:ring-blue-500">
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="flex items-center justify-between p-3 bg-white rounded-lg border border-blue-200 text-xs">
-                                <span class="font-semibold text-gray-600">{{ __('Total Paid so far:') }} <strong class="text-emerald-700 font-mono" x-text="'BDT ' + softTotalPaid().toLocaleString()"></strong></span>
-                                <span class="font-semibold text-gray-600">{{ __('Remaining Due:') }} <strong class="text-rose-600 font-mono text-sm" x-text="'BDT ' + (softTotal - softTotalPaid()).toLocaleString()"></strong></span>
+                            <!-- Dynamic Payment Rows -->
+                            <div class="space-y-2.5">
+                                <label class="block text-2xs font-bold text-gray-600 uppercase">{{ __('Payment History / Installments (Date, Amount & Source)') }}</label>
+                                
+                                <template x-for="(pay, index) in softPayments" :key="index">
+                                    <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 p-2.5 bg-white rounded-xl border border-blue-100 shadow-2xs">
+                                        <span class="text-xs font-bold text-blue-600 font-mono w-6 text-center" x-text="'#' + (index + 1)"></span>
+                                        
+                                        <!-- Payment Date -->
+                                        <div class="w-full sm:w-1/3">
+                                            <input type="date" :name="'soft_payments[' + index + '][payment_date]'" x-model="pay.payment_date" :disabled="orderType !== 'web_software'" class="w-full text-xs rounded-lg border-gray-300 focus:ring-blue-500">
+                                        </div>
+
+                                        <!-- Amount -->
+                                        <div class="w-full sm:w-1/3">
+                                            <div class="relative">
+                                                <span class="absolute left-2.5 top-2 text-xs text-gray-400 font-bold">BDT</span>
+                                                <input type="number" step="0.01" :name="'soft_payments[' + index + '][amount]'" x-model.number="pay.amount" placeholder="0.00" :disabled="orderType !== 'web_software'" class="w-full text-xs font-mono font-bold pl-12 rounded-lg border-gray-300 focus:ring-blue-500">
+                                            </div>
+                                        </div>
+
+                                        <!-- Payment Source -->
+                                        <div class="w-full sm:w-1/3">
+                                            <select :name="'soft_payments[' + index + '][payment_method]'" x-model="pay.payment_method" :disabled="orderType !== 'web_software'" class="w-full text-xs rounded-lg border-gray-300 focus:ring-blue-500 font-semibold">
+                                                <option value="Cash">💵 Cash</option>
+                                                <option value="Bank">🏦 Bank</option>
+                                                <option value="bKash">📱 bKash</option>
+                                                <option value="Nagad">📱 Nagad</option>
+                                                <option value="Rocket">📱 Rocket</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Remove Row Button -->
+                                        <button type="button" @click="removeSoftPayment(index)" x-show="softPayments.length > 1" class="p-1.5 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" title="{{ __('Remove') }}">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                        </button>
+                                    </div>
+                                </template>
+
+                                <button type="button" @click="addSoftPayment()" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-xs font-semibold transition mt-1 border border-blue-200">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                                    <span>{{ __('+ Add Another Payment / Installment') }}</span>
+                                </button>
+                            </div>
+
+                            <!-- Live Calculation Bar & Next Due Date -->
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-white rounded-xl border border-blue-200 text-xs gap-3 mt-3">
+                                <div class="flex items-center gap-4">
+                                    <span class="text-gray-600">{{ __('Initial Total:') }} <strong class="text-blue-950 font-mono font-bold" x-text="'BDT ' + (parseFloat(softTotal) || 0).toLocaleString()"></strong></span>
+                                    <span class="text-gray-600">{{ __('Total Paid:') }} <strong class="text-emerald-700 font-mono font-bold" x-text="'BDT ' + softTotalPaid().toLocaleString()"></strong></span>
+                                    <span class="text-gray-600">{{ __('Calculated Due:') }} <strong class="text-rose-600 font-mono font-bold text-sm" x-text="'BDT ' + softDue().toLocaleString()"></strong></span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <label class="text-2xs font-semibold text-gray-700 uppercase whitespace-nowrap">{{ __('Initial Next Due Pay Date') }}:</label>
+                                    <input type="date" name="meta[initial_next_due_date]" :disabled="orderType !== 'web_software'" class="text-xs rounded-lg border-gray-300 focus:ring-blue-500 py-1 px-2 font-mono">
+                                </div>
                             </div>
                         </div>
 
@@ -674,9 +783,25 @@
 
                 // Creative amounts
                 creativeTotal: 0,
-                creativePay1: 0,
-                creativePay2: 0,
-                creativePay3: 0,
+                creativePayments: [
+                    { payment_date: '{{ date("Y-m-d") }}', amount: '', payment_method: 'Cash' }
+                ],
+                addCreativePayment() {
+                    this.creativePayments.push({
+                        payment_date: '{{ date("Y-m-d") }}',
+                        amount: '',
+                        payment_method: 'Cash'
+                    });
+                },
+                removeCreativePayment(index) {
+                    this.creativePayments.splice(index, 1);
+                },
+                creativeTotalPaid() {
+                    return this.creativePayments.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
+                },
+                creativeDue() {
+                    return Math.max(0, (parseFloat(this.creativeTotal) || 0) - this.creativeTotalPaid());
+                },
 
                 // Ads amounts
                 adsDailyCost: 0,
@@ -687,7 +812,25 @@
 
                 // Soft amounts
                 softTotal: 0,
-                softPay: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0 },
+                softPayments: [
+                    { payment_date: '{{ date("Y-m-d") }}', amount: '', payment_method: 'Cash' }
+                ],
+                addSoftPayment() {
+                    this.softPayments.push({
+                        payment_date: '{{ date("Y-m-d") }}',
+                        amount: '',
+                        payment_method: 'Cash'
+                    });
+                },
+                removeSoftPayment(index) {
+                    this.softPayments.splice(index, 1);
+                },
+                softTotalPaid() {
+                    return this.softPayments.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
+                },
+                softDue() {
+                    return Math.max(0, (parseFloat(this.softTotal) || 0) - this.softTotalPaid());
+                },
 
                 get filteredCustomers() {
                     if (!this.searchQuery) return this.customers.slice(0, 10);
@@ -729,7 +872,7 @@
 
                 currentPaid() {
                     if (this.orderType === 'creative') {
-                        return (parseFloat(this.creativePay1) || 0) + (parseFloat(this.creativePay2) || 0) + (parseFloat(this.creativePay3) || 0);
+                        return this.creativeTotalPaid();
                     }
                     if (this.orderType === 'ads') {
                         return parseFloat(this.adsPaidAmount) || 0;

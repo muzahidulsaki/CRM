@@ -280,42 +280,6 @@
                                     </div>
                                 </dl>
 
-                                <!-- Creative 3-Step Installment Payments Breakdown -->
-                                <div class="mt-4 p-4 bg-indigo-50/50 rounded-xl border border-indigo-100 space-y-3">
-                                    <div class="flex items-center justify-between">
-                                        <h4 class="text-xs font-bold text-indigo-950 uppercase tracking-wider flex items-center gap-1.5">
-                                            <span>💳</span> {{ __('Creative Milestone Installments') }}
-                                        </h4>
-                                        <span class="text-2xs font-semibold text-indigo-700 bg-indigo-100/70 px-2 py-0.5 rounded">3-Step Milestone</span>
-                                    </div>
-                                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
-                                        <div class="p-3 bg-white rounded-lg border border-indigo-100">
-                                            <span class="text-2xs font-semibold text-gray-500 block uppercase">{{ __('1st Pay') }}</span>
-                                            <div class="font-bold font-mono text-gray-900 text-sm mt-0.5">
-                                                {{ !empty($meta['pay_1st']) ? 'BDT ' . number_format(floatval($meta['pay_1st']), 2) : 'BDT 0.00' }}
-                                            </div>
-                                        </div>
-                                        <div class="p-3 bg-white rounded-lg border border-indigo-100">
-                                            <span class="text-2xs font-semibold text-gray-500 block uppercase">{{ __('2nd Pay') }}</span>
-                                            <div class="font-bold font-mono text-gray-900 text-sm mt-0.5">
-                                                {{ !empty($meta['pay_2nd']) ? 'BDT ' . number_format(floatval($meta['pay_2nd']), 2) : 'BDT 0.00' }}
-                                            </div>
-                                        </div>
-                                        <div class="p-3 bg-white rounded-lg border border-indigo-100">
-                                            <span class="text-2xs font-semibold text-gray-500 block uppercase">{{ __('3rd Pay') }}</span>
-                                            <div class="font-bold font-mono text-gray-900 text-sm mt-0.5">
-                                                {{ !empty($meta['pay_3rd']) ? 'BDT ' . number_format(floatval($meta['pay_3rd']), 2) : 'BDT 0.00' }}
-                                            </div>
-                                        </div>
-                                        <div class="p-3 bg-white rounded-lg border border-rose-200 bg-rose-50/30">
-                                            <span class="text-2xs font-semibold text-rose-700 block uppercase">{{ __('Remaining Due') }}</span>
-                                            <div class="font-bold font-mono text-rose-600 text-sm mt-0.5">
-                                                BDT {{ number_format($order->due_amount, 2) }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
                             @elseif($order->order_type === 'ads')
                                 <dl class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
                                     <div class="p-3 bg-gray-50 rounded-xl sm:col-span-4">
@@ -333,6 +297,18 @@
                                     <div class="p-3 bg-gray-50 rounded-xl">
                                         <dt class="text-gray-500 font-semibold">{{ __('Total Budget ($)') }}</dt>
                                         <dd class="font-bold font-mono text-amber-700 mt-0.5 text-sm">${{ number_format(floatval($meta['total_dollar'] ?? 0), 2) }}</dd>
+                                    </div>
+                                    <div class="p-3 bg-gray-50 rounded-xl">
+                                        <dt class="text-gray-500 font-semibold">{{ __('Lifetime Budget ($)') }}</dt>
+                                        <dd class="font-bold font-mono text-amber-700 mt-0.5 text-sm">${{ number_format(floatval($meta['lifetime_budget'] ?? 0), 2) }}</dd>
+                                    </div>
+                                    <div class="p-3 bg-gray-50 rounded-xl">
+                                        <dt class="text-gray-500 font-semibold">{{ __('Starting Date') }}</dt>
+                                        <dd class="font-bold font-mono text-gray-900 mt-0.5">{{ $meta['starting_date'] ?? $order->start_date?->format('d M, Y') ?? '-' }}</dd>
+                                    </div>
+                                    <div class="p-3 bg-gray-50 rounded-xl">
+                                        <dt class="text-gray-500 font-semibold">{{ __('End Date') }}</dt>
+                                        <dd class="font-bold font-mono text-gray-900 mt-0.5">{{ $meta['end_date'] ?? $order->expected_delivery_date?->format('d M, Y') ?? '-' }}</dd>
                                     </div>
                                     <div class="p-3 bg-gray-50 rounded-xl">
                                         <dt class="text-gray-500 font-semibold">{{ __('Daily Cost ($)') }}</dt>
@@ -375,8 +351,12 @@
                                         <dd class="font-bold text-gray-900 mt-0.5">{{ $meta['subscription_system'] ?? 'None' }}</dd>
                                     </div>
                                     <div class="p-3 bg-gray-50 rounded-xl">
-                                        <dt class="text-gray-500 font-semibold">{{ __('Subscription Fee') }}</dt>
+                                        <dt class="text-gray-500 font-semibold">{{ __('Subscription / Renew Fee') }}</dt>
                                         <dd class="font-bold font-mono text-blue-700 mt-0.5">{{ !empty($meta['subscription_fee']) ? 'BDT ' . number_format(floatval($meta['subscription_fee']), 2) : '-' }}</dd>
+                                    </div>
+                                    <div class="p-3 bg-gray-50 rounded-xl">
+                                        <dt class="text-gray-500 font-semibold">{{ __('Next Renew Payment Date') }}</dt>
+                                        <dd class="font-bold font-mono text-blue-800 mt-0.5">{{ !empty($meta['next_renew_date']) ? date('d M, Y', strtotime($meta['next_renew_date'])) : '-' }}</dd>
                                     </div>
                                     <div class="p-3 bg-gray-50 rounded-xl">
                                         <dt class="text-gray-500 font-semibold">{{ __('Working Priority') }}</dt>
@@ -385,6 +365,14 @@
                                                 {{ $meta['working_priority'] ?? 'Normal' }}
                                             </span>
                                         </dd>
+                                    </div>
+                                    <div class="p-3 bg-gray-50 rounded-xl">
+                                        <dt class="text-gray-500 font-semibold">{{ __('Purchase Date') }}</dt>
+                                        <dd class="font-bold font-mono text-gray-900 mt-0.5">{{ !empty($meta['purchase_date']) ? date('d M, Y', strtotime($meta['purchase_date'])) : '-' }}</dd>
+                                    </div>
+                                    <div class="p-3 bg-gray-50 rounded-xl">
+                                        <dt class="text-gray-500 font-semibold">{{ __('Complete Date') }}</dt>
+                                        <dd class="font-bold font-mono text-gray-900 mt-0.5">{{ !empty($meta['complete_date']) ? date('d M, Y', strtotime($meta['complete_date'])) : '-' }}</dd>
                                     </div>
                                     <div class="p-3 bg-gray-50 rounded-xl">
                                         <dt class="text-gray-500 font-semibold">{{ __('Renew Status') }}</dt>
@@ -415,35 +403,6 @@
                                         </dd>
                                     </div>
                                 </dl>
-
-                                <!-- 7-Step Milestones & Installments Breakdown for Software & Web -->
-                                <div class="mt-4 p-4 bg-blue-50/50 rounded-xl border border-blue-200 space-y-3">
-                                    <div class="flex items-center justify-between">
-                                        <h4 class="text-xs font-bold text-blue-950 uppercase tracking-wider flex items-center gap-1.5">
-                                            <span>💳</span> {{ __('Payment Installments (1st to 7th Pay Breakdown)') }}
-                                        </h4>
-                                        <span class="text-2xs font-semibold text-blue-700 bg-blue-100/70 px-2 py-0.5 rounded">7-Step Milestones</span>
-                                    </div>
-                                    <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2 text-xs">
-                                        @foreach(['1st', '2nd', '3rd', '4th', '5th', '6th', '7th'] as $step)
-                                            @php $amt = floatval($meta["pay_{$step}"] ?? 0); @endphp
-                                            <div class="p-2.5 bg-white rounded-lg border {{ $amt > 0 ? 'border-emerald-200 bg-emerald-50/20' : 'border-gray-200' }}">
-                                                <span class="text-2xs font-semibold {{ $amt > 0 ? 'text-emerald-700' : 'text-gray-400' }} block uppercase">{{ $step }} Pay</span>
-                                                <div class="font-bold font-mono {{ $amt > 0 ? 'text-emerald-800' : 'text-gray-400' }} text-xs mt-0.5">
-                                                    {{ $amt > 0 ? 'BDT ' . number_format($amt) : '-' }}
-                                                </div>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                    <div class="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-white rounded-lg border border-blue-100 text-xs gap-2">
-                                        <span class="text-gray-600">
-                                            {{ __('Total Paid:') }} <strong class="text-emerald-700 font-mono font-bold">BDT {{ number_format($order->paid_amount, 2) }}</strong>
-                                        </span>
-                                        <span class="text-gray-600">
-                                            {{ __('Remaining Due:') }} <strong class="text-rose-600 font-mono font-bold">BDT {{ number_format($order->due_amount, 2) }}</strong>
-                                        </span>
-                                    </div>
-                                </div>
 
                                 @if(!empty($meta['official_admin_link']) || !empty($meta['client_admin_link']) || !empty($meta['client_other_credentials']))
                                     <div class="p-4 bg-gray-50/70 border border-gray-200 rounded-xl space-y-2 text-xs mt-4">
@@ -485,6 +444,147 @@
                             @endif
                         </div>
                     @endif
+
+                    <!-- Payment Installments & Transaction Log -->
+                    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 space-y-4" x-data="{ showPayModal: false }">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-100 pb-4">
+                            <div>
+                                <h3 class="font-bold text-gray-900 text-base flex items-center gap-2">
+                                    <span>💳</span> {{ __('Payment Installments & Transaction Log') }}
+                                </h3>
+                                <p class="text-xs text-gray-500">{{ __('Payment installment receipts & live transaction history log') }}</p>
+                            </div>
+                            @if($order->due_amount > 0)
+                                <button type="button" @click="showPayModal = !showPayModal" class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold shadow-xs transition">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                                    <span>{{ __('+ Record New Payment') }}</span>
+                                </button>
+                            @else
+                                <span class="inline-flex items-center gap-1 px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-bold">
+                                    ✓ Fully Paid
+                                </span>
+                            @endif
+                        </div>
+
+                        <!-- Quick Summary Cards -->
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div class="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                                <span class="text-2xs font-semibold text-gray-500 block uppercase tracking-wider">{{ __('Initial Total') }}</span>
+                                <div class="font-bold font-mono text-gray-900 text-lg mt-0.5">
+                                    BDT {{ number_format($order->total_amount, 2) }}
+                                </div>
+                            </div>
+                            <div class="p-4 bg-emerald-50/50 rounded-xl border border-emerald-200">
+                                <span class="text-2xs font-semibold text-emerald-700 block uppercase tracking-wider">{{ __('Total Paid') }}</span>
+                                <div class="font-bold font-mono text-emerald-800 text-lg mt-0.5">
+                                    BDT {{ number_format($order->paid_amount, 2) }}
+                                </div>
+                            </div>
+                            <div class="p-4 bg-rose-50/50 rounded-xl border border-rose-200">
+                                <span class="text-2xs font-semibold text-rose-700 block uppercase tracking-wider">{{ __('Calculated Due') }}</span>
+                                <div class="font-bold font-mono text-rose-600 text-lg mt-0.5">
+                                    BDT {{ number_format($order->due_amount, 2) }}
+                                </div>
+                            </div>
+                        </div>
+
+                        @if(!empty($meta['initial_next_due_date']))
+                            <div class="p-3 bg-amber-50 rounded-xl border border-amber-200 flex items-center justify-between text-xs">
+                                <span class="font-semibold text-amber-900 flex items-center gap-1.5">
+                                    <span>📅</span> {{ __('Initial Next Due Pay Date') }}:
+                                </span>
+                                <strong class="font-mono text-amber-900 font-bold">{{ date('d M, Y', strtotime($meta['initial_next_due_date'])) }}</strong>
+                            </div>
+                        @endif
+
+                        <!-- Inline New Payment Recording Box -->
+                        <div x-show="showPayModal" x-cloak class="p-4 bg-indigo-50/70 rounded-xl border border-indigo-200 shadow-sm space-y-3">
+                            <div class="flex items-center justify-between border-b border-indigo-100 pb-2">
+                                <span class="text-xs font-bold text-indigo-950 flex items-center gap-1.5">
+                                    <span>📥</span> {{ __('Record New Payment Installment') }}
+                                </span>
+                                <button type="button" @click="showPayModal = false" class="text-gray-400 hover:text-gray-600 text-xs font-bold">&times; Close</button>
+                            </div>
+                            
+                            <form method="POST" action="{{ route('orders.add-payment', $order) }}" class="space-y-3">
+                                @csrf
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                    <div>
+                                        <label class="block text-2xs font-semibold text-gray-700 uppercase mb-1">{{ __('Payment Date') }} <span class="text-rose-500">*</span></label>
+                                        <input type="date" name="payment_date" required value="{{ date('Y-m-d') }}" class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500">
+                                    </div>
+                                    <div>
+                                        <label class="block text-2xs font-semibold text-gray-700 uppercase mb-1">{{ __('Amount (BDT)') }} <span class="text-rose-500">*</span></label>
+                                        <input type="number" step="0.01" name="amount" required placeholder="0.00" class="w-full text-xs font-mono font-bold rounded-lg border-gray-300 focus:ring-indigo-500">
+                                    </div>
+                                    <div>
+                                        <label class="block text-2xs font-semibold text-gray-700 uppercase mb-1">{{ __('Payment Source / Method') }} <span class="text-rose-500">*</span></label>
+                                        <select name="payment_method" required class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 font-semibold">
+                                            <option value="Cash">💵 Cash</option>
+                                            <option value="Bank">🏦 Bank</option>
+                                            <option value="bKash">📱 bKash</option>
+                                            <option value="Nagad">📱 Nagad</option>
+                                            <option value="Rocket">📱 Rocket</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col sm:flex-row items-center justify-between gap-2 pt-1">
+                                    <input type="text" name="notes" placeholder="Notes / Description (Optional)" class="w-full sm:w-2/3 text-xs rounded-lg border-gray-300 focus:ring-indigo-500">
+                                    <button type="submit" class="w-full sm:w-auto px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold transition">
+                                        {{ __('Save Payment') }}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Payment History Table -->
+                        <div class="overflow-x-auto bg-white rounded-xl border border-gray-200">
+                            <table class="min-w-full divide-y divide-gray-200 text-xs">
+                                <thead class="bg-gray-50/80 text-gray-600 font-semibold uppercase">
+                                    <tr>
+                                        <th class="py-2.5 px-3 text-left">#</th>
+                                        <th class="py-2.5 px-3 text-left">{{ __('Receipt No') }}</th>
+                                        <th class="py-2.5 px-3 text-left">{{ __('Payment Date') }}</th>
+                                        <th class="py-2.5 px-3 text-left">{{ __('Amount (BDT)') }}</th>
+                                        <th class="py-2.5 px-3 text-left">{{ __('Source / Method') }}</th>
+                                        <th class="py-2.5 px-3 text-left">{{ __('Received By') }}</th>
+                                        <th class="py-2.5 px-3 text-right">{{ __('Receipt') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100">
+                                    @forelse($order->clientPayments as $idx => $pmt)
+                                        <tr class="hover:bg-gray-50/50 transition">
+                                            <td class="py-2.5 px-3 font-mono text-gray-400">{{ $idx + 1 }}</td>
+                                            <td class="py-2.5 px-3 font-mono font-bold text-indigo-700">{{ $pmt->payment_no }}</td>
+                                            <td class="py-2.5 px-3">{{ $pmt->payment_date?->format('d M, Y') }}</td>
+                                            <td class="py-2.5 px-3 font-mono font-bold text-emerald-700">BDT {{ number_format($pmt->amount, 2) }}</td>
+                                            <td class="py-2.5 px-3 font-semibold">
+                                                @if($pmt->payment_method === 'Cash')
+                                                    <span class="inline-flex items-center gap-1 text-emerald-800">💵 Cash</span>
+                                                @elseif(str_contains(strtolower($pmt->payment_method), 'bank'))
+                                                    <span class="inline-flex items-center gap-1 text-blue-800">🏦 Bank</span>
+                                                @else
+                                                    <span class="inline-flex items-center gap-1 text-purple-800">📱 {{ $pmt->payment_method }}</span>
+                                                @endif
+                                            </td>
+                                            <td class="py-2.5 px-3 text-gray-600">{{ $pmt->receivedBy->name ?? 'System' }}</td>
+                                            <td class="py-2.5 px-3 text-right">
+                                                <a href="{{ route('client-payments.show', $pmt) }}" target="_blank" class="p-1 text-indigo-600 hover:underline font-semibold" title="{{ __('View Money Receipt') }}">
+                                                    {{ __('Receipt ↗') }}
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="7" class="py-6 text-center text-gray-400">
+                                                {{ __('No payments recorded yet. Click "+ Record New Payment" above to add one.') }}
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
 
                 </div>
 

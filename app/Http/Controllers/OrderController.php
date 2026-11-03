@@ -197,8 +197,34 @@ class OrderController extends Controller
         $orderType = $request->input('order_type', 'creative');
         $meta = $request->input('meta', []);
 
-        // Compute paid amount from installments if provided
+        // Compute paid amount from dynamic payment entries or installments if provided
+        $paymentsInput = [];
         if ($orderType === 'creative') {
+            $paymentsInput = $request->input('creative_payments', $request->input('payments', []));
+        } elseif ($orderType === 'web_software') {
+            $paymentsInput = $request->input('soft_payments', $request->input('payments', []));
+        }
+
+        $validPayments = [];
+        $totalPaid = 0;
+        if (is_array($paymentsInput) && !empty($paymentsInput)) {
+            foreach ($paymentsInput as $p) {
+                $pAmt = floatval($p['amount'] ?? 0);
+                if ($pAmt > 0) {
+                    $validPayments[] = [
+                        'amount' => $pAmt,
+                        'payment_date' => $p['payment_date'] ?? now()->toDateString(),
+                        'payment_method' => $p['payment_method'] ?? 'Cash',
+                        'notes' => $p['notes'] ?? null,
+                    ];
+                    $totalPaid += $pAmt;
+                }
+            }
+        }
+
+        if ($totalPaid > 0) {
+            $paid = $totalPaid;
+        } elseif ($orderType === 'creative') {
             $sumInstallments = floatval($meta['pay_1st'] ?? 0) + floatval($meta['pay_2nd'] ?? 0) + floatval($meta['pay_3rd'] ?? 0);
             if ($sumInstallments > 0) {
                 $paid = $sumInstallments;
@@ -234,11 +260,26 @@ class OrderController extends Controller
             'payment_terms' => $request->input('payment_terms'),
             'order_date' => $request->input('order_date'),
             'start_date' => $meta['starting_date'] ?? $request->input('start_date', $request->input('order_date')),
-            'expected_delivery_date' => $request->input('expected_delivery_date'),
+            'expected_delivery_date' => $meta['end_date'] ?? $request->input('expected_delivery_date'),
             'status' => $request->input('status', 'Pending'),
             'notes' => $request->input('notes'),
             'meta' => $meta,
         ]);
+
+        // Record initial payment entries if provided
+        if (!empty($validPayments)) {
+            $financeService = app(\App\Services\FinanceService::class);
+            foreach ($validPayments as $idx => $vPay) {
+                $financeService->recordClientPayment([
+                    'customer_id' => $order->customer_id,
+                    'order_id' => $order->id,
+                    'amount' => $vPay['amount'],
+                    'payment_date' => $vPay['payment_date'],
+                    'payment_method' => $vPay['payment_method'],
+                    'notes' => $vPay['notes'] ?? ("Initial Payment #" . ($idx + 1) . " for Order {$order->order_code}"),
+                ]);
+            }
+        }
 
         // If from quotation, update quotation status
         if ($quotationId = $request->input('quotation_id')) {
@@ -272,9 +313,34 @@ class OrderController extends Controller
      */
     public function show(Order $order): View
     {
-        $order->load(['customer', 'quotation', 'lead', 'salesPerson', 'projectManager', 'project.tasks']);
+        $order->load(['customer', 'quotation', 'lead', 'salesPerson', 'projectManager', 'project.tasks', 'clientPayments.receivedBy']);
 
         return view('orders.show', compact('order'));
+    }
+
+    /**
+     * Add payment installment to an order.
+     */
+    public function addPayment(Request $request, Order $order): RedirectResponse
+    {
+        $validated = $request->validate([
+            'amount' => ['required', 'numeric', 'min:1'],
+            'payment_date' => ['required', 'date'],
+            'payment_method' => ['required', 'string', 'in:Cash,Bank,Bank Transfer,bKash,Nagad,Rocket,Card,Other'],
+            'notes' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $financeService = app(\App\Services\FinanceService::class);
+        $payment = $financeService->recordClientPayment([
+            'customer_id' => $order->customer_id,
+            'order_id' => $order->id,
+            'amount' => floatval($validated['amount']),
+            'payment_date' => $validated['payment_date'],
+            'payment_method' => $validated['payment_method'],
+            'notes' => $validated['notes'] ?? ('Installment payment for Order ' . $order->order_code),
+        ]);
+
+        return back()->with('success', "Payment of BDT " . number_format($payment->amount, 2) . " ({$payment->payment_method}) recorded successfully. Due amount updated.");
     }
 
     /**
