@@ -209,6 +209,7 @@ class LeadController extends Controller
             'email' => ['nullable', 'email', 'max:255'],
             'lead_source' => ['required', 'string', 'max:255'],
             'lead_temperature' => ['required', 'in:Hot,Warm,Cold'],
+            'lead_status' => ['required', 'in:New,Contacted,Interested,Meeting/Demo,Proposal Sent,Negotiation,Won,Lost'],
             'budget' => ['nullable', 'numeric', 'min:0'],
             'discussed_amount' => ['nullable', 'numeric', 'min:0'],
             'assigned_to' => ['nullable', 'exists:users,id'],

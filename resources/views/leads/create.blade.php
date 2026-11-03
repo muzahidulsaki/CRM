@@ -123,8 +123,8 @@
                         </div>
                     </div>
 
-                    <!-- Client Name & Business Name -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                    <!-- Client Name, Business Name & Pipeline Status -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Client Name (Person)') }}</label>
                             <input type="text" name="name" value="{{ old('name') }}" placeholder="e.g. Bashir Ahmed (Optional)" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
@@ -134,6 +134,16 @@
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Business Name (Company)') }}</label>
                             <input type="text" name="company_name" value="{{ old('company_name') }}" placeholder="e.g. Moonway Tour & Travels" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Pipeline Status') }} <span class="text-rose-500">*</span></label>
+                            <select name="lead_status" required class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 font-semibold">
+                                @foreach(['New', 'Contacted', 'Interested', 'Meeting/Demo', 'Proposal Sent', 'Negotiation', 'Won', 'Lost'] as $st)
+                                    <option value="{{ $st }}" {{ old('lead_status', 'New') === $st ? 'selected' : '' }}>{{ $st }}</option>
+                                @endforeach
+                            </select>
+                            @error('lead_status') <span class="text-rose-600 text-xs">{{ $message }}</span> @enderror
                         </div>
                     </div>
                 </div>
