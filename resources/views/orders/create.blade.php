@@ -412,8 +412,8 @@
                             </div>
 
                             <div>
-                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Daily Cost ($)') }}</label>
-                                <input type="number" step="0.01" name="meta[daily_cost]" :disabled="orderType !== 'ads'" x-model.number="adsDailyCost" placeholder="e.g. 5.00" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500 font-mono">
+                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Lifetime/ Daily Budget ($)') }}</label>
+                                <input type="number" step="0.01" name="meta[lifetime_daily_budget]" :disabled="orderType !== 'ads'" placeholder="e.g. 5.00 or 150.00" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500 font-mono font-bold">
                             </div>
 
                             <div>
@@ -422,13 +422,11 @@
                             </div>
 
                             <div>
-                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Total Dollar ($ Budget)') }}</label>
-                                <input type="number" step="0.01" name="meta[total_dollar]" :disabled="orderType !== 'ads'" x-model.number="adsTotalDollar" placeholder="e.g. 75.00" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500 font-mono font-bold">
-                            </div>
-
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Lifetime Budget ($)') }}</label>
-                                <input type="number" step="0.01" name="meta[lifetime_budget]" :disabled="orderType !== 'ads'" placeholder="e.g. 150.00" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500 font-mono font-bold">
+                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1 flex items-center justify-between">
+                                    <span>{{ __('Total Dollar ($ Budget)') }}</span>
+                                    <span class="text-[10px] text-amber-700 font-normal">({{ __('Auto: BDT ÷ 150') }})</span>
+                                </label>
+                                <input type="number" step="0.01" name="meta[total_dollar]" :disabled="orderType !== 'ads'" :value="adsTotalAmount > 0 ? (adsTotalAmount / 150).toFixed(2) : ''" readonly placeholder="0.00" class="w-full text-sm rounded-lg border-gray-300 bg-gray-100 cursor-not-allowed focus:ring-0 font-mono font-bold text-amber-900">
                             </div>
 
                             <div>
@@ -451,43 +449,43 @@
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Previous Dollar ($)') }}</label>
-                                <input type="number" step="0.01" name="meta[previous_dollar]" :disabled="orderType !== 'ads'" placeholder="0.00" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500 font-mono">
+                                <input type="number" step="0.01" name="meta[previous_dollar]" :disabled="orderType !== 'ads'" x-model.number="adsPreviousDollar" placeholder="0.00" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500 font-mono">
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Running Dollar ($)') }}</label>
-                                <input type="number" step="0.01" name="meta[running_dollar]" :disabled="orderType !== 'ads'" placeholder="0.00" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500 font-mono">
+                                <input type="number" step="0.01" name="meta[running_dollar]" :disabled="orderType !== 'ads'" x-model.number="adsRunningDollar" placeholder="0.00" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500 font-mono">
                             </div>
 
                             <div>
-                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Total $ Cost') }}</label>
-                                <input type="number" step="0.01" name="meta[total_dollar_cost]" :disabled="orderType !== 'ads'" placeholder="0.00" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500 font-mono">
+                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1 flex items-center justify-between">
+                                    <span>{{ __('Total $ Cost') }}</span>
+                                    <span class="text-[10px] text-gray-500 font-normal">({{ __('Auto: Running - Previous') }})</span>
+                                </label>
+                                <input type="number" step="0.01" name="meta[total_dollar_cost]" :disabled="orderType !== 'ads'" :value="adsTotalDollarCost()" readonly placeholder="0.00" class="w-full text-sm rounded-lg border-gray-300 bg-gray-100 cursor-not-allowed focus:ring-0 font-mono font-bold text-gray-800">
                             </div>
 
                             <div>
-                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Dollar Due ($)') }}</label>
-                                <input type="number" step="0.01" name="meta[dollar_due]" :disabled="orderType !== 'ads'" placeholder="0.00" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500 font-mono text-rose-600 font-bold">
-                            </div>
-
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Monthly Retainer / Due (BDT)') }}</label>
-                                <input type="number" step="0.01" name="meta[monthly_due]" :disabled="orderType !== 'ads'" placeholder="0.00" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500 font-mono">
+                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1 flex items-center justify-between">
+                                    <span>{{ __('Dollar Due ($)') }}</span>
+                                    <span class="text-[10px] text-rose-500 font-normal">({{ __('Auto: Budget - Cost') }})</span>
+                                </label>
+                                <input type="number" step="0.01" name="meta[dollar_due]" :disabled="orderType !== 'ads'" :value="adsDollarDue()" readonly placeholder="0.00" class="w-full text-sm rounded-lg border-gray-300 bg-gray-100 cursor-not-allowed focus:ring-0 font-mono font-bold text-rose-600">
                             </div>
                         </div>
 
-                        <!-- Ads BDT Budget & Paid -->
-                        <div class="p-4 bg-amber-50/50 rounded-xl border border-amber-200 grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
-                            <div>
-                                <label class="block text-2xs font-semibold text-gray-600 uppercase mb-1">{{ __('Total Amount (BDT)') }} <span class="text-rose-500">*</span></label>
+                        <!-- Ads BDT Budget -->
+                        <div class="p-4 bg-amber-50/50 rounded-xl border border-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-4">
+                            <div class="w-full sm:w-1/2">
+                                <label class="block text-2xs font-semibold text-gray-700 uppercase mb-1">{{ __('Total Amount (BDT)') }} <span class="text-rose-500">*</span></label>
                                 <input type="number" step="0.01" x-model.number="adsTotalAmount" placeholder="0.00" class="w-full text-sm font-bold font-mono rounded-lg border-gray-300 focus:ring-amber-500">
                             </div>
-                            <div>
-                                <label class="block text-2xs font-semibold text-gray-600 uppercase mb-1">{{ __('Paid Amount (BDT)') }}</label>
-                                <input type="number" step="0.01" x-model.number="adsPaidAmount" placeholder="0.00" class="w-full text-sm font-mono rounded-lg border-gray-300 focus:ring-amber-500">
-                            </div>
-                            <div class="bg-white p-2.5 rounded-lg border border-amber-300 flex flex-col justify-center">
-                                <div class="text-2xs font-bold text-gray-500 uppercase">{{ __('Calculated Due') }}</div>
-                                <div class="text-base font-bold text-rose-600 font-mono" x-text="'BDT ' + (adsTotalAmount - adsPaidAmount).toLocaleString()"></div>
+                            <div class="w-full sm:w-1/2 p-3 bg-white rounded-xl border border-amber-200 flex items-center justify-between">
+                                <div>
+                                    <div class="text-2xs font-bold text-gray-500 uppercase">{{ __('Total Dollar ($ Budget)') }}</div>
+                                    <div class="text-[10px] text-gray-400">{{ __('Auto-calculated (BDT ÷ 150)') }}</div>
+                                </div>
+                                <div class="text-lg font-black text-amber-700 font-mono" x-text="'$' + (adsTotalAmount > 0 ? (adsTotalAmount / 150).toFixed(2) : '0.00')"></div>
                             </div>
                         </div>
                     </div>
@@ -824,6 +822,18 @@
                 adsTotalDollar: 0,
                 adsTotalAmount: 0,
                 adsPaidAmount: 0,
+                adsPreviousDollar: 0,
+                adsRunningDollar: 0,
+                adsTotalDollarCost() {
+                    const running = parseFloat(this.adsRunningDollar) || 0;
+                    const previous = parseFloat(this.adsPreviousDollar) || 0;
+                    return (running - previous).toFixed(2);
+                },
+                adsDollarDue() {
+                    const budgetDollar = (parseFloat(this.adsTotalAmount) || 0) / 150;
+                    const costDollar = parseFloat(this.adsTotalDollarCost()) || 0;
+                    return (budgetDollar - costDollar).toFixed(2);
+                },
 
                 // Soft amounts
                 softTotal: 0,
@@ -890,7 +900,7 @@
                         return this.creativeTotalPaid();
                     }
                     if (this.orderType === 'ads') {
-                        return parseFloat(this.adsPaidAmount) || 0;
+                        return 0;
                     }
                     if (this.orderType === 'web_software') {
                         return this.softTotalPaid();

@@ -299,8 +299,8 @@
                                         <dd class="font-bold font-mono text-amber-700 mt-0.5 text-sm">${{ number_format(floatval($meta['total_dollar'] ?? 0), 2) }}</dd>
                                     </div>
                                     <div class="p-3 bg-gray-50 rounded-xl">
-                                        <dt class="text-gray-500 font-semibold">{{ __('Lifetime Budget ($)') }}</dt>
-                                        <dd class="font-bold font-mono text-amber-700 mt-0.5 text-sm">${{ number_format(floatval($meta['lifetime_budget'] ?? 0), 2) }}</dd>
+                                        <dt class="text-gray-500 font-semibold">{{ __('Lifetime/ Daily Budget ($)') }}</dt>
+                                        <dd class="font-bold font-mono text-amber-700 mt-0.5 text-sm">${{ number_format(floatval($meta['lifetime_daily_budget'] ?? $meta['lifetime_budget'] ?? $meta['daily_cost'] ?? 0), 2) }}</dd>
                                     </div>
                                     <div class="p-3 bg-gray-50 rounded-xl">
                                         <dt class="text-gray-500 font-semibold">{{ __('Starting Date') }}</dt>
@@ -309,10 +309,6 @@
                                     <div class="p-3 bg-gray-50 rounded-xl">
                                         <dt class="text-gray-500 font-semibold">{{ __('End Date') }}</dt>
                                         <dd class="font-bold font-mono text-gray-900 mt-0.5">{{ $meta['end_date'] ?? $order->expected_delivery_date?->format('d M, Y') ?? '-' }}</dd>
-                                    </div>
-                                    <div class="p-3 bg-gray-50 rounded-xl">
-                                        <dt class="text-gray-500 font-semibold">{{ __('Daily Cost ($)') }}</dt>
-                                        <dd class="font-bold font-mono text-gray-900 mt-0.5 text-sm">${{ number_format(floatval($meta['daily_cost'] ?? 0), 2) }}</dd>
                                     </div>
                                     <div class="p-3 bg-gray-50 rounded-xl">
                                         <dt class="text-gray-500 font-semibold">{{ __('Total Days') }}</dt>

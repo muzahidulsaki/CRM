@@ -302,7 +302,7 @@
                                     <th class="py-3 px-3">{{ __('Order Code & Date') }}</th>
                                     <th class="py-3 px-3">{{ __('Business & WhatsApp') }}</th>
                                     <th class="py-3 px-3">{{ __('Ads Post Link') }}</th>
-                                    <th class="py-3 px-3">{{ __('Days & Daily Cost') }}</th>
+                                    <th class="py-3 px-3">{{ __('Days & Budget') }}</th>
                                     <th class="py-3 px-3">{{ __('Dollar Budget ($)') }}</th>
                                     <th class="py-3 px-3">{{ __('Total BDT') }}</th>
                                     <th class="py-3 px-3">{{ __('Paid / Due (BDT)') }}</th>
@@ -341,11 +341,17 @@
                                         </td>
                                         <td class="py-3 px-3 whitespace-nowrap font-mono">
                                             <div class="font-semibold">{{ $meta['total_days'] ?? '-' }} days</div>
-                                            <div class="text-2xs text-gray-500">${{ number_format(floatval($meta['daily_cost'] ?? 0), 2) }}/day</div>
+                                            @if(!empty($meta['lifetime_daily_budget']))
+                                                <div class="text-2xs text-amber-700 font-bold">${{ number_format(floatval($meta['lifetime_daily_budget']), 2) }}</div>
+                                            @elseif(!empty($meta['daily_cost']))
+                                                <div class="text-2xs text-gray-500">${{ number_format(floatval($meta['daily_cost']), 2) }}/day</div>
+                                            @endif
                                         </td>
                                         <td class="py-3 px-3 whitespace-nowrap font-mono font-bold text-amber-800">
                                             ${{ number_format(floatval($meta['total_dollar'] ?? 0), 2) }}
-                                            @if(!empty($meta['lifetime_budget']))
+                                            @if(!empty($meta['lifetime_daily_budget']))
+                                                <div class="text-[10px] text-gray-500 font-normal">Budget: ${{ number_format(floatval($meta['lifetime_daily_budget']), 2) }}</div>
+                                            @elseif(!empty($meta['lifetime_budget']))
                                                 <div class="text-[10px] text-gray-500 font-normal">Life: ${{ number_format(floatval($meta['lifetime_budget']), 2) }}</div>
                                             @endif
                                         </td>
