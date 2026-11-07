@@ -310,11 +310,21 @@ class LeadController extends Controller
     /**
      * Show the form for editing the specified lead.
      */
-    public function edit(Lead $lead): View
+    public function edit(Request $request, Lead $lead): View
     {
         $dropdowns = $this->getFormDropdowns();
+        $returnTo = $request->input('return_to');
+        if (empty($returnTo)) {
+            $prev = url()->previous();
+            if ($prev && !str_contains($prev, route('leads.edit', $lead))) {
+                $returnTo = $prev;
+            }
+        }
 
-        return view('leads.edit', array_merge(['lead' => $lead], $dropdowns));
+        return view('leads.edit', array_merge([
+            'lead' => $lead,
+            'returnTo' => $returnTo ?: route('leads.index'),
+        ], $dropdowns));
     }
 
     /**
@@ -452,6 +462,12 @@ class LeadController extends Controller
             );
         }
 
+        $returnTo = $request->input('return_to');
+        if (!empty($returnTo) && filter_var($returnTo, FILTER_VALIDATE_URL)) {
+            return redirect($returnTo)
+                ->with('success', "Lead {$lead->lead_code} updated successfully.");
+        }
+
         return redirect()->route('leads.index')
             ->with('success', "Lead {$lead->lead_code} updated successfully.");
     }
@@ -561,7 +577,7 @@ class LeadController extends Controller
             userId: auth()->id()
         );
 
-        return redirect()->route('leads.index')
+        return back()
             ->with('success', "Lead {$leadCode} deleted successfully.");
     }
 }

@@ -23,16 +23,6 @@
 
     <div class="w-full space-y-5">
 
-            <!-- Alerts -->
-            @if(session('success'))
-                <div class="p-4 bg-emerald-50 border-l-4 border-emerald-500 text-emerald-800 rounded-r-lg shadow-sm flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <svg class="w-5 h-5 text-emerald-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                        <span class="font-medium text-sm">{{ __(session('success')) }}</span>
-                    </div>
-                </div>
-            @endif
-
             <!-- Quick Metrics Grid -->
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
                 <a href="{{ route('leads.index') }}" class="bg-white p-3.5 rounded-xl border border-gray-200 shadow-sm hover:border-indigo-400 transition text-center {{ !request()->hasAny(['status', 'follow_up', 'today_followup', 'today_meeting', 'why_not_order', 'existing_order']) ? 'ring-2 ring-indigo-500 bg-indigo-50/20' : '' }}">
@@ -283,12 +273,12 @@
                                                  class="absolute left-0 z-50 mt-1 w-48 origin-top-left rounded-xl bg-white p-1.5 shadow-xl ring-1 ring-slate-900/10 focus:outline-none text-left"
                                                  style="display: none;">
                                                 
-                                                <a href="{{ route('leads.show', $lead) }}" class="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 rounded-lg transition">
+                                                <a href="{{ route('leads.show', array_filter(['lead' => $lead, 'return_to' => request()->fullUrl()])) }}" class="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 rounded-lg transition">
                                                     <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                                     <span>{{ __('View Details') }}</span>
                                                 </a>
 
-                                                <a href="{{ route('leads.edit', $lead) }}" class="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-amber-50 hover:text-amber-700 rounded-lg transition">
+                                                <a href="{{ route('leads.edit', array_filter(['lead' => $lead, 'return_to' => request()->fullUrl()])) }}" class="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-amber-50 hover:text-amber-700 rounded-lg transition">
                                                     <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                                     <span>{{ __('Edit Lead') }}</span>
                                                 </a>
@@ -319,7 +309,7 @@
 
                                     <!-- Lead ID & Token -->
                                     <td class="py-3 px-3 whitespace-nowrap">
-                                        <a href="{{ route('leads.show', $lead) }}" class="font-bold font-mono text-indigo-600 hover:text-indigo-800 hover:underline">
+                                        <a href="{{ route('leads.show', array_filter(['lead' => $lead, 'return_to' => request()->fullUrl()])) }}" class="font-bold font-mono text-indigo-600 hover:text-indigo-800 hover:underline">
                                             {{ $lead->lead_code }}
                                         </a>
                                         @if($lead->token_id)

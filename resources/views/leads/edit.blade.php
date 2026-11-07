@@ -3,14 +3,14 @@
         <div class="flex items-center justify-between">
             <div>
                 <h2 class="font-bold text-2xl text-gray-800 leading-tight flex items-center gap-2">
-                    <a href="{{ route('leads.index') }}" class="text-gray-400 hover:text-gray-600 transition" title="{{ __('Back to Lead Management') }}">
+                    <a href="{{ $returnTo ?? route('leads.index') }}" class="text-gray-400 hover:text-gray-600 transition" title="{{ __('Back to Lead Management') }}">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
                     </a>
                     {{ __('Edit Lead') }}: {{ $lead->lead_code }}
                 </h2>
                 <p class="text-sm text-gray-500 mt-0.5">{{ $lead->name }} - {{ $lead->company_name ?? __('Individual') }}</p>
             </div>
-            <a href="{{ route('leads.index') }}" class="text-sm font-medium text-gray-600 hover:text-gray-900 bg-white px-3.5 py-2 border border-gray-300 rounded-lg shadow-sm">
+            <a href="{{ $returnTo ?? route('leads.index') }}" class="text-sm font-medium text-gray-600 hover:text-gray-900 bg-white px-3.5 py-2 border border-gray-300 rounded-lg shadow-sm">
                 &larr; {{ __('Back to Leads') }}
             </a>
         </div>
@@ -21,6 +21,7 @@
             <form method="POST" action="{{ route('leads.update', $lead) }}" class="space-y-6">
                 @csrf
                 @method('PUT')
+                <input type="hidden" name="return_to" value="{{ old('return_to', $returnTo ?? request('return_to')) }}">
 
                 <!-- Section 1: Lead Identification & Category -->
                 <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-4">
@@ -394,7 +395,7 @@
 
                 <!-- Submit Button -->
                 <div class="flex items-center justify-end gap-3 pt-4">
-                    <a href="{{ route('leads.index') }}" class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-lg text-sm transition">
+                    <a href="{{ $returnTo ?? route('leads.index') }}" class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-lg text-sm transition">
                         {{ __('Cancel') }}
                     </a>
                     <button type="submit" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg text-sm shadow-sm transition flex items-center gap-2">
