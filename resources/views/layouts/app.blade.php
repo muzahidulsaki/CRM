@@ -32,7 +32,7 @@
                 <!-- Page Header (if any) -->
                 @isset($header)
                     <div class="bg-white border-b border-slate-200/80 shadow-2xs">
-                        <div class="px-4 sm:px-6 lg:px-8 py-4 sm:py-5">
+                        <div class="px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4">
                             {{ $header }}
                         </div>
                     </div>
@@ -42,7 +42,7 @@
                 @include('layouts.partials.flash-messages')
 
                 <!-- Page Content -->
-                <main class="flex-1 py-6 sm:py-8">
+                <main class="flex-1 py-4 sm:py-6">
                     <div class="px-4 sm:px-6 lg:px-8">
                         {{ $slot }}
                     </div>

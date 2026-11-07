@@ -383,22 +383,12 @@ class LeadController extends Controller
                 'Real Estate',
                 'Others Business',
             ],
-            'interestedProductsList' => [
-                'ERP / Custom Software',
-                'E-commerce Website',
-                'Business Website',
-                'Video Editing',
-                'Graphics Design',
-                'Social Media Marketing (SMM)',
-                'Paid Ads Campaign',
-                'Mobile App',
-                'Domain & Hosting',
-                'Other'
-            ],
             'countries' => [
                 'Saudi Arabia',
                 'Bangladesh',
-                'United Arab Emirates',
+                'UAE',
+                'Bahrain',
+                'Netrakona',
                 'Qatar',
                 'Kuwait',
                 'Oman',
@@ -409,18 +399,8 @@ class LeadController extends Controller
                 'Malaysia',
                 'Other'
             ],
-            'leadSources' => Setting::get('lead_sources', [
-                'Google Maps',
-                'Facebook Ad',
-                'Facebook Page/Organic',
-                'Instagram',
-                'WhatsApp Outreach',
-                'Referral',
-                'Website Form',
-                'Cold Call',
-                'LinkedIn',
-                'Other'
-            ]),
+            'leadSources' => Setting::get('lead_sources', []),
+            'serviceCategories' => Setting::get('service_categories', []),
             'users' => User::where('status', 'active')->orderBy('name')->get(),
         ];
     }

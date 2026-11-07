@@ -21,8 +21,7 @@
         </div>
     </x-slot>
 
-    <div class="py-6">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="w-full space-y-6">
 
             <!-- Duplicate Warning Card from Session -->
             @if(session('duplicate_warning'))
@@ -502,9 +501,7 @@
                     </button>
                 </div>
             </form>
-
         </div>
-    </div>
 
     <!-- Live Duplicate Checking Script -->
     <script>

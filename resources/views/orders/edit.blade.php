@@ -14,8 +14,7 @@
         </div>
     </x-slot>
 
-    <div class="py-6">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="w-full space-y-6">
 
             @if ($errors->any())
                 <div class="mb-6 p-4 bg-rose-50 border-l-4 border-rose-500 text-rose-800 rounded-r-lg shadow-sm">
@@ -165,9 +164,7 @@
                     </button>
                 </div>
             </form>
-
         </div>
-    </div>
 
     <script>
         function updateDue() {

@@ -14,8 +14,7 @@
         </div>
     </x-slot>
 
-    <div class="py-6" x-data="orderForm()">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+    <div class="w-full space-y-6" x-data="orderForm()">
 
             @if($preselectedQuotation)
                 <div class="p-4 bg-indigo-50 border border-indigo-200 rounded-xl flex items-center justify-between">
@@ -781,9 +780,7 @@
                     </button>
                 </div>
             </form>
-
         </div>
-    </div>
 
     <!-- Alpine.js script for live customer WhatsApp searching & calculations -->
     <script>

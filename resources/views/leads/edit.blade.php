@@ -16,8 +16,7 @@
         </div>
     </x-slot>
 
-    <div class="py-6">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="w-full space-y-6">
 
             <form method="POST" action="{{ route('leads.update', $lead) }}" class="space-y-6">
                 @csrf
@@ -404,7 +403,5 @@
                     </button>
                 </div>
             </form>
-
         </div>
-    </div>
 </x-app-layout>
