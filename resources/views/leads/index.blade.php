@@ -43,7 +43,7 @@
                 <a href="{{ route('leads.index', ['follow_up' => 'overdue']) }}" class="bg-rose-50/70 p-3.5 rounded-xl border border-rose-200 shadow-sm hover:border-rose-400 transition text-center {{ request('follow_up') == 'overdue' || request('today_followup') == 'overdue' ? 'ring-2 ring-rose-500 bg-rose-100/50' : '' }}">
                     <div class="text-xs font-semibold text-rose-800 flex items-center justify-center gap-1">
                         <span class="w-2 h-2 rounded-full bg-rose-500"></span>
-                        {{ __('Previous Follow-ups') }}
+                        {{ __('Prev. Follow-up') }}
                     </div>
                     <div class="text-xl font-bold text-rose-900 mt-1">{{ $metrics['overdue_followups'] }}</div>
                 </a>

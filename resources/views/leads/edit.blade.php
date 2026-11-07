@@ -227,12 +227,12 @@
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">📍 {{ __('Current Country') }}</label>
-                            <input list="countries_list" name="current_country" value="{{ old('current_country', $lead->current_country ?? 'Saudi Arabia') }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                            <input list="countries_list" name="current_country" value="{{ old('current_country', $lead->current_country ?? 'Saudi Arab') }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
 
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">🏢 {{ __('Business Country') }}</label>
-                            <input list="countries_list" name="business_country" value="{{ old('business_country', $lead->business_country ?? 'Saudi Arabia') }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                            <input list="countries_list" name="business_country" value="{{ old('business_country', $lead->business_country ?? 'Saudi Arab') }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
 
                         <div>
