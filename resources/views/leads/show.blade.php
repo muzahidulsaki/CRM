@@ -288,7 +288,7 @@
                             </div>
                             <div class="p-2 rounded-lg bg-indigo-50 border border-indigo-100">
                                 <span class="text-[10px] font-semibold text-indigo-500 block uppercase">Next Date</span>
-                                <strong class="text-indigo-800 text-[11px]">{{ $lead->followup_next_date ? $lead->followup_next_date->format('d M, Y') : '—' }}</strong>
+                                <strong class="text-indigo-800 text-[11px]">{{ ($lead->followup_next_date ?? $lead->next_followup_date) ? ($lead->followup_next_date ?? $lead->next_followup_date)->format('d M, Y') : '—' }}</strong>
                             </div>
                         </div>
 
@@ -380,7 +380,7 @@
 
                         <div class="flex justify-between items-center text-xs">
                             <span class="text-gray-500">{{ __('Next Follow-up') }}:</span>
-                            <span class="font-bold text-amber-700">{{ $lead->next_followup_date ? $lead->next_followup_date->format('d M, Y h:i A') : __('Not scheduled') }}</span>
+                            <span class="font-bold text-amber-700">{{ ($lead->next_followup_date ?? $lead->followup_next_date) ? ($lead->next_followup_date ?? $lead->followup_next_date)->format('d M, Y h:i A') : __('Not scheduled') }}</span>
                         </div>
 
                         @if($lead->notes)

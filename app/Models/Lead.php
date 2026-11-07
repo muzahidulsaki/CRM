@@ -93,6 +93,19 @@ class Lead extends Model
             if (!empty($lead->whatsapp)) {
                 $lead->normalized_whatsapp = PhoneHelper::normalize($lead->whatsapp);
             }
+
+            // Two-way synchronization between next_followup_date and followup_next_date
+            if ($lead->isDirty('followup_next_date') && !$lead->isDirty('next_followup_date')) {
+                $lead->next_followup_date = $lead->followup_next_date ? \Carbon\Carbon::parse($lead->followup_next_date) : null;
+            } elseif ($lead->isDirty('next_followup_date') && !$lead->isDirty('followup_next_date')) {
+                $lead->followup_next_date = $lead->next_followup_date ? \Carbon\Carbon::parse($lead->next_followup_date)->format('Y-m-d') : null;
+            } elseif (!$lead->exists) {
+                if ($lead->followup_next_date && !$lead->next_followup_date) {
+                    $lead->next_followup_date = \Carbon\Carbon::parse($lead->followup_next_date);
+                } elseif ($lead->next_followup_date && !$lead->followup_next_date) {
+                    $lead->followup_next_date = \Carbon\Carbon::parse($lead->next_followup_date)->format('Y-m-d');
+                }
+            }
         });
     }
 

@@ -45,9 +45,19 @@ class LeadFollowUpController extends Controller
         $leadUpdates = [];
         if ($conductedAt) {
             $leadUpdates['last_contact_date'] = $conductedAt;
+            $leadUpdates['followup_last_date'] = $conductedAt->format('Y-m-d');
         }
         if ($request->filled('next_followup_date')) {
-            $leadUpdates['next_followup_date'] = $request->input('next_followup_date');
+            $nextDate = $request->input('next_followup_date');
+            $leadUpdates['next_followup_date'] = $nextDate;
+            $leadUpdates['followup_next_date'] = \Carbon\Carbon::parse($nextDate)->format('Y-m-d');
+        } elseif ($request->input('status') === 'completed') {
+            // When marked as completed and no new date is scheduled, clear past overdue dates
+            $effectiveDate = $lead->followup_next_date ?? $lead->next_followup_date;
+            if ($effectiveDate && \Carbon\Carbon::parse($effectiveDate)->isPast()) {
+                $leadUpdates['next_followup_date'] = null;
+                $leadUpdates['followup_next_date'] = null;
+            }
         }
         if (!empty($leadUpdates)) {
             $lead->update($leadUpdates);
@@ -76,7 +86,31 @@ class LeadFollowUpController extends Controller
         ]);
 
         if ($followUp->lead) {
-            $followUp->lead->update(['last_contact_date' => now()]);
+            $leadUpdates = [
+                'last_contact_date' => now(),
+                'followup_last_date' => now()->format('Y-m-d'),
+            ];
+
+            // If the completed follow-up was the scheduled one, check if another scheduled follow-up exists
+            $nextScheduled = LeadFollowUp::where('lead_id', $followUp->lead_id)
+                ->where('id', '!=', $followUp->id)
+                ->where('status', 'scheduled')
+                ->where('scheduled_at', '>=', now())
+                ->orderBy('scheduled_at', 'asc')
+                ->first();
+
+            if ($nextScheduled) {
+                $leadUpdates['next_followup_date'] = $nextScheduled->scheduled_at;
+                $leadUpdates['followup_next_date'] = \Carbon\Carbon::parse($nextScheduled->scheduled_at)->format('Y-m-d');
+            } else {
+                $effectiveDate = $followUp->lead->followup_next_date ?? $followUp->lead->next_followup_date;
+                if ($effectiveDate && \Carbon\Carbon::parse($effectiveDate)->isPast()) {
+                    $leadUpdates['next_followup_date'] = null;
+                    $leadUpdates['followup_next_date'] = null;
+                }
+            }
+
+            $followUp->lead->update($leadUpdates);
         }
 
         ActivityLog::log(
