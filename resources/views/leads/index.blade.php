@@ -35,13 +35,21 @@
             @endif
 
             <!-- Quick Metrics Grid -->
-            <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3">
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
                 <a href="{{ route('leads.index') }}" class="bg-white p-3.5 rounded-xl border border-gray-200 shadow-sm hover:border-indigo-400 transition text-center {{ !request()->hasAny(['status', 'follow_up', 'today_followup', 'today_meeting', 'why_not_order', 'existing_order']) ? 'ring-2 ring-indigo-500 bg-indigo-50/20' : '' }}">
                     <div class="text-xs font-medium text-gray-500">{{ __('Total Leads') }}</div>
                     <div class="text-xl font-bold text-gray-900 mt-1">{{ $metrics['total'] }}</div>
                 </a>
 
-                <a href="{{ route('leads.index', ['today_followup' => 1]) }}" class="bg-amber-50/70 p-3.5 rounded-xl border border-amber-200 shadow-sm hover:border-amber-400 transition text-center {{ request('today_followup') || request('follow_up') == 'today' ? 'ring-2 ring-amber-500 bg-amber-100/50' : '' }}">
+                <a href="{{ route('leads.index', ['follow_up' => 'overdue']) }}" class="bg-rose-50/70 p-3.5 rounded-xl border border-rose-200 shadow-sm hover:border-rose-400 transition text-center {{ request('follow_up') == 'overdue' || request('today_followup') == 'overdue' ? 'ring-2 ring-rose-500 bg-rose-100/50' : '' }}">
+                    <div class="text-xs font-semibold text-rose-800 flex items-center justify-center gap-1">
+                        <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                        {{ __('Previous Follow-ups') }}
+                    </div>
+                    <div class="text-xl font-bold text-rose-900 mt-1">{{ $metrics['overdue_followups'] }}</div>
+                </a>
+
+                <a href="{{ route('leads.index', ['today_followup' => 1]) }}" class="bg-amber-50/70 p-3.5 rounded-xl border border-amber-200 shadow-sm hover:border-amber-400 transition text-center {{ request('today_followup') == '1' || request('follow_up') == 'today' ? 'ring-2 ring-amber-500 bg-amber-100/50' : '' }}">
                     <div class="text-xs font-semibold text-amber-800 flex items-center justify-center gap-1">
                         <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
                         {{ __('Today Follow-up') }}
@@ -62,11 +70,6 @@
                 <a href="{{ route('leads.index', ['status' => 'Interested']) }}" class="bg-white p-3.5 rounded-xl border border-gray-200 shadow-sm hover:border-cyan-400 transition text-center {{ request('status') == 'Interested' ? 'ring-2 ring-cyan-500 bg-cyan-50/20' : '' }}">
                     <div class="text-xs font-medium text-cyan-600">{{ __('Interested') }}</div>
                     <div class="text-xl font-bold text-cyan-700 mt-1">{{ $metrics['interested'] }}</div>
-                </a>
-
-                <a href="{{ route('leads.index', ['status' => 'Won']) }}" class="bg-white p-3.5 rounded-xl border border-gray-200 shadow-sm hover:border-emerald-400 transition text-center {{ request('status') == 'Won' ? 'ring-2 ring-emerald-500 bg-emerald-50/20' : '' }}">
-                    <div class="text-xs font-medium text-emerald-600">{{ __('Won (Converted)') }}</div>
-                    <div class="text-xl font-bold text-emerald-700 mt-1">{{ $metrics['won'] }}</div>
                 </a>
 
                 <a href="{{ route('leads.index', ['existing_order' => 'has_orders']) }}" class="bg-emerald-50/50 p-3.5 rounded-xl border border-emerald-200 shadow-sm hover:border-emerald-400 transition text-center {{ request('existing_order') == 'has_orders' ? 'ring-2 ring-emerald-500' : '' }}">
@@ -135,6 +138,7 @@
                             <select name="today_followup" class="w-full text-sm border-amber-300 bg-amber-50/40 rounded-lg focus:ring-amber-500 focus:border-amber-500">
                                 <option value="">{{ __('All Follow-up Dates') }}</option>
                                 <option value="1" {{ request('today_followup') == '1' || request('follow_up') == 'today' ? 'selected' : '' }}>🔔 {{ __('Follow-up Due Today') }}</option>
+                                <option value="overdue" {{ request('today_followup') == 'overdue' || request('follow_up') == 'overdue' ? 'selected' : '' }}>⏳ {{ __('Previous / Overdue Follow-up') }}</option>
                             </select>
                         </div>
 
@@ -237,6 +241,7 @@
                     <table class="text-left text-xs border-separate border-spacing-0" style="min-width: 1450px; width: 100%;">
                         <thead class="text-gray-700 font-bold uppercase tracking-wider" style="position: sticky; top: 0; z-index: 20;">
                             <tr>
+                                <th class="py-3 px-3 whitespace-nowrap text-center w-12">{{ __('Actions') }}</th>
                                 <th class="py-3 px-3 whitespace-nowrap">{{ __('Lead ID / Token') }}</th>
                                 <th class="py-3 px-3 whitespace-nowrap">{{ __('Client & Business') }}</th>
                                 <th class="py-3 px-3 whitespace-nowrap">{{ __('WhatsApp & Phone') }}</th>
@@ -248,7 +253,6 @@
                                 <th class="py-3 px-3 whitespace-nowrap bg-indigo-sticky text-indigo-950 border-x border-indigo-200">
                                     {{ __('Existing Order Count') }}
                                 </th>
-                                <th class="py-3 px-3 text-right whitespace-nowrap">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100">
@@ -257,6 +261,63 @@
                                     $orderCounts = $lead->existing_order_counts;
                                 @endphp
                                 <tr class="hover:bg-indigo-50/20 transition">
+                                    <!-- Actions (Three Dots Menu) -->
+                                    <td class="py-3 px-3 whitespace-nowrap text-center">
+                                        <div class="relative inline-block text-left" x-data="{ open: false }" @click.outside="open = false">
+                                            <button @click="open = !open" type="button" class="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition focus:outline-none" title="{{ __('Actions') }}">
+                                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                                    <circle cx="12" cy="5" r="1.75" />
+                                                    <circle cx="12" cy="12" r="1.75" />
+                                                    <circle cx="12" cy="19" r="1.75" />
+                                                </svg>
+                                            </button>
+
+                                            <!-- Dropdown Menu -->
+                                            <div x-show="open"
+                                                 x-cloak
+                                                 x-transition:enter="transition ease-out duration-100"
+                                                 x-transition:enter-start="transform opacity-0 scale-95"
+                                                 x-transition:enter-end="transform opacity-100 scale-100"
+                                                 x-transition:leave="transition ease-in duration-75"
+                                                 x-transition:leave-start="transform opacity-100 scale-100"
+                                                 x-transition:leave-end="transform opacity-0 scale-95"
+                                                 class="absolute left-0 z-50 mt-1 w-48 origin-top-left rounded-xl bg-white p-1.5 shadow-xl ring-1 ring-slate-900/10 focus:outline-none text-left"
+                                                 style="display: none;">
+                                                
+                                                <a href="{{ route('leads.show', $lead) }}" class="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 rounded-lg transition">
+                                                    <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                                    <span>{{ __('View Details') }}</span>
+                                                </a>
+
+                                                <a href="{{ route('leads.edit', $lead) }}" class="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-amber-50 hover:text-amber-700 rounded-lg transition">
+                                                    <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                                    <span>{{ __('Edit Lead') }}</span>
+                                                </a>
+
+                                                @if(!$lead->customer_id && $lead->lead_status !== 'Lost')
+                                                    <form method="POST" action="{{ route('leads.convert', $lead) }}">
+                                                        @csrf
+                                                        <button type="submit" class="w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold text-emerald-700 hover:bg-emerald-50 rounded-lg transition text-left" onclick="return confirm('{{ __('Convert this lead to a customer?') }}');">
+                                                            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
+                                                            <span>{{ __('Convert to Customer') }}</span>
+                                                        </button>
+                                                    </form>
+                                                @endif
+
+                                                <div class="my-1 border-t border-gray-100"></div>
+
+                                                <form method="POST" action="{{ route('leads.destroy', $lead) }}" onsubmit="return confirm('{{ __('Are you sure you want to delete this lead?') }}');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 rounded-lg transition text-left">
+                                                        <svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                                        <span>{{ __('Delete') }}</span>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </td>
+
                                     <!-- Lead ID & Token -->
                                     <td class="py-3 px-3 whitespace-nowrap">
                                         <a href="{{ route('leads.show', $lead) }}" class="font-bold font-mono text-indigo-600 hover:text-indigo-800 hover:underline">
@@ -283,16 +344,31 @@
 
                                     <!-- WhatsApp & Phone & Status -->
                                     <td class="py-3 px-3 whitespace-nowrap">
+                                        <!-- Phone -->
                                         <div class="flex items-center gap-1 font-medium text-gray-800">
                                             <span>📞</span>
-                                            <a href="tel:{{ $lead->phone }}" class="hover:underline">{{ $lead->phone }}</a>
+                                            <button type="button" 
+                                                    onclick="copyLeadText('{{ $lead->phone }}', this)" 
+                                                    class="group inline-flex items-center gap-1 text-gray-800 hover:text-indigo-600 transition cursor-pointer text-left focus:outline-none" 
+                                                    title="{{ __('Click to copy: ') }}{{ $lead->phone }}">
+                                                <span class="copy-target-text group-hover:underline">{{ $lead->phone }}</span>
+                                                <svg class="w-3 h-3 text-gray-400 group-hover:text-indigo-600 opacity-0 group-hover:opacity-100 transition shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                            </button>
                                         </div>
+
+                                        <!-- WhatsApp -->
                                         @if($lead->whatsapp)
                                             <div class="flex items-center gap-1 text-[11px] mt-0.5 text-emerald-700">
-                                                <span>💬</span>
-                                                <a href="https://wa.me/{{ $lead->normalized_whatsapp ?? preg_replace('/\D/', '', $lead->whatsapp) }}" target="_blank" class="hover:underline font-mono">
-                                                    {{ $lead->whatsapp }}
+                                                <a href="https://wa.me/{{ $lead->normalized_whatsapp ?? preg_replace('/\D/', '', $lead->whatsapp) }}" target="_blank" class="hover:scale-110 transition shrink-0" title="{{ __('Open in WhatsApp') }}">
+                                                    <span>💬</span>
                                                 </a>
+                                                <button type="button" 
+                                                        onclick="copyLeadText('{{ $lead->whatsapp }}', this)" 
+                                                        class="group inline-flex items-center gap-1 font-mono hover:text-emerald-900 transition cursor-pointer text-left focus:outline-none" 
+                                                        title="{{ __('Click to copy: ') }}{{ $lead->whatsapp }}">
+                                                    <span class="copy-target-text group-hover:underline">{{ $lead->whatsapp }}</span>
+                                                    <svg class="w-2.5 h-2.5 text-emerald-500 opacity-0 group-hover:opacity-100 transition shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                                </button>
                                                 @if($lead->whatsapp_status)
                                                     <span class="px-1 py-0.2 rounded text-[9px] bg-emerald-100 text-emerald-800 font-semibold uppercase">
                                                         {{ $lead->whatsapp_status }}
@@ -300,9 +376,18 @@
                                                 @endif
                                             </div>
                                         @endif
+
+                                        <!-- Email -->
                                         @if($lead->email)
-                                            <div class="text-2xs text-gray-500 truncate max-w-[140px] mt-0.5" title="{{ $lead->email }}">
-                                                ✉️ {{ $lead->email }}
+                                            <div class="mt-0.5">
+                                                <button type="button" 
+                                                        onclick="copyLeadText('{{ $lead->email }}', this)" 
+                                                        class="group inline-flex items-center gap-1 text-2xs text-gray-500 hover:text-indigo-600 transition cursor-pointer text-left max-w-[170px] focus:outline-none" 
+                                                        title="{{ __('Click to copy: ') }}{{ $lead->email }}">
+                                                    <span>✉️</span>
+                                                    <span class="copy-target-text truncate group-hover:underline">{{ $lead->email }}</span>
+                                                    <svg class="w-2.5 h-2.5 text-gray-400 group-hover:text-indigo-600 opacity-0 group-hover:opacity-100 transition shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                                </button>
                                             </div>
                                         @endif
                                     </td>
@@ -427,63 +512,6 @@
                                             <span class="text-gray-400 text-2xs italic">{{ __('No prior orders') }}</span>
                                         @endif
                                     </td>
-
-                                    <!-- Actions (Three Dots Menu) -->
-                                    <td class="py-3 px-3 text-right whitespace-nowrap">
-                                        <div class="relative inline-block text-left" x-data="{ open: false }" @click.outside="open = false">
-                                            <button @click="open = !open" type="button" class="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition focus:outline-none" title="{{ __('Actions') }}">
-                                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                                    <circle cx="12" cy="5" r="1.75" />
-                                                    <circle cx="12" cy="12" r="1.75" />
-                                                    <circle cx="12" cy="19" r="1.75" />
-                                                </svg>
-                                            </button>
-
-                                            <!-- Dropdown Menu -->
-                                            <div x-show="open"
-                                                 x-cloak
-                                                 x-transition:enter="transition ease-out duration-100"
-                                                 x-transition:enter-start="transform opacity-0 scale-95"
-                                                 x-transition:enter-end="transform opacity-100 scale-100"
-                                                 x-transition:leave="transition ease-in duration-75"
-                                                 x-transition:leave-start="transform opacity-100 scale-100"
-                                                 x-transition:leave-end="transform opacity-0 scale-95"
-                                                 class="absolute right-0 z-50 mt-1 w-48 origin-top-right rounded-xl bg-white p-1.5 shadow-xl ring-1 ring-slate-900/10 focus:outline-none text-left"
-                                                 style="display: none;">
-                                                
-                                                <a href="{{ route('leads.show', $lead) }}" class="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 rounded-lg transition">
-                                                    <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                                    <span>{{ __('View Details') }}</span>
-                                                </a>
-
-                                                <a href="{{ route('leads.edit', $lead) }}" class="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-amber-50 hover:text-amber-700 rounded-lg transition">
-                                                    <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                                                    <span>{{ __('Edit Lead') }}</span>
-                                                </a>
-
-                                                @if(!$lead->customer_id && $lead->lead_status !== 'Lost')
-                                                    <form method="POST" action="{{ route('leads.convert', $lead) }}">
-                                                        @csrf
-                                                        <button type="submit" class="w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold text-emerald-700 hover:bg-emerald-50 rounded-lg transition text-left" onclick="return confirm('{{ __('Convert this lead to a customer?') }}');">
-                                                            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
-                                                            <span>{{ __('Convert to Customer') }}</span>
-                                                        </button>
-                                                    </form>
-                                                @endif
-
-                                                <div class="my-1 border-t border-gray-100"></div>
-
-                                                <form method="POST" action="{{ route('leads.destroy', $lead) }}" onsubmit="return confirm('{{ __('Are you sure you want to delete this lead?') }}');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 rounded-lg transition text-left">
-                                                        <svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                                        <span>{{ __('Delete') }}</span>
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </td>
                                 </tr>
                             @empty
                                 <tr>
@@ -556,4 +584,85 @@
             border-bottom: 1px solid #f1f5f9;
         }
     </style>
+
+    <!-- Top-Center Floating Copy Toast Notification -->
+    <div id="copy-toast-banner" 
+         class="fixed top-6 left-1/2 transform -translate-x-1/2 z-[99999] opacity-0 -translate-y-4 transition-all duration-300 pointer-events-none flex items-center gap-3 bg-slate-900/95 text-white px-5 py-3 rounded-2xl shadow-2xl border border-slate-700/80 backdrop-blur-md">
+        <div class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+        </div>
+        <div class="flex items-center gap-2 text-xs sm:text-sm font-semibold">
+            <span class="text-emerald-400 font-bold">Copied:</span>
+            <span class="text-slate-100 font-mono" id="copy-toast-text"></span>
+        </div>
+    </div>
+
+    <script>
+        let copyToastTimer = null;
+
+        function copyLeadText(text, btn) {
+            if (!text) return;
+            const cleanText = text.trim();
+
+            // 1. Copy to clipboard
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(cleanText).catch(function() {
+                    fallbackCopy(cleanText);
+                });
+            } else {
+                fallbackCopy(cleanText);
+            }
+
+            // 2. Direct inline feedback on clicked text
+            if (btn) {
+                const textSpan = btn.querySelector('.copy-target-text');
+                if (textSpan && !btn.dataset.isCopying) {
+                    btn.dataset.isCopying = 'true';
+                    const originalHtml = textSpan.innerHTML;
+                    textSpan.innerHTML = '<span class="text-emerald-600 font-bold bg-emerald-50 px-1 py-0.5 rounded">✓ Copied!</span>';
+                    setTimeout(function() {
+                        textSpan.innerHTML = originalHtml;
+                        delete btn.dataset.isCopying;
+                    }, 1400);
+                }
+            }
+
+            // 3. Show prominent top-center floating toast
+            showCopyToast(cleanText);
+        }
+
+        function showCopyToast(text) {
+            const toast = document.getElementById('copy-toast-banner');
+            const toastText = document.getElementById('copy-toast-text');
+            if (!toast || !toastText) return;
+
+            toastText.textContent = text;
+            toast.classList.remove('opacity-0', '-translate-y-4');
+            toast.classList.add('opacity-100', 'translate-y-0');
+
+            clearTimeout(copyToastTimer);
+            copyToastTimer = setTimeout(function() {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', '-translate-y-4');
+            }, 2200);
+        }
+
+        function fallbackCopy(text) {
+            const el = document.createElement('textarea');
+            el.value = text;
+            el.setAttribute('readonly', '');
+            el.style.position = 'fixed';
+            el.style.left = '-9999px';
+            el.style.top = '-9999px';
+            document.body.appendChild(el);
+            el.focus();
+            el.select();
+            try {
+                document.execCommand('copy');
+            } catch (e) {
+                console.warn('Fallback copy error:', e);
+            }
+            document.body.removeChild(el);
+        }
+    </script>
 </x-app-layout>

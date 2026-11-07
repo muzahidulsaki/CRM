@@ -343,6 +343,14 @@
                             @elseif($order->order_type === 'web_software')
                                 <dl class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
                                     <div class="p-3 bg-gray-50 rounded-xl">
+                                        <dt class="text-gray-500 font-semibold">{{ __('Model') }}</dt>
+                                        <dd class="font-bold text-gray-900 mt-0.5">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold {{ ($meta['model'] ?? '') === 'Waterfall Model' ? 'bg-cyan-100 text-cyan-800' : 'bg-indigo-100 text-indigo-800' }}">
+                                                {{ $meta['model'] ?? 'Agile Model' }}
+                                            </span>
+                                        </dd>
+                                    </div>
+                                    <div class="p-3 bg-gray-50 rounded-xl">
                                         <dt class="text-gray-500 font-semibold">{{ __('Subscription System') }}</dt>
                                         <dd class="font-bold text-gray-900 mt-0.5">{{ $meta['subscription_system'] ?? 'None' }}</dd>
                                     </div>

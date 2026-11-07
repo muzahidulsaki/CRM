@@ -420,12 +420,7 @@
                         <!-- Interested Product -->
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Interested Product / Service') }}</label>
-                            <input list="interested_products_list" name="interested_products" value="{{ old('interested_products') }}" placeholder="{{ __('Select or type product') }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
-                            <datalist id="interested_products_list">
-                                @foreach($interestedProductsList as $prod)
-                                    <option value="{{ $prod }}"></option>
-                                @endforeach
-                            </datalist>
+                            <input type="text" name="interested_products" value="{{ old('interested_products') }}" placeholder="{{ __('Type interested product or service...') }}" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
 
                         <!-- Potential Order -->

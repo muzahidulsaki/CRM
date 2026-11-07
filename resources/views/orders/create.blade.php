@@ -506,6 +506,14 @@
                             </div>
 
                             <div>
+                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Model') }}</label>
+                                <select name="meta[model]" :disabled="orderType !== 'web_software'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500 font-medium">
+                                    <option value="Agile Model">Agile Model</option>
+                                    <option value="Waterfall Model">Waterfall Model</option>
+                                </select>
+                            </div>
+
+                            <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Working Priority') }}</label>
                                 <select name="meta[working_priority]" :disabled="orderType !== 'web_software'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500">
                                     <option value="Normal">Normal</option>

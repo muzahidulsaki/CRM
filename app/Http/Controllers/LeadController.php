@@ -85,8 +85,19 @@ class LeadController extends Controller
             }
         }
 
-        // Today Follow-up Direct Filter
-        if ($request->boolean('today_followup') || $request->input('follow_up') === 'today') {
+        // Today or Previous/Overdue Follow-up Filter
+        if ($request->input('today_followup') === 'overdue' || $request->input('follow_up') === 'overdue') {
+            $today = now()->format('Y-m-d');
+            $query->where(function ($q) use ($today) {
+                $q->where(function ($sub) use ($today) {
+                    $sub->whereNotNull('next_followup_date')
+                        ->whereDate('next_followup_date', '<', $today);
+                })->orWhere(function ($sub) use ($today) {
+                    $sub->whereNotNull('followup_next_date')
+                        ->whereDate('followup_next_date', '<', $today);
+                });
+            })->whereNotIn('lead_status', ['Won', 'Lost']);
+        } elseif ($request->boolean('today_followup') || $request->input('follow_up') === 'today') {
             $today = now()->format('Y-m-d');
             $query->where(function ($q) use ($today) {
                 $q->whereDate('next_followup_date', $today)
@@ -163,8 +174,19 @@ class LeadController extends Controller
             'proposal' => Lead::where('lead_status', 'Proposal Sent')->count(),
             'won' => Lead::where('lead_status', 'Won')->count(),
             'lost' => Lead::where('lead_status', 'Lost')->count(),
-            'today_followups' => Lead::whereDate('next_followup_date', $today)->count(),
-            'overdue_followups' => Lead::whereDate('next_followup_date', '<', $today)->whereNotIn('lead_status', ['Won', 'Lost'])->count(),
+            'today_followups' => Lead::where(function ($q) use ($today) {
+                $q->whereDate('next_followup_date', $today)
+                  ->orWhereDate('followup_next_date', $today);
+            })->count(),
+            'overdue_followups' => Lead::where(function ($q) use ($today) {
+                $q->where(function ($sub) use ($today) {
+                    $sub->whereNotNull('next_followup_date')
+                        ->whereDate('next_followup_date', '<', $today);
+                })->orWhere(function ($sub) use ($today) {
+                    $sub->whereNotNull('followup_next_date')
+                        ->whereDate('followup_next_date', '<', $today);
+                });
+            })->whereNotIn('lead_status', ['Won', 'Lost'])->count(),
         ];
 
         $dropdowns = $this->getFormDropdowns();
@@ -276,6 +298,10 @@ class LeadController extends Controller
         // If next_followup_date is empty but followup_next_date is provided, sync it
         if (empty($data['next_followup_date']) && !empty($data['followup_next_date'])) {
             $data['next_followup_date'] = $data['followup_next_date'];
+        }
+
+        if (!empty($data['interested_products']) && empty($data['interested_service'])) {
+            $data['interested_service'] = $data['interested_products'];
         }
 
         $lead = Lead::create($data);
@@ -425,6 +451,9 @@ class LeadController extends Controller
         $updateData = $request->all();
         if (empty($updateData['name'])) {
             $updateData['name'] = $request->filled('company_name') ? $request->input('company_name') : '-';
+        }
+        if (!empty($updateData['interested_products']) && empty($updateData['interested_service'])) {
+            $updateData['interested_service'] = $updateData['interested_products'];
         }
 
         $lead->update($updateData);
