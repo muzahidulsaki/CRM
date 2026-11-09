@@ -153,6 +153,8 @@ class LeadController extends Controller
             'proposal' => Lead::where('lead_status', 'Proposal Sent')->count(),
             'won' => Lead::where('lead_status', 'Won')->count(),
             'lost' => Lead::where('lead_status', 'Lost')->count(),
+            'will_pay' => Lead::where('lead_temperature', 'Will Pay')->count(),
+            'hot' => Lead::where('lead_temperature', 'Hot')->count(),
             'today_followups' => Lead::whereNotNull(DB::raw('COALESCE(followup_next_date, next_followup_date)'))
                 ->whereDate(DB::raw('COALESCE(followup_next_date, next_followup_date)'), $today)
                 ->whereNotIn('lead_status', ['Won', 'Lost'])
@@ -233,7 +235,7 @@ class LeadController extends Controller
             'phone' => ['required', 'string', 'max:30'],
             'email' => ['nullable', 'email', 'max:255'],
             'lead_source' => ['required', 'string', 'max:255'],
-            'lead_temperature' => ['required', 'in:Hot,Warm,Cold'],
+            'lead_temperature' => ['required', 'in:Will Pay,Hot,Warm,Cold'],
             'lead_status' => ['required', 'in:New,Contacted,Interested,Meeting/Demo,Proposal Sent,Negotiation,Won,Lost'],
             'budget' => ['nullable', 'numeric', 'min:0'],
             'discussed_amount' => ['nullable', 'numeric', 'min:0'],
@@ -403,7 +405,7 @@ class LeadController extends Controller
             'phone' => ['required', 'string', 'max:30'],
             'email' => ['nullable', 'email', 'max:255'],
             'lead_source' => ['required', 'string', 'max:255'],
-            'lead_temperature' => ['required', 'in:Hot,Warm,Cold'],
+            'lead_temperature' => ['required', 'in:Will Pay,Hot,Warm,Cold'],
             'lead_status' => ['required', 'in:New,Contacted,Interested,Meeting/Demo,Proposal Sent,Negotiation,Won,Lost'],
             'budget' => ['nullable', 'numeric', 'min:0'],
             'discussed_amount' => ['nullable', 'numeric', 'min:0'],
@@ -479,7 +481,7 @@ class LeadController extends Controller
     {
         $request->validate([
             'lead_status' => ['nullable', 'in:New,Contacted,Interested,Meeting/Demo,Proposal Sent,Negotiation,Won,Lost'],
-            'lead_temperature' => ['nullable', 'in:Hot,Warm,Cold'],
+            'lead_temperature' => ['nullable', 'in:Will Pay,Hot,Warm,Cold'],
             'lost_reason' => ['nullable', 'string'],
         ]);
 

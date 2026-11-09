@@ -63,7 +63,8 @@
                                             {{ $lead->lead_code }}
                                         </a>
                                         <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold border {{ $lead->temperature_badge_class }}">
-                                            @if($lead->lead_temperature === 'Hot') 🔥
+                                            @if($lead->lead_temperature === 'Will Pay') 💰
+                                            @elseif($lead->lead_temperature === 'Hot') 🔥
                                             @elseif($lead->lead_temperature === 'Warm') ⚡
                                             @else ❄️
                                             @endif

@@ -24,7 +24,8 @@
                             </span>
                         @endif
                         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border {{ $lead->temperature_badge_class }}">
-                            @if($lead->lead_temperature === 'Hot') 🔥 {{ __('Hot') }}
+                            @if($lead->lead_temperature === 'Will Pay') 💰 {{ __('Will Pay') }}
+                            @elseif($lead->lead_temperature === 'Hot') 🔥 {{ __('Hot') }}
                             @elseif($lead->lead_temperature === 'Warm') ⚡ {{ __('Warm') }}
                             @else ❄️ {{ __('Cold') }}
                             @endif

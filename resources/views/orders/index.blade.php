@@ -174,9 +174,17 @@
 
                     <div>
                         <label class="block text-xs font-medium text-gray-700 mb-1">{{ __('Order Status') }}</label>
+                        @php
+                            $availableStatuses = match($currentType) {
+                                'ads' => ['Pending', 'Pused', 'Active', 'Closed'],
+                                'web_software' => ['New Order', 'Requirements', 'Planning/ SRS', 'UI/UX Design', 'On Hold', 'In Development', 'Dev. Review', 'Testing/ QA', 'Customization', 'Client Review', 'Modification', 'Delivery Ready', 'Delivered', 'Active', 'Cancel', 'Support'],
+                                'creative' => ['Pending', 'Working', 'Re-working', 'Pused', 'Complete', 'Delivery', 'Delay', 'Closed'],
+                                default => ['New Order', 'Requirements', 'Planning/ SRS', 'UI/UX Design', 'In Development', 'Dev. Review', 'Testing/ QA', 'Customization', 'Client Review', 'Modification', 'Delivery Ready', 'Pending', 'Working', 'Re-working', 'Pused', 'Complete', 'Delivery', 'Active', 'Cancel', 'Delay', 'Closed', 'Support'],
+                            };
+                        @endphp
                         <select name="status" class="w-full text-sm rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
                             <option value="">{{ __('All Statuses') }}</option>
-                            @foreach(['Pending', 'Working', 'Re-working', 'Pused', 'Complete', 'Checked', 'Delivery', 'Active', 'Cancel', 'Delay'] as $st)
+                            @foreach($availableStatuses as $st)
                                 <option value="{{ $st }}" {{ request('status') == $st ? 'selected' : '' }}>{{ __($st) }}</option>
                             @endforeach
                         </select>

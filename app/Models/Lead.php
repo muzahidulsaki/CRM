@@ -142,6 +142,7 @@ class Lead extends Model
     public function getTemperatureBadgeClassAttribute(): string
     {
         return match ($this->lead_temperature) {
+            'Will Pay' => 'bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-900/30 dark:text-emerald-400',
             'Hot' => 'bg-rose-100 text-rose-700 border-rose-200 dark:bg-rose-900/30 dark:text-rose-400',
             'Warm' => 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400',
             'Cold' => 'bg-sky-100 text-sky-700 border-sky-200 dark:bg-sky-900/30 dark:text-sky-400',

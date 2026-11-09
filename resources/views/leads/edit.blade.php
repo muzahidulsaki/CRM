@@ -66,6 +66,7 @@
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Client Temperature') }} <span class="text-rose-500">*</span></label>
                             <select name="lead_temperature" required class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="Will Pay" {{ old('lead_temperature', $lead->lead_temperature) === 'Will Pay' ? 'selected' : '' }}>💰 Will Pay</option>
                                 <option value="Warm" {{ old('lead_temperature', $lead->lead_temperature) === 'Warm' ? 'selected' : '' }}>🔥 Warm</option>
                                 <option value="Hot" {{ old('lead_temperature', $lead->lead_temperature) === 'Hot' ? 'selected' : '' }}>⚡ Hot</option>
                                 <option value="Cold" {{ old('lead_temperature', $lead->lead_temperature) === 'Cold' ? 'selected' : '' }}>❄️ Cold</option>

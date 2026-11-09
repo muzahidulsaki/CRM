@@ -78,8 +78,19 @@
                     <!-- Status -->
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">{{ __('Status') }} <span class="text-rose-500">*</span></label>
+                        @php
+                            $type = $order->order_type ?? 'creative';
+                            $statuses = match($type) {
+                                'ads' => ['Pending', 'Pused', 'Active', 'Closed'],
+                                'web_software' => ['New Order', 'Requirements', 'Planning/ SRS', 'UI/UX Design', 'On Hold', 'In Development', 'Dev. Review', 'Testing/ QA', 'Customization', 'Client Review', 'Modification', 'Delivery Ready', 'Delivered', 'Active', 'Cancel', 'Support'],
+                                default => ['Pending', 'Working', 'Re-working', 'Pused', 'Complete', 'Delivery', 'Delay', 'Closed'],
+                            };
+                            if (!in_array($order->status, $statuses)) {
+                                $statuses[] = $order->status;
+                            }
+                        @endphp
                         <select name="status" required class="w-full text-sm rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
-                            @foreach(['Pending', 'Working', 'Re-working', 'Pused', 'Complete', 'Checked', 'Delivery', 'Active', 'Cancel', 'Delay', 'Confirmed', 'Under Review'] as $st)
+                            @foreach($statuses as $st)
                                 <option value="{{ $st }}" {{ old('status', $order->status) == $st ? 'selected' : '' }}>{{ __($st) }}</option>
                             @endforeach
                         </select>

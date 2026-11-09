@@ -722,11 +722,33 @@
 
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Order Status') }} <span class="text-rose-500">*</span></label>
-                            <select name="status" required class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
-                                @foreach(['Pending', 'Working', 'Re-working', 'Pused', 'Complete', 'Checked', 'Delivery', 'Active', 'Cancel', 'Delay'] as $st)
-                                    <option value="{{ $st }}" {{ old('status', 'Pending') === $st ? 'selected' : '' }}>{{ $st }}</option>
-                                @endforeach
-                            </select>
+                            
+                            <!-- Creative Order Status -->
+                            <div x-show="orderType === 'creative'">
+                                <select name="status" :disabled="orderType !== 'creative'" required class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
+                                    @foreach(['Pending', 'Working', 'Re-working', 'Pused', 'Complete', 'Delivery', 'Delay', 'Closed'] as $st)
+                                        <option value="{{ $st }}" {{ old('status', 'Pending') === $st ? 'selected' : '' }}>{{ $st }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- Ads Campaign Status -->
+                            <div x-show="orderType === 'ads'">
+                                <select name="status" :disabled="orderType !== 'ads'" required class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500">
+                                    @foreach(['Pending', 'Pused', 'Active', 'Closed'] as $st)
+                                        <option value="{{ $st }}" {{ old('status', 'Pending') === $st ? 'selected' : '' }}>{{ $st }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- Website & Software Status -->
+                            <div x-show="orderType === 'web_software'">
+                                <select name="status" :disabled="orderType !== 'web_software'" required class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500">
+                                    @foreach(['New Order', 'Requirements', 'Planning/ SRS', 'UI/UX Design', 'On Hold', 'In Development', 'Dev. Review', 'Testing/ QA', 'Customization', 'Client Review', 'Modification', 'Delivery Ready', 'Delivered', 'Active', 'Cancel', 'Support'] as $st)
+                                        <option value="{{ $st }}" {{ old('status', 'New Order') === $st ? 'selected' : '' }}>{{ $st }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
 
                         <div>

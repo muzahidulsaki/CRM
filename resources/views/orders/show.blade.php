@@ -683,11 +683,22 @@
                     <!-- Quick Status Update -->
                     <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 space-y-3">
                         <h3 class="font-bold text-gray-900 text-sm">{{ __('Quick Status Update') }}</h3>
+                        @php
+                            $orderType = $order->order_type ?? 'creative';
+                            $statuses = match($orderType) {
+                                'ads' => ['Pending', 'Pused', 'Active', 'Closed'],
+                                'web_software' => ['New Order', 'Requirements', 'Planning/ SRS', 'UI/UX Design', 'On Hold', 'In Development', 'Dev. Review', 'Testing/ QA', 'Customization', 'Client Review', 'Modification', 'Delivery Ready', 'Delivered', 'Active', 'Cancel', 'Support'],
+                                default => ['Pending', 'Working', 'Re-working', 'Pused', 'Complete', 'Delivery', 'Delay', 'Closed'],
+                            };
+                            if (!in_array($order->status, $statuses)) {
+                                $statuses[] = $order->status;
+                            }
+                        @endphp
                         <form method="POST" action="{{ route('orders.update-status', $order) }}" class="space-y-3">
                             @csrf
                             @method('PATCH')
                             <select name="status" class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
-                                @foreach(['Pending', 'Working', 'Re-working', 'Pused', 'Complete', 'Checked', 'Delivery', 'Active', 'Cancel', 'Delay'] as $st)
+                                @foreach($statuses as $st)
                                     <option value="{{ $st }}" {{ $order->status === $st ? 'selected' : '' }}>{{ __($st) }}</option>
                                 @endforeach
                             </select>

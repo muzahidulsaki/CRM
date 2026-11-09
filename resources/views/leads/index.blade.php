@@ -25,7 +25,7 @@
 
             <!-- Quick Metrics Grid -->
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-                <a href="{{ route('leads.index') }}" class="bg-white p-3.5 rounded-xl border border-gray-200 shadow-sm hover:border-indigo-400 transition text-center {{ !request()->hasAny(['status', 'follow_up', 'today_followup', 'today_meeting', 'why_not_order', 'existing_order']) ? 'ring-2 ring-indigo-500 bg-indigo-50/20' : '' }}">
+                <a href="{{ route('leads.index') }}" class="bg-white p-3.5 rounded-xl border border-gray-200 shadow-sm hover:border-indigo-400 transition text-center {{ !request()->hasAny(['status', 'temperature', 'follow_up', 'today_followup', 'today_meeting', 'why_not_order', 'existing_order']) ? 'ring-2 ring-indigo-500 bg-indigo-50/20' : '' }}">
                     <div class="text-xs font-medium text-gray-500">{{ __('Total Leads') }}</div>
                     <div class="text-xl font-bold text-gray-900 mt-1">{{ $metrics['total'] }}</div>
                 </a>
@@ -56,16 +56,20 @@
                     </div>
                 </a>
 
-                <a href="{{ route('leads.index', ['status' => 'Interested']) }}" class="bg-white p-3.5 rounded-xl border border-gray-200 shadow-sm hover:border-cyan-400 transition text-center {{ request('status') == 'Interested' ? 'ring-2 ring-cyan-500 bg-cyan-50/20' : '' }}">
-                    <div class="text-xs font-medium text-cyan-600">{{ __('Interested') }}</div>
-                    <div class="text-xl font-bold text-cyan-700 mt-1">{{ $metrics['interested'] }}</div>
+                <a href="{{ route('leads.index', ['temperature' => 'Will Pay']) }}" class="bg-emerald-50/70 p-3.5 rounded-xl border border-emerald-200 shadow-sm hover:border-emerald-400 transition text-center {{ request('temperature') == 'Will Pay' ? 'ring-2 ring-emerald-500 bg-emerald-100/50' : '' }}">
+                    <div class="text-xs font-semibold text-emerald-800 flex items-center justify-center gap-1">
+                        <span>💰</span>
+                        {{ __('Will Pay') }}
+                    </div>
+                    <div class="text-xl font-bold text-emerald-900 mt-1">{{ $metrics['will_pay'] }}</div>
                 </a>
 
-                <a href="{{ route('leads.index', ['existing_order' => 'has_orders']) }}" class="bg-emerald-50/50 p-3.5 rounded-xl border border-emerald-200 shadow-sm hover:border-emerald-400 transition text-center {{ request('existing_order') == 'has_orders' ? 'ring-2 ring-emerald-500' : '' }}">
-                    <div class="text-xs font-semibold text-emerald-700">{{ __('Existing Clients') }}</div>
-                    <div class="text-xl font-bold text-emerald-800 mt-1">
-                        {{ \App\Models\Lead::whereHas('customer.orders')->count() }}
+                <a href="{{ route('leads.index', ['temperature' => 'Hot']) }}" class="bg-rose-50/60 p-3.5 rounded-xl border border-rose-200 shadow-sm hover:border-rose-400 transition text-center {{ request('temperature') == 'Hot' ? 'ring-2 ring-rose-500 bg-rose-100/50' : '' }}">
+                    <div class="text-xs font-semibold text-rose-800 flex items-center justify-center gap-1">
+                        <span>🔥</span>
+                        {{ __('Hot Leads') }}
                     </div>
+                    <div class="text-xl font-bold text-rose-900 mt-1">{{ $metrics['hot'] }}</div>
                 </a>
             </div>
 
@@ -110,6 +114,7 @@
                             <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">{{ __('Temperature') }}</label>
                             <select name="temperature" class="w-full text-sm border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
                                 <option value="">{{ __('All Temperatures') }}</option>
+                                <option value="Will Pay" {{ request('temperature') == 'Will Pay' ? 'selected' : '' }}>💰 Will Pay</option>
                                 <option value="Hot" {{ request('temperature') == 'Hot' ? 'selected' : '' }}>🔥 Hot</option>
                                 <option value="Warm" {{ request('temperature') == 'Warm' ? 'selected' : '' }}>⚡ Warm</option>
                                 <option value="Cold" {{ request('temperature') == 'Cold' ? 'selected' : '' }}>❄️ Cold</option>
