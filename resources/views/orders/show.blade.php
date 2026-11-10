@@ -303,14 +303,16 @@
                                         <dt class="text-gray-500 font-semibold">{{ __('Total Days') }}</dt>
                                         <dd class="font-bold font-mono text-gray-900 mt-0.5 text-sm">{{ $meta['total_days'] ?? '-' }} days</dd>
                                     </div>
-                                    <div class="p-3 bg-gray-50 rounded-xl">
-                                        <dt class="text-gray-500 font-semibold">{{ __('Today Check') }}</dt>
-                                        <dd class="mt-0.5 font-bold">
-                                            <span class="px-2 py-0.5 rounded text-xs {{ ($meta['today_check'] ?? 'Pending') === 'Checked' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800' }}">
-                                                {{ ($meta['today_check'] ?? 'Pending') === 'Checked' ? '✅ Checked' : '⏳ Pending' }}
-                                            </span>
-                                        </dd>
-                                    </div>
+                                    @if(!empty($meta['today_check']))
+                                        <div class="p-3 bg-gray-50 rounded-xl">
+                                            <dt class="text-gray-500 font-semibold">{{ __('Today Check') }}</dt>
+                                            <dd class="mt-0.5 font-bold">
+                                                <span class="px-2 py-0.5 rounded text-xs {{ $meta['today_check'] === 'Checked' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800' }}">
+                                                    {{ $meta['today_check'] === 'Checked' ? '✅ Checked' : '⏳ Pending' }}
+                                                </span>
+                                            </dd>
+                                        </div>
+                                    @endif
                                     <div class="p-3 bg-gray-50 rounded-xl">
                                         <dt class="text-gray-500 font-semibold">{{ __('Previous Dollar ($)') }}</dt>
                                         <dd class="font-bold font-mono text-gray-700 mt-0.5">${{ number_format(floatval($meta['previous_dollar'] ?? 0), 2) }}</dd>
@@ -370,8 +372,20 @@
                                     <div class="p-3 bg-gray-50 rounded-xl">
                                         <dt class="text-gray-500 font-semibold">{{ __('Renew Status') }}</dt>
                                         <dd class="font-bold mt-0.5">
-                                            <span class="px-2 py-0.5 rounded text-xs {{ ($meta['renew_status'] ?? 'Active') === 'Active' ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-700' }}">
-                                                {{ $meta['renew_status'] ?? 'Active' }}
+                                            @php
+                                                $rnStatus = $meta['renew_status'] ?? 'Active';
+                                                $rnClass = match($rnStatus) {
+                                                    'Active' => 'bg-emerald-100 text-emerald-800',
+                                                    'Upcoming' => 'bg-cyan-100 text-cyan-800',
+                                                    'Due' => 'bg-amber-100 text-amber-800',
+                                                    'Expired' => 'bg-rose-100 text-rose-800',
+                                                    'Cancelled' => 'bg-gray-200 text-gray-700',
+                                                    'Not Required' => 'bg-slate-100 text-slate-600',
+                                                    default => 'bg-gray-100 text-gray-700'
+                                                };
+                                            @endphp
+                                            <span class="px-2 py-0.5 rounded text-xs {{ $rnClass }}">
+                                                {{ $rnStatus }}
                                             </span>
                                         </dd>
                                     </div>
@@ -491,8 +505,9 @@
                         @endif
 
                         @php
-                            $mDue = floatval($meta['monthly_due'] ?? (($meta['subscription_system'] ?? '') === 'Monthly' ? ($meta['subscription_fee'] ?? 0) : 0));
-                            $yDue = floatval($meta['yearly_due'] ?? (($meta['subscription_system'] ?? '') === 'Yearly' ? ($meta['subscription_fee'] ?? 0) : 0));
+                            $subSys = $meta['subscription_system'] ?? '';
+                            $mDue = floatval($meta['monthly_due'] ?? (str_contains($subSys, 'Monthly') ? ($meta['subscription_fee'] ?? 0) : 0));
+                            $yDue = floatval($meta['yearly_due'] ?? (str_contains($subSys, 'Yearly') ? ($meta['subscription_fee'] ?? 0) : 0));
                         @endphp
 
                         @if($mDue > 0 || $yDue > 0)

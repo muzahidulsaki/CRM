@@ -414,8 +414,10 @@
                                         <td class="py-3 px-3 whitespace-nowrap">
                                             @if(($meta['today_check'] ?? '') === 'Checked')
                                                 <span class="px-2 py-0.5 rounded-full text-2xs font-bold bg-emerald-100 text-emerald-800">✅ Checked</span>
-                                            @else
+                                            @elseif(($meta['today_check'] ?? '') === 'Pending')
                                                 <span class="px-2 py-0.5 rounded-full text-2xs font-bold bg-amber-100 text-amber-800">⏳ Pending</span>
+                                            @else
+                                                <span class="text-gray-400 text-xs">-</span>
                                             @endif
                                         </td>
                                         <td class="py-3 px-3 text-right whitespace-nowrap">

@@ -232,25 +232,6 @@
                     <div x-show="orderType === 'creative'" class="space-y-4 pt-2">
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             <div>
-                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Order Source') }}</label>
-                                <select name="order_source" :disabled="orderType !== 'creative'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
-                                    <option value="Direct">Direct</option>
-                                    <option value="Repeat">Repeat</option>
-                                    <option value="Referral">Referral</option>
-                                    <option value="Local">Local</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Activity Status') }}</label>
-                                <select name="activity_status" :disabled="orderType !== 'creative'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
-                                    <option value="Active">Active</option>
-                                    <option value="Open">Open</option>
-                                    <option value="Closed">Closed</option>
-                                </select>
-                            </div>
-
-                            <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Service Provider') }}</label>
                                 <input type="text" name="meta[service_provider]" :disabled="orderType !== 'creative'" placeholder="e.g. Mahfuz, Jahid Hasan" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
                             </div>
@@ -392,25 +373,6 @@
                             </div>
 
                             <div>
-                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Order Source') }}</label>
-                                <select name="order_source" :disabled="orderType !== 'ads'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500">
-                                    <option value="Direct">Direct</option>
-                                    <option value="Repeat">Repeat</option>
-                                    <option value="Referral">Referral</option>
-                                    <option value="Local">Local</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Campaign Activity') }}</label>
-                                <select name="activity_status" :disabled="orderType !== 'ads'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500">
-                                    <option value="Active">Active</option>
-                                    <option value="Completed">Completed</option>
-                                    <option value="Paused">Paused</option>
-                                </select>
-                            </div>
-
-                            <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Lifetime/ Daily Budget ($)') }}</label>
                                 <input type="number" step="0.01" name="meta[lifetime_daily_budget]" :disabled="orderType !== 'ads'" placeholder="e.g. 5.00 or 150.00" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500 font-mono font-bold">
                             </div>
@@ -436,14 +398,6 @@
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('End Date') }}</label>
                                 <input type="date" name="meta[end_date]" :disabled="orderType !== 'ads'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500">
-                            </div>
-
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Today Check Status') }}</label>
-                                <select name="meta[today_check]" :disabled="orderType !== 'ads'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500 font-semibold">
-                                    <option value="Checked">✅ Checked</option>
-                                    <option value="Pending">⏳ Pending</option>
-                                </select>
                             </div>
 
                             <div>
@@ -495,16 +449,6 @@
                     <div x-show="orderType === 'web_software'" class="space-y-4 pt-2">
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                             <div>
-                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Order Source') }}</label>
-                                <select name="order_source" :disabled="orderType !== 'web_software'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500">
-                                    <option value="Direct">Direct</option>
-                                    <option value="Repeat">Repeat</option>
-                                    <option value="Referral">Referral</option>
-                                    <option value="Local">Local</option>
-                                </select>
-                            </div>
-
-                            <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Model') }}</label>
                                 <select name="meta[model]" :disabled="orderType !== 'web_software'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500 font-medium">
                                     <option value="Agile Model">Agile Model</option>
@@ -524,9 +468,9 @@
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Subscription System') }}</label>
                                 <select name="meta[subscription_system]" :disabled="orderType !== 'web_software'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500">
-                                    <option value="Monthly">Monthly Subscription</option>
-                                    <option value="Yearly">Yearly Renewal</option>
-                                    <option value="One-time">One-time / No Subscription</option>
+                                    <option value="One-Time Payment">One-Time Payment</option>
+                                    <option value="Monthly Subscription">Monthly Subscription</option>
+                                    <option value="Yearly Subscription">Yearly Subscription</option>
                                 </select>
                             </div>
 
@@ -553,9 +497,12 @@
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Renew Status') }}</label>
                                 <select name="meta[renew_status]" :disabled="orderType !== 'web_software'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500">
+                                    <option value="Not Required">Not Required</option>
                                     <option value="Active">Active</option>
-                                    <option value="Pending">Pending</option>
+                                    <option value="Upcoming">Upcoming</option>
+                                    <option value="Due">Due</option>
                                     <option value="Expired">Expired</option>
+                                    <option value="Cancelled">Cancelled</option>
                                 </select>
                             </div>
 
