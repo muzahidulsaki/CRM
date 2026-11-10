@@ -235,17 +235,50 @@
                     <table class="text-left text-xs border-separate border-spacing-0" style="min-width: 1450px; width: 100%;">
                         <thead class="text-gray-700 font-bold uppercase tracking-wider" style="position: sticky; top: 0; z-index: 20;">
                             <tr>
-                                <th class="py-3 px-3 whitespace-nowrap text-center w-12">{{ __('Actions') }}</th>
-                                <th class="py-3 px-3 whitespace-nowrap">{{ __('Lead ID / Token') }}</th>
-                                <th class="py-3 px-3 whitespace-nowrap">{{ __('Client & Business') }}</th>
-                                <th class="py-3 px-3 whitespace-nowrap">{{ __('WhatsApp & Phone') }}</th>
-                                <th class="py-3 px-3 whitespace-nowrap">{{ __('Country / Map') }}</th>
-                                <th class="py-3 px-3 whitespace-nowrap">{{ __('Follow-up Status') }}</th>
-                                <th class="py-3 px-3 whitespace-nowrap">{{ __('Meeting Info') }}</th>
-                                <th class="py-3 px-3 whitespace-nowrap">{{ __('Product & Temp') }}</th>
-                                <th class="py-3 px-3 whitespace-nowrap">{{ __('Status / Why Not') }}</th>
-                                <th class="py-3 px-3 whitespace-nowrap bg-indigo-sticky text-indigo-950 border-x border-indigo-200">
-                                    {{ __('Existing Order Count') }}
+                                <th class="py-2.5 px-2.5 whitespace-nowrap text-center w-12 text-[11px]">{{ __('Actions') }}</th>
+                                <th class="py-2.5 px-2.5 whitespace-nowrap text-[11px] leading-tight">
+                                    <div>{{ __('Lead ID') }}</div>
+                                    <div class="text-[10px] text-gray-500 font-semibold uppercase">/ Token</div>
+                                </th>
+                                <th class="py-2.5 px-2.5 whitespace-nowrap text-[11px] leading-tight">
+                                    <div>{{ __('WhatsApp') }}</div>
+                                    <div class="text-[10px] text-gray-500 font-semibold uppercase">& Phone</div>
+                                </th>
+                                <th class="py-2.5 px-2.5 whitespace-nowrap text-[11px] leading-tight">
+                                    <div>{{ __('Status') }}</div>
+                                    <div class="text-[10px] text-gray-500 font-semibold uppercase">/ Why Not</div>
+                                </th>
+                                <th class="py-2.5 px-2.5 whitespace-nowrap text-[11px] leading-tight">
+                                    <div>{{ __('Product') }}</div>
+                                    <div class="text-[10px] text-gray-500 font-semibold uppercase">& Temp</div>
+                                </th>
+                                <th class="py-2.5 px-2.5 whitespace-nowrap text-[11px] leading-tight">
+                                    <div>{{ __('Follow Up') }}</div>
+                                    <div class="text-[10px] text-gray-500 font-semibold uppercase">Status</div>
+                                </th>
+                                <th class="py-2.5 px-2.5 whitespace-nowrap text-[11px] leading-tight">
+                                    <div>{{ __('Follow Up') }}</div>
+                                    <div class="text-[10px] text-gray-500 font-semibold uppercase">1st Date</div>
+                                </th>
+                                <th class="py-2.5 px-2.5 whitespace-nowrap text-[11px] leading-tight">
+                                    <div>{{ __('Follow Up') }}</div>
+                                    <div class="text-[10px] text-gray-500 font-semibold uppercase">Last Date</div>
+                                </th>
+                                <th class="py-2.5 px-2.5 whitespace-nowrap text-[11px] leading-tight">
+                                    <div>{{ __('Follow Up') }}</div>
+                                    <div class="text-[10px] text-gray-500 font-semibold uppercase">Next Date</div>
+                                </th>
+                                <th class="py-2.5 px-2.5 whitespace-nowrap text-[11px] leading-tight bg-indigo-sticky text-indigo-950 border-x border-indigo-200">
+                                    <div>{{ __('Existing Order') }}</div>
+                                    <div class="text-[10px] text-indigo-800 font-semibold uppercase">Count</div>
+                                </th>
+                                <th class="py-2.5 px-2.5 whitespace-nowrap text-[11px] leading-tight">
+                                    <div>{{ __('Interested') }}</div>
+                                    <div class="text-[10px] text-gray-500 font-semibold uppercase">Product</div>
+                                </th>
+                                <th class="py-2.5 px-2.5 whitespace-nowrap text-[11px] leading-tight">
+                                    <div>{{ __('Potential') }}</div>
+                                    <div class="text-[10px] text-gray-500 font-semibold uppercase">Order</div>
                                 </th>
                             </tr>
                         </thead>
@@ -255,8 +288,8 @@
                                     $orderCounts = $lead->existing_order_counts;
                                 @endphp
                                 <tr class="hover:bg-indigo-50/20 transition">
-                                    <!-- Actions (Three Dots Menu) -->
-                                    <td class="py-3 px-3 whitespace-nowrap text-center">
+                                    <!-- 1. Actions (Three Dots Menu) -->
+                                    <td class="py-2.5 px-2.5 whitespace-nowrap text-center">
                                         <div class="relative inline-block text-left" x-data="{ open: false }" @click.outside="open = false">
                                             <button @click="open = !open" type="button" class="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition focus:outline-none" title="{{ __('Actions') }}">
                                                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -312,47 +345,25 @@
                                         </div>
                                     </td>
 
-                                    <!-- Lead ID & Token -->
-                                    <td class="py-3 px-3 whitespace-nowrap">
-                                        <a href="{{ route('leads.show', array_filter(['lead' => $lead, 'return_to' => request()->fullUrl()])) }}" class="font-bold font-mono text-indigo-600 hover:text-indigo-800 hover:underline">
+                                    <!-- 2. Lead ID / Token (Stacked) -->
+                                    <td class="py-2.5 px-2.5 whitespace-nowrap">
+                                        <a href="{{ route('leads.show', array_filter(['lead' => $lead, 'return_to' => request()->fullUrl()])) }}" class="font-bold font-mono text-indigo-600 hover:text-indigo-800 hover:underline text-xs">
                                             {{ $lead->lead_code }}
                                         </a>
+                                        @if(!empty($lead->name) && $lead->name !== '-')
+                                            <div class="text-[11px] font-semibold text-gray-900 truncate max-w-[130px]" title="{{ $lead->name }}">{{ $lead->name }}</div>
+                                        @elseif(!empty($lead->company_name))
+                                            <div class="text-[11px] font-semibold text-gray-900 truncate max-w-[130px]" title="{{ $lead->company_name }}">{{ $lead->company_name }}</div>
+                                        @endif
                                         @if($lead->token_id)
-                                            <div class="text-2xs text-gray-500 font-mono">{{ $lead->token_id }}</div>
-                                        @endif
-                                        <div class="text-2xs text-slate-400 mt-0.5">{{ $lead->lead_source }}</div>
-                                    </td>
-
-                                    <!-- Client & Business -->
-                                    <td class="py-3 px-3 min-w-[160px]">
-                                        <div class="font-bold text-gray-900">{{ !empty($lead->name) && $lead->name !== '-' ? $lead->name : ($lead->company_name ?: '-') }}</div>
-                                        @if($lead->company_name)
-                                            <div class="text-gray-600 text-2xs truncate max-w-[180px]">{{ $lead->company_name }}</div>
-                                        @endif
-                                        @if($lead->business_type)
-                                            <span class="inline-block px-1.5 py-0.2 rounded text-[10px] bg-slate-100 text-slate-600 font-medium mt-0.5">
-                                                {{ $lead->business_type }}
-                                            </span>
+                                            <div class="text-[10px] text-gray-500 font-mono">{{ $lead->token_id }}</div>
                                         @endif
                                     </td>
 
-                                    <!-- WhatsApp & Phone & Status -->
-                                    <td class="py-3 px-3 whitespace-nowrap">
-                                        <!-- Phone -->
-                                        <div class="flex items-center gap-1 font-medium text-gray-800">
-                                            <span>📞</span>
-                                            <button type="button" 
-                                                    onclick="copyLeadText('{{ $lead->phone }}', this)" 
-                                                    class="group inline-flex items-center gap-1 text-gray-800 hover:text-indigo-600 transition cursor-pointer text-left focus:outline-none" 
-                                                    title="{{ __('Click to copy: ') }}{{ $lead->phone }}">
-                                                <span class="copy-target-text group-hover:underline">{{ $lead->phone }}</span>
-                                                <svg class="w-3 h-3 text-gray-400 group-hover:text-indigo-600 opacity-0 group-hover:opacity-100 transition shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                                            </button>
-                                        </div>
-
-                                        <!-- WhatsApp -->
+                                    <!-- 3. WhatsApp & Phone (Stacked) -->
+                                    <td class="py-2.5 px-2.5 whitespace-nowrap">
                                         @if($lead->whatsapp)
-                                            <div class="flex items-center gap-1 text-[11px] mt-0.5 text-emerald-700">
+                                            <div class="flex items-center gap-1 text-[11px] text-emerald-700">
                                                 <a href="https://wa.me/{{ $lead->normalized_whatsapp ?? preg_replace('/\D/', '', $lead->whatsapp) }}" target="_blank" class="hover:scale-110 transition shrink-0" title="{{ __('Open in WhatsApp') }}">
                                                     <span>💬</span>
                                                 </a>
@@ -370,100 +381,107 @@
                                                 @endif
                                             </div>
                                         @endif
-
-                                        <!-- Email -->
-                                        @if($lead->email)
-                                            <div class="mt-0.5">
+                                        @if($lead->phone)
+                                            <div class="flex items-center gap-1 font-medium text-gray-800 text-[11px] mt-0.5">
+                                                <span>📞</span>
                                                 <button type="button" 
-                                                        onclick="copyLeadText('{{ $lead->email }}', this)" 
-                                                        class="group inline-flex items-center gap-1 text-2xs text-gray-500 hover:text-indigo-600 transition cursor-pointer text-left max-w-[170px] focus:outline-none" 
-                                                        title="{{ __('Click to copy: ') }}{{ $lead->email }}">
-                                                    <span>✉️</span>
-                                                    <span class="copy-target-text truncate group-hover:underline">{{ $lead->email }}</span>
+                                                        onclick="copyLeadText('{{ $lead->phone }}', this)" 
+                                                        class="group inline-flex items-center gap-1 text-gray-800 hover:text-indigo-600 transition cursor-pointer text-left focus:outline-none" 
+                                                        title="{{ __('Click to copy: ') }}{{ $lead->phone }}">
+                                                    <span class="copy-target-text group-hover:underline">{{ $lead->phone }}</span>
                                                     <svg class="w-2.5 h-2.5 text-gray-400 group-hover:text-indigo-600 opacity-0 group-hover:opacity-100 transition shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
                                                 </button>
                                             </div>
                                         @endif
-                                    </td>
-
-                                    <!-- Location / Country -->
-                                    <td class="py-3 px-3 whitespace-nowrap">
-                                        <div class="text-gray-900 font-medium">
-                                            {{ $lead->current_country ?? $lead->country ?? '-' }}
-                                        </div>
-                                        @if($lead->business_country && $lead->business_country !== $lead->current_country)
-                                            <div class="text-2xs text-gray-500">Biz: {{ $lead->business_country }}</div>
-                                        @endif
-                                        @if($lead->google_maps_link)
-                                            <a href="{{ $lead->google_maps_link }}" target="_blank" class="inline-flex items-center gap-0.5 text-2xs text-indigo-600 hover:underline mt-0.5">
-                                                🗺️ Maps ↗
-                                            </a>
+                                        @if(!$lead->whatsapp && !$lead->phone)
+                                            <span class="text-gray-400 text-2xs">-</span>
                                         @endif
                                     </td>
 
-                                    <!-- Follow-up -->
-                                    <td class="py-3 px-3 whitespace-nowrap">
-                                        @php
-                                            $nextDate = $lead->followup_next_date ?? $lead->next_followup_date;
-                                            $isToday = $nextDate && \Carbon\Carbon::parse($nextDate)->isToday();
-                                            $isOverdue = $nextDate && \Carbon\Carbon::parse($nextDate)->isPast() && !$isToday && !in_array($lead->lead_status, ['Won', 'Lost']);
-                                        @endphp
-                                        @if($nextDate)
-                                            <div class="font-semibold {{ $isOverdue ? 'text-rose-600 font-bold' : ($isToday ? 'text-amber-700 font-bold' : 'text-gray-800') }}">
-                                                📅 {{ \Carbon\Carbon::parse($nextDate)->format('d M, Y') }}
-                                            </div>
-                                        @else
-                                            <span class="text-gray-400 text-2xs">{{ __('No date set') }}</span>
-                                        @endif
-                                        @if($lead->followup_comment)
-                                            <div class="text-2xs text-gray-500 truncate max-w-[150px] mt-0.5" title="{{ $lead->followup_comment }}">
-                                                "{{ $lead->followup_comment }}"
-                                            </div>
-                                        @endif
-                                    </td>
-
-                                    <!-- Meeting Info -->
-                                    <td class="py-3 px-3 whitespace-nowrap">
-                                        @if($lead->next_meeting_datetime)
-                                            <div class="font-semibold text-purple-700 flex items-center gap-1">
-                                                <span>🤝</span>
-                                                <span>{{ $lead->next_meeting_datetime->format('d M, h:i A') }}</span>
-                                            </div>
-                                            @if($lead->meeting_platform)
-                                                <div class="text-2xs text-purple-600 font-medium">via {{ $lead->meeting_platform }}</div>
-                                            @endif
-                                        @else
-                                            <span class="text-gray-400 text-2xs">{{ __('No meeting scheduled') }}</span>
-                                        @endif
-                                    </td>
-
-                                    <!-- Product & Temperature -->
-                                    <td class="py-3 px-3 whitespace-nowrap">
-                                        <div class="font-medium text-gray-900 truncate max-w-[140px]" title="{{ $lead->interested_products ?? $lead->interested_service }}">
-                                            {{ $lead->interested_products ?? $lead->interested_service ?? '-' }}
-                                        </div>
-                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold border mt-0.5 {{ $lead->temperature_badge_class }}">
-                                            {{ $lead->lead_temperature }}
-                                        </span>
-                                    </td>
-
-                                    <!-- Pipeline Status & Why Not Order -->
-                                    <td class="py-3 px-3 whitespace-nowrap">
+                                    <!-- 4. Status / Why Not (Stacked) -->
+                                    <td class="py-2.5 px-2.5 whitespace-nowrap">
                                         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold {{ $lead->status_badge_class }}">
                                             {{ __($lead->lead_status) }}
                                         </span>
                                         @if($lead->why_not_order)
-                                            <div class="text-2xs font-semibold text-rose-600 mt-1 max-w-[130px] truncate" title="{{ $lead->why_not_order }}">
+                                            <div class="text-2xs font-semibold text-rose-600 mt-0.5 max-w-[130px] truncate" title="{{ $lead->why_not_order }}">
                                                 🚫 {{ $lead->why_not_order }}
                                             </div>
                                         @endif
                                     </td>
 
-                                    <!-- Existing Order Count (Categorized Breakdown) -->
-                                    <td class="py-3 px-3 bg-indigo-50/30 border-x border-indigo-100 min-w-[210px]">
+                                    <!-- 5. Product & Temp (Stacked) -->
+                                    <td class="py-2.5 px-2.5 whitespace-nowrap">
+                                        <div class="font-medium text-gray-900 truncate max-w-[130px] text-[11px]" title="{{ $lead->interested_products ?? $lead->interested_service }}">
+                                            {{ $lead->interested_products ?? $lead->interested_service ?? '-' }}
+                                        </div>
+                                        <span class="inline-flex items-center px-1.5 py-0.2 rounded-full text-[10px] font-semibold border mt-0.5 {{ $lead->temperature_badge_class }}">
+                                            {{ $lead->lead_temperature }}
+                                        </span>
+                                    </td>
+
+                                    <!-- 6. Follow Up Status -->
+                                    <td class="py-2.5 px-2.5 whitespace-nowrap">
+                                        @php
+                                            $fuNextDate = $lead->followup_next_date ?? $lead->next_followup_date;
+                                            $fuIsToday = $fuNextDate && \Carbon\Carbon::parse($fuNextDate)->isToday();
+                                            $fuIsOverdue = $fuNextDate && \Carbon\Carbon::parse($fuNextDate)->isPast() && !$fuIsToday && !in_array($lead->lead_status, ['Won', 'Lost']);
+                                        @endphp
+                                        @if($fuIsOverdue)
+                                            <span class="inline-flex items-center px-1.5 py-0.2 rounded text-[10px] font-bold bg-rose-100 text-rose-700">⚠️ Overdue</span>
+                                        @elseif($fuIsToday)
+                                            <span class="inline-flex items-center px-1.5 py-0.2 rounded text-[10px] font-bold bg-amber-100 text-amber-800">⏳ Today</span>
+                                        @elseif($fuNextDate)
+                                            <span class="inline-flex items-center px-1.5 py-0.2 rounded text-[10px] font-semibold bg-blue-100 text-blue-700">Scheduled</span>
+                                        @else
+                                            <span class="text-gray-400 text-2xs">-</span>
+                                        @endif
+                                        @if($lead->followup_comment)
+                                            <div class="text-[10px] text-gray-600 truncate max-w-[140px] mt-0.5" title="{{ $lead->followup_comment }}">
+                                                "{{ $lead->followup_comment }}"
+                                            </div>
+                                        @endif
+                                    </td>
+
+                                    <!-- 7. Follow up 1st Date -->
+                                    <td class="py-2.5 px-2.5 whitespace-nowrap text-[11px] font-mono text-gray-800">
+                                        @if($lead->followup_first_date)
+                                            <div>📅 {{ \Carbon\Carbon::parse($lead->followup_first_date)->format('d M, Y') }}</div>
+                                        @else
+                                            <span class="text-gray-400 text-2xs">-</span>
+                                        @endif
+                                    </td>
+
+                                    <!-- 8. Follow up last date -->
+                                    <td class="py-2.5 px-2.5 whitespace-nowrap text-[11px] font-mono text-gray-800">
+                                        @if($lead->followup_last_date)
+                                            <div>📅 {{ \Carbon\Carbon::parse($lead->followup_last_date)->format('d M, Y') }}</div>
+                                        @else
+                                            <span class="text-gray-400 text-2xs">-</span>
+                                        @endif
+                                    </td>
+
+                                    <!-- 9. Follow up next date -->
+                                    <td class="py-2.5 px-2.5 whitespace-nowrap text-[11px] font-mono">
+                                        @php
+                                            $nDate = $lead->followup_next_date ?? $lead->next_followup_date;
+                                            $isToday = $nDate && \Carbon\Carbon::parse($nDate)->isToday();
+                                            $isOverdue = $nDate && \Carbon\Carbon::parse($nDate)->isPast() && !$isToday && !in_array($lead->lead_status, ['Won', 'Lost']);
+                                        @endphp
+                                        @if($nDate)
+                                            <div class="font-bold {{ $isOverdue ? 'text-rose-600' : ($isToday ? 'text-amber-700' : 'text-gray-800') }}">
+                                                📅 {{ \Carbon\Carbon::parse($nDate)->format('d M, Y') }}
+                                            </div>
+                                        @else
+                                            <span class="text-gray-400 text-2xs">-</span>
+                                        @endif
+                                    </td>
+
+                                    <!-- 10. Existing Order Count (Categorized Breakdown) -->
+                                    <td class="py-2.5 px-2.5 bg-indigo-50/30 border-x border-indigo-100 min-w-[190px]">
                                         @if($orderCounts['total'] > 0)
-                                            <div class="font-bold text-indigo-900 text-[11px] mb-1 flex items-center gap-1">
-                                                <span>📦 Total: {{ $orderCounts['total'] }} orders</span>
+                                            <div class="font-bold text-indigo-900 text-[11px] mb-0.5 flex items-center gap-1">
+                                                <span>📦 Total: {{ $orderCounts['total'] }}</span>
                                             </div>
                                             <div class="flex flex-wrap gap-1">
                                                 @if($orderCounts['erp'] > 0)
@@ -506,10 +524,29 @@
                                             <span class="text-gray-400 text-2xs italic">{{ __('No prior orders') }}</span>
                                         @endif
                                     </td>
+
+                                    <!-- 11. Interested Product -->
+                                    <td class="py-2.5 px-2.5 whitespace-nowrap text-[11px]">
+                                        @php $intProd = $lead->interested_products ?: ($lead->interested_service ?: null); @endphp
+                                        @if($intProd)
+                                            <span class="font-semibold text-gray-900 truncate max-w-[130px] block" title="{{ $intProd }}">{{ $intProd }}</span>
+                                        @else
+                                            <span class="text-gray-400 text-2xs">-</span>
+                                        @endif
+                                    </td>
+
+                                    <!-- 12. Potential Order -->
+                                    <td class="py-2.5 px-2.5 whitespace-nowrap text-[11px]">
+                                        @if($lead->potential_order)
+                                            <span class="font-semibold text-indigo-700 truncate max-w-[130px] block" title="{{ $lead->potential_order }}">{{ $lead->potential_order }}</span>
+                                        @else
+                                            <span class="text-gray-400 text-2xs">-</span>
+                                        @endif
+                                    </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="10" class="text-center py-12 text-gray-500">
+                                    <td colspan="12" class="text-center py-12 text-gray-500">
                                         <div class="flex flex-col items-center justify-center">
                                             <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/></svg>
                                             <span class="text-base font-semibold text-gray-700">{{ __('No leads found') }}</span>
