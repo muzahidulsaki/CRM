@@ -208,16 +208,16 @@
                             @if($order->order_type === 'creative')
                                 <dl class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
                                     <div class="p-3 bg-gray-50 rounded-xl">
-                                        <dt class="text-gray-500 font-semibold">{{ __('Script / Idea') }}</dt>
-                                        <dd class="font-bold text-gray-900 mt-0.5">{{ $meta['script_idea'] ?? '-' }}</dd>
+                                        <dt class="text-gray-500 font-semibold">{{ __('Script Status') }}</dt>
+                                        <dd class="font-bold text-gray-900 mt-0.5">{{ $meta['script_status'] ?? $meta['script_idea'] ?? '-' }}</dd>
                                     </div>
                                     <div class="p-3 bg-gray-50 rounded-xl">
                                         <dt class="text-gray-500 font-semibold">{{ __('Script Code') }}</dt>
                                         <dd class="font-bold font-mono text-indigo-700 mt-0.5">{{ $meta['script_code'] ?? '-' }}</dd>
                                     </div>
                                     <div class="p-3 bg-gray-50 rounded-xl">
-                                        <dt class="text-gray-500 font-semibold">{{ __('Voice / Design') }}</dt>
-                                        <dd class="font-bold text-gray-900 mt-0.5">{{ $meta['voice_design'] ?? '-' }}</dd>
+                                        <dt class="text-gray-500 font-semibold">{{ __('Voice Status') }}</dt>
+                                        <dd class="font-bold text-gray-900 mt-0.5">{{ $meta['voice_status'] ?? $meta['voice_design'] ?? '-' }}</dd>
                                     </div>
                                     <div class="p-3 bg-gray-50 rounded-xl">
                                         <dt class="text-gray-500 font-semibold">{{ __('Duration') }}</dt>

@@ -210,401 +210,291 @@
                 <div class="overflow-x-auto">
                     
                     @if($currentType === 'creative')
-                        <!-- 🎨 CREATIVE ORDERS TABLE (Excel Sheet Creative format) -->
+                        <!-- 🎨 CREATIVE ORDERS TABLE -->
                         <table class="min-w-full divide-y divide-gray-200 text-left text-xs">
                             <thead class="bg-indigo-50/70 text-indigo-900 font-bold uppercase tracking-wider">
                                 <tr>
                                     <th class="py-3 px-3 whitespace-nowrap text-center w-12">{{ __('Actions') }}</th>
-                                    <th class="py-3 px-3">{{ __('Order Code & Date') }}</th>
-                                    <th class="py-3 px-3">{{ __('Client & WhatsApp') }}</th>
-                                    <th class="py-3 px-3">{{ __('Service & Details') }}</th>
-                                    <th class="py-3 px-3">{{ __('Script Code / Idea') }}</th>
-                                    <th class="py-3 px-3">{{ __('Voice / Seconds') }}</th>
-                                    <th class="py-3 px-3">{{ __('Initial Total') }}</th>
-                                    <th class="py-3 px-3">{{ __('1st / 2nd / 3rd Pay') }}</th>
-                                    <th class="py-3 px-3">{{ __('Due (BDT)') }}</th>
-                                    <th class="py-3 px-3">{{ __('Working Status') }}</th>
+                                    <th class="py-3 px-3 whitespace-nowrap">{{ __('Order Code') }}</th>
+                                    <th class="py-3 px-3 whitespace-nowrap">{{ __('Order Status') }}</th>
+                                    <th class="py-3 px-3 whitespace-nowrap">{{ __('Whatsapp') }}</th>
+                                    <th class="py-3 px-3 whitespace-nowrap">{{ __('Service & Details') }}</th>
+                                    <th class="py-3 px-3 whitespace-nowrap">{{ __('Script Status') }}</th>
+                                    <th class="py-3 px-3 whitespace-nowrap">{{ __('Voice Status') }}</th>
+                                    <th class="py-3 px-3 whitespace-nowrap">{{ __('Initial Total') }}</th>
+                                    <th class="py-3 px-3 whitespace-nowrap">{{ __('Due Payment') }}</th>
+                                    <th class="py-3 px-3 whitespace-nowrap">{{ __('Service Provider') }}</th>
+                                    <th class="py-3 px-3 whitespace-nowrap">{{ __('Starting Date') }}</th>
+                                    <th class="py-3 px-3 whitespace-nowrap">{{ __('Complete Date') }}</th>
+                                    <th class="py-3 px-3 whitespace-nowrap">{{ __('Why Not Delivery') }}</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100">
                                 @forelse($orders as $order)
-                                    @php $meta = $order->meta ?? []; @endphp
+                                    @php
+                                        $meta = $order->meta ?? [];
+                                        $waNumber = $order->customer?->whatsapp ?? $order->customer?->phone;
+                                        $waDigits = preg_replace('/\D/', '', (string) $waNumber);
+                                        $scriptSt = $meta['script_status'] ?? $meta['script_idea'] ?? '-';
+                                        $voiceSt = $meta['voice_status'] ?? $meta['voice_design'] ?? '-';
+                                        $badgeColor = fn($st) => match($st) {
+                                            'Confirmed', 'No need' => 'bg-emerald-100 text-emerald-800',
+                                            'Ready', 'Cl-Checking' => 'bg-blue-100 text-blue-800',
+                                            'Not ready' => 'bg-amber-100 text-amber-800',
+                                            default => 'bg-gray-100 text-gray-700',
+                                        };
+                                    @endphp
                                     <tr class="hover:bg-indigo-50/20 transition">
-                                        <td class="py-3 px-3 whitespace-nowrap text-center">
-                                            <div class="relative inline-block text-left" x-data="{ open: false }" @click.outside="open = false">
-                                                <button @click="open = !open" type="button" class="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition focus:outline-none" title="{{ __('Actions') }}">
-                                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                                        <circle cx="12" cy="5" r="1.75" />
-                                                        <circle cx="12" cy="12" r="1.75" />
-                                                        <circle cx="12" cy="19" r="1.75" />
-                                                    </svg>
-                                                </button>
-
-                                                <!-- Dropdown Menu -->
-                                                <div x-show="open"
-                                                     x-cloak
-                                                     x-transition:enter="transition ease-out duration-100"
-                                                     x-transition:enter-start="transform opacity-0 scale-95"
-                                                     x-transition:enter-end="transform opacity-100 scale-100"
-                                                     x-transition:leave="transition ease-in duration-75"
-                                                     x-transition:leave-start="transform opacity-100 scale-100"
-                                                     x-transition:leave-end="transform opacity-0 scale-95"
-                                                     class="absolute left-0 z-50 mt-1 w-44 origin-top-left rounded-xl bg-white p-1.5 shadow-xl ring-1 ring-slate-900/10 focus:outline-none text-left"
-                                                     style="display: none;">
-                                                    
-                                                    <a href="{{ route('orders.show', $order) }}" class="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 rounded-lg transition">
-                                                        <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                                        <span>{{ __('View Details') }}</span>
-                                                    </a>
-
-                                                    <a href="{{ route('orders.edit', $order) }}" class="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-amber-50 hover:text-amber-700 rounded-lg transition">
-                                                        <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                                                        <span>{{ __('Edit Order') }}</span>
-                                                    </a>
-
-                                                    @if($order->project)
-                                                        <a href="{{ route('projects.show', $order->project) }}" class="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-indigo-700 hover:bg-indigo-50 rounded-lg transition">
-                                                            <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-                                                            <span>{{ __('Project Workspace') }}</span>
-                                                        </a>
-                                                    @endif
-
-                                                    <div class="my-1 border-t border-gray-100"></div>
-
-                                                    <form method="POST" action="{{ route('orders.destroy', $order) }}" onsubmit="return confirm('{{ __('Are you sure you want to delete this order?') }}');">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 rounded-lg transition text-left">
-                                                            <svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                                            <span>{{ __('Delete') }}</span>
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </td>
+                                        @include('orders.partials._actions', ['order' => $order])
                                         <td class="py-3 px-3 whitespace-nowrap">
                                             <a href="{{ route('orders.show', $order) }}" class="font-bold font-mono text-indigo-600 hover:underline">
                                                 {{ $order->order_code }}
                                             </a>
-                                            <div class="text-2xs text-gray-400">{{ $order->order_date?->format('d M, Y') }}</div>
                                         </td>
                                         <td class="py-3 px-3 whitespace-nowrap">
-                                            <div class="font-bold text-gray-900">{{ $order->customer->name ?? '-' }}</div>
-                                            <div class="text-2xs font-mono text-emerald-700 flex items-center gap-1 mt-0.5">
-                                                <span>💬</span>
-                                                <a href="https://wa.me/{{ preg_replace('/\D/', '', $order->customer->whatsapp ?? $order->customer->phone ?? '') }}" target="_blank" class="hover:underline">
-                                                    {{ $order->customer->whatsapp ?? $order->customer->phone ?? '-' }}
+                                            <span class="px-2 py-0.5 rounded-full text-2xs font-bold {{ in_array($order->status, ['Delivered', 'Delivery', 'Complete', 'Completed']) ? 'bg-emerald-100 text-emerald-800' : 'bg-indigo-100 text-indigo-800' }}">
+                                                {{ $order->status }}
+                                            </span>
+                                        </td>
+                                        <td class="py-3 px-3 whitespace-nowrap font-mono">
+                                            @if($waNumber)
+                                                <a href="https://wa.me/{{ $waDigits }}" target="_blank" class="text-emerald-700 hover:underline inline-flex items-center gap-1 font-semibold">
+                                                    <span>💬</span>
+                                                    <span>{{ $waNumber }}</span>
                                                 </a>
-                                            </div>
+                                            @else
+                                                <span class="text-gray-400">-</span>
+                                            @endif
                                         </td>
                                         <td class="py-3 px-3">
-                                            <div class="font-semibold text-gray-900">{{ $order->service_category }}</div>
-                                            <div class="text-2xs text-gray-500 truncate max-w-[150px]">{{ $order->title }}</div>
-                                            @if(!empty($meta['service_provider']))
-                                                <div class="text-[10px] text-indigo-600 font-semibold mt-0.5">👤 {{ $meta['service_provider'] }}</div>
-                                            @endif
+                                            <div class="font-semibold text-gray-900 whitespace-nowrap">{{ $order->service_category }}</div>
+                                            <div class="text-2xs text-gray-500 truncate max-w-[160px]">{{ $order->title }}</div>
                                         </td>
                                         <td class="py-3 px-3 whitespace-nowrap">
-                                            <div class="font-mono font-bold text-indigo-700">{{ $meta['script_code'] ?? '-' }}</div>
-                                            <div class="text-2xs text-gray-500">{{ $meta['script_idea'] ?? '-' }}</div>
+                                            <span class="px-2 py-0.5 rounded-full text-2xs font-bold {{ $badgeColor($scriptSt) }}">
+                                                {{ $scriptSt }}
+                                            </span>
                                         </td>
                                         <td class="py-3 px-3 whitespace-nowrap">
-                                            <div class="font-semibold text-gray-800">{{ $meta['second'] ? $meta['second'] . 's' : '-' }}</div>
-                                            @if(!empty($meta['voice_link']))
-                                                <a href="{{ $meta['voice_link'] }}" target="_blank" class="text-2xs text-indigo-600 hover:underline flex items-center gap-0.5 mt-0.5">
-                                                    🎙️ Voice Link ↗
-                                                </a>
-                                            @endif
+                                            <span class="px-2 py-0.5 rounded-full text-2xs font-bold {{ $badgeColor($voiceSt) }}">
+                                                {{ $voiceSt }}
+                                            </span>
                                         </td>
                                         <td class="py-3 px-3 whitespace-nowrap font-mono font-bold text-gray-900">
                                             {{ number_format($order->total_amount) }}
                                         </td>
-                                        <td class="py-3 px-3 whitespace-nowrap text-2xs font-mono">
-                                            <div>1st: {{ number_format(floatval($meta['pay_1st'] ?? 0)) }}</div>
-                                            <div class="text-gray-500">2nd: {{ number_format(floatval($meta['pay_2nd'] ?? 0)) }} | 3rd: {{ number_format(floatval($meta['pay_3rd'] ?? 0)) }}</div>
-                                        </td>
                                         <td class="py-3 px-3 whitespace-nowrap font-mono font-bold {{ $order->due_amount > 0 ? 'text-rose-600' : 'text-emerald-600' }}">
                                             {{ number_format($order->due_amount) }}
                                         </td>
-                                        <td class="py-3 px-3 whitespace-nowrap">
-                                            <span class="px-2 py-0.5 rounded-full text-2xs font-bold {{ $order->status === 'Delivered' || $order->status === 'Completed' ? 'bg-emerald-100 text-emerald-800' : 'bg-indigo-100 text-indigo-800' }}">
-                                                {{ $order->status }}
-                                            </span>
+                                        <td class="py-3 px-3 whitespace-nowrap text-gray-800 font-medium">
+                                            {{ $meta['service_provider'] ?? '-' }}
+                                        </td>
+                                        <td class="py-3 px-3 whitespace-nowrap font-mono text-gray-700">
+                                            {{ $meta['starting_date'] ?? $order->start_date?->format('Y-m-d') ?? '-' }}
+                                        </td>
+                                        <td class="py-3 px-3 whitespace-nowrap font-mono text-gray-700">
+                                            {{ $meta['complete_date'] ?? '-' }}
+                                        </td>
+                                        <td class="py-3 px-3 text-rose-700 font-medium max-w-[180px] truncate" title="{{ $meta['why_not_delivery'] ?? '' }}">
+                                            {{ $meta['why_not_delivery'] ?? '-' }}
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="10" class="text-center py-8 text-gray-400">{{ __('No Creative Orders found.') }}</td>
+                                        <td colspan="13" class="text-center py-8 text-gray-400">{{ __('No Creative Orders found.') }}</td>
                                     </tr>
                                 @endforelse
                             </tbody>
                         </table>
 
                     @elseif($currentType === 'ads')
-                        <!-- 📈 ADS CAMPAIGN ORDERS TABLE (Excel Sheet Ads Campaign format) -->
+                        <!-- 📈 ADS CAMPAIGN ORDERS TABLE -->
                         <table class="min-w-full divide-y divide-gray-200 text-left text-xs">
                             <thead class="bg-amber-50/70 text-amber-900 font-bold uppercase tracking-wider">
                                 <tr>
                                     <th class="py-3 px-3 whitespace-nowrap text-center w-12">{{ __('Actions') }}</th>
-                                    <th class="py-3 px-3">{{ __('Order Code & Date') }}</th>
-                                    <th class="py-3 px-3">{{ __('Business & WhatsApp') }}</th>
-                                    <th class="py-3 px-3">{{ __('Ads Post Link') }}</th>
-                                    <th class="py-3 px-3">{{ __('Days & Budget') }}</th>
-                                    <th class="py-3 px-3">{{ __('Dollar Budget ($)') }}</th>
-                                    <th class="py-3 px-3">{{ __('Total BDT') }}</th>
-                                    <th class="py-3 px-3">{{ __('Paid / Due (BDT)') }}</th>
-                                    <th class="py-3 px-3">{{ __('Dollar Due ($)') }}</th>
-                                    <th class="py-3 px-3">{{ __('Today Check') }}</th>
+                                    <th class="py-3 px-3 whitespace-nowrap">{{ __('Order Code') }}</th>
+                                    <th class="py-3 px-3 whitespace-nowrap">{{ __('Order Status') }}</th>
+                                    <th class="py-3 px-3 whitespace-nowrap">{{ __('Whatsapp') }}</th>
+                                    <th class="py-3 px-3 whitespace-nowrap">{{ __('Dollar Due ($)') }}</th>
+                                    <th class="py-3 px-3 whitespace-nowrap">{{ __('Total $ Cost') }}</th>
+                                    <th class="py-3 px-3 whitespace-nowrap">{{ __('Total Days') }}</th>
+                                    <th class="py-3 px-3 whitespace-nowrap">{{ __('Total BDT') }}</th>
+                                    <th class="py-3 px-3 whitespace-nowrap">{{ __('Total Dollar ($ Budget)') }}</th>
+                                    <th class="py-3 px-3 whitespace-nowrap">{{ __('Starting Date') }}</th>
+                                    <th class="py-3 px-3 whitespace-nowrap">{{ __('End Date') }}</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100">
                                 @forelse($orders as $order)
-                                    @php $meta = $order->meta ?? []; @endphp
+                                    @php
+                                        $meta = $order->meta ?? [];
+                                        $waNumber = $order->customer?->whatsapp ?? $order->customer?->phone;
+                                        $waDigits = preg_replace('/\D/', '', (string) $waNumber);
+                                    @endphp
                                     <tr class="hover:bg-amber-50/20 transition">
-                                        <td class="py-3 px-3 whitespace-nowrap text-center">
-                                            <div class="relative inline-block text-left" x-data="{ open: false }" @click.outside="open = false">
-                                                <button @click="open = !open" type="button" class="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition focus:outline-none" title="{{ __('Actions') }}">
-                                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                                        <circle cx="12" cy="5" r="1.75" />
-                                                        <circle cx="12" cy="12" r="1.75" />
-                                                        <circle cx="12" cy="19" r="1.75" />
-                                                    </svg>
-                                                </button>
-
-                                                <!-- Dropdown Menu -->
-                                                <div x-show="open"
-                                                     x-cloak
-                                                     x-transition:enter="transition ease-out duration-100"
-                                                     x-transition:enter-start="transform opacity-0 scale-95"
-                                                     x-transition:enter-end="transform opacity-100 scale-100"
-                                                     x-transition:leave="transition ease-in duration-75"
-                                                     x-transition:leave-start="transform opacity-100 scale-100"
-                                                     x-transition:leave-end="transform opacity-0 scale-95"
-                                                     class="absolute left-0 z-50 mt-1 w-44 origin-top-left rounded-xl bg-white p-1.5 shadow-xl ring-1 ring-slate-900/10 focus:outline-none text-left"
-                                                     style="display: none;">
-                                                    
-                                                    <a href="{{ route('orders.show', $order) }}" class="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 rounded-lg transition">
-                                                        <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                                        <span>{{ __('View Details') }}</span>
-                                                    </a>
-
-                                                    <a href="{{ route('orders.edit', $order) }}" class="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-amber-50 hover:text-amber-700 rounded-lg transition">
-                                                        <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                                                        <span>{{ __('Edit Order') }}</span>
-                                                    </a>
-
-                                                    @if($order->project)
-                                                        <a href="{{ route('projects.show', $order->project) }}" class="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-indigo-700 hover:bg-indigo-50 rounded-lg transition">
-                                                            <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-                                                            <span>{{ __('Project Workspace') }}</span>
-                                                        </a>
-                                                    @endif
-
-                                                    <div class="my-1 border-t border-gray-100"></div>
-
-                                                    <form method="POST" action="{{ route('orders.destroy', $order) }}" onsubmit="return confirm('{{ __('Are you sure you want to delete this order?') }}');">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 rounded-lg transition text-left">
-                                                            <svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                                            <span>{{ __('Delete') }}</span>
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </td>
+                                        @include('orders.partials._actions', ['order' => $order])
                                         <td class="py-3 px-3 whitespace-nowrap">
                                             <a href="{{ route('orders.show', $order) }}" class="font-bold font-mono text-amber-700 hover:underline">
                                                 {{ $order->order_code }}
                                             </a>
-                                            <div class="text-2xs text-gray-400">{{ $order->order_date?->format('d M, Y') }}</div>
                                         </td>
                                         <td class="py-3 px-3 whitespace-nowrap">
-                                            <div class="font-bold text-gray-900">{{ $order->customer->company_name ?? $order->customer->name ?? '-' }}</div>
-                                            <div class="text-2xs font-mono text-emerald-700 flex items-center gap-1 mt-0.5">
-                                                <span>💬</span>
-                                                <a href="https://wa.me/{{ preg_replace('/\D/', '', $order->customer->whatsapp ?? $order->customer->phone ?? '') }}" target="_blank" class="hover:underline">
-                                                    {{ $order->customer->whatsapp ?? $order->customer->phone ?? '-' }}
-                                                </a>
-                                            </div>
+                                            <span class="px-2 py-0.5 rounded-full text-2xs font-bold {{ $order->status === 'Active' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800' }}">
+                                                {{ $order->status }}
+                                            </span>
                                         </td>
-                                        <td class="py-3 px-3">
-                                            @if(!empty($meta['ads_post_link']))
-                                                <a href="{{ $meta['ads_post_link'] }}" target="_blank" class="text-indigo-600 hover:underline text-2xs font-medium block truncate max-w-[160px]">
-                                                    🔗 {{ $meta['ads_post_link'] }}
+                                        <td class="py-3 px-3 whitespace-nowrap font-mono">
+                                            @if($waNumber)
+                                                <a href="https://wa.me/{{ $waDigits }}" target="_blank" class="text-emerald-700 hover:underline inline-flex items-center gap-1 font-semibold">
+                                                    <span>💬</span>
+                                                    <span>{{ $waNumber }}</span>
                                                 </a>
                                             @else
                                                 <span class="text-gray-400">-</span>
                                             @endif
                                         </td>
-                                        <td class="py-3 px-3 whitespace-nowrap font-mono">
-                                            <div class="font-semibold">{{ $meta['total_days'] ?? '-' }} days</div>
-                                            @if(!empty($meta['lifetime_daily_budget']))
-                                                <div class="text-2xs text-amber-700 font-bold">${{ number_format(floatval($meta['lifetime_daily_budget']), 2) }}</div>
-                                            @elseif(!empty($meta['daily_cost']))
-                                                <div class="text-2xs text-gray-500">${{ number_format(floatval($meta['daily_cost']), 2) }}/day</div>
-                                            @endif
+                                        <td class="py-3 px-3 whitespace-nowrap font-mono font-bold text-rose-600">
+                                            ${{ number_format(floatval($meta['dollar_due'] ?? 0), 2) }}
                                         </td>
-                                        <td class="py-3 px-3 whitespace-nowrap font-mono font-bold text-amber-800">
-                                            ${{ number_format(floatval($meta['total_dollar'] ?? 0), 2) }}
-                                            @if(!empty($meta['lifetime_daily_budget']))
-                                                <div class="text-[10px] text-gray-500 font-normal">Budget: ${{ number_format(floatval($meta['lifetime_daily_budget']), 2) }}</div>
-                                            @elseif(!empty($meta['lifetime_budget']))
-                                                <div class="text-[10px] text-gray-500 font-normal">Life: ${{ number_format(floatval($meta['lifetime_budget']), 2) }}</div>
-                                            @endif
+                                        <td class="py-3 px-3 whitespace-nowrap font-mono font-semibold text-gray-800">
+                                            ${{ number_format(floatval($meta['total_dollar_cost'] ?? 0), 2) }}
+                                        </td>
+                                        <td class="py-3 px-3 whitespace-nowrap font-mono font-semibold text-gray-900">
+                                            {{ !empty($meta['total_days']) ? $meta['total_days'] . ' days' : '-' }}
                                         </td>
                                         <td class="py-3 px-3 whitespace-nowrap font-mono font-bold text-gray-900">
                                             {{ number_format($order->total_amount) }}
                                         </td>
-                                        <td class="py-3 px-3 whitespace-nowrap text-2xs font-mono">
-                                            <div class="text-emerald-700 font-semibold">Paid: {{ number_format($order->paid_amount) }}</div>
-                                            <div class="text-rose-600 font-bold">Due: {{ number_format($order->due_amount) }}</div>
+                                        <td class="py-3 px-3 whitespace-nowrap font-mono font-bold text-amber-800">
+                                            ${{ number_format(floatval($meta['total_dollar'] ?? ($order->total_amount > 0 ? $order->total_amount / 150 : 0)), 2) }}
                                         </td>
-                                        <td class="py-3 px-3 whitespace-nowrap font-mono font-bold text-rose-600">
-                                            ${{ number_format(floatval($meta['dollar_due'] ?? 0), 2) }}
+                                        <td class="py-3 px-3 whitespace-nowrap font-mono text-gray-700">
+                                            {{ $meta['starting_date'] ?? $order->start_date?->format('Y-m-d') ?? '-' }}
                                         </td>
-                                        <td class="py-3 px-3 whitespace-nowrap">
-                                            @if(($meta['today_check'] ?? '') === 'Checked')
-                                                <span class="px-2 py-0.5 rounded-full text-2xs font-bold bg-emerald-100 text-emerald-800">✅ Checked</span>
-                                            @elseif(($meta['today_check'] ?? '') === 'Pending')
-                                                <span class="px-2 py-0.5 rounded-full text-2xs font-bold bg-amber-100 text-amber-800">⏳ Pending</span>
-                                            @else
-                                                <span class="text-gray-400 text-xs">-</span>
-                                            @endif
+                                        <td class="py-3 px-3 whitespace-nowrap font-mono text-gray-700">
+                                            {{ $meta['end_date'] ?? $order->expected_delivery_date?->format('Y-m-d') ?? '-' }}
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="10" class="text-center py-8 text-gray-400">{{ __('No Ads Campaign Orders found.') }}</td>
+                                        <td colspan="11" class="text-center py-8 text-gray-400">{{ __('No Ads Campaign Orders found.') }}</td>
                                     </tr>
                                 @endforelse
                             </tbody>
                         </table>
 
                     @elseif($currentType === 'web_software')
-                        <!-- 💻 SOFTWARE & WEBSITE ORDERS TABLE (Excel Sheet Soft & Web format) -->
+                        <!-- 💻 SOFTWARE & WEBSITE ORDERS TABLE -->
                         <table class="min-w-full divide-y divide-gray-200 text-left text-xs">
                             <thead class="bg-blue-50/70 text-blue-900 font-bold uppercase tracking-wider">
                                 <tr>
                                     <th class="py-3 px-3 whitespace-nowrap text-center w-12">{{ __('Actions') }}</th>
-                                    <th class="py-3 px-3">{{ __('Order Code & Date') }}</th>
-                                    <th class="py-3 px-3">{{ __('Business & WhatsApp') }}</th>
-                                    <th class="py-3 px-3">{{ __('Domain / Link') }}</th>
-                                    <th class="py-3 px-3">{{ __('Subscription / Fee') }}</th>
-                                    <th class="py-3 px-3">{{ __('Initial Total') }}</th>
-                                    <th class="py-3 px-3">{{ __('Installments (1st-7th)') }}</th>
-                                    <th class="py-3 px-3">{{ __('Total Due') }}</th>
-                                    <th class="py-3 px-3">{{ __('Credentials') }}</th>
+                                    <th class="py-3 px-3 whitespace-nowrap">{{ __('Order Code') }}</th>
+                                    <th class="py-3 px-3 whitespace-nowrap">{{ __('Order Status') }}</th>
+                                    <th class="py-3 px-3 whitespace-nowrap">{{ __('Whatsapp') }}</th>
+                                    <th class="py-3 px-3 whitespace-nowrap">{{ __('Domain') }}</th>
+                                    <th class="py-3 px-3 whitespace-nowrap">{{ __('Initial Next Due Pay Date') }}</th>
+                                    <th class="py-3 px-3 whitespace-nowrap">{{ __('Initial Total') }}</th>
+                                    <th class="py-3 px-3 whitespace-nowrap">{{ __('Initial Due') }}</th>
+                                    <th class="py-3 px-3 whitespace-nowrap">{{ __('Subscription System') }}</th>
+                                    <th class="py-3 px-3 whitespace-nowrap">{{ __('Subscription / Renew Fee') }}</th>
+                                    <th class="py-3 px-3 whitespace-nowrap">{{ __('Monthly Due') }}</th>
+                                    <th class="py-3 px-3 whitespace-nowrap">{{ __('Yearly Due') }}</th>
+                                    <th class="py-3 px-3 whitespace-nowrap">{{ __('Next Renew Payment Date') }}</th>
+                                    <th class="py-3 px-3 whitespace-nowrap">{{ __('Renew Status') }}</th>
+                                    <th class="py-3 px-3 whitespace-nowrap">{{ __('Service Category') }}</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100">
                                 @forelse($orders as $order)
-                                    @php $meta = $order->meta ?? []; @endphp
+                                    @php
+                                        $meta = $order->meta ?? [];
+                                        $waNumber = $order->customer?->whatsapp ?? $order->customer?->phone;
+                                        $waDigits = preg_replace('/\D/', '', (string) $waNumber);
+                                        $rawSub = $meta['subscription_system'] ?? 'One-Time Payment';
+                                        $subLabel = match($rawSub) {
+                                            'One Time/No Subscription', 'No Subscription' => 'One-Time Payment',
+                                            'Yearly Renewal', 'Yearly' => 'Yearly Subscription',
+                                            'Monthly' => 'Monthly Subscription',
+                                            default => $rawSub,
+                                        };
+                                        $renewSt = $meta['renew_status'] ?? 'Not Required';
+                                        $renewBadge = match($renewSt) {
+                                            'Active' => 'bg-emerald-100 text-emerald-800',
+                                            'Upcoming' => 'bg-blue-100 text-blue-800',
+                                            'Due', 'Expired' => 'bg-rose-100 text-rose-800',
+                                            'Cancelled' => 'bg-gray-200 text-gray-700',
+                                            default => 'bg-gray-100 text-gray-700',
+                                        };
+                                    @endphp
                                     <tr class="hover:bg-blue-50/20 transition">
-                                        <td class="py-3 px-3 whitespace-nowrap text-center">
-                                            <div class="relative inline-block text-left" x-data="{ open: false }" @click.outside="open = false">
-                                                <button @click="open = !open" type="button" class="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition focus:outline-none" title="{{ __('Actions') }}">
-                                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                                        <circle cx="12" cy="5" r="1.75" />
-                                                        <circle cx="12" cy="12" r="1.75" />
-                                                        <circle cx="12" cy="19" r="1.75" />
-                                                    </svg>
-                                                </button>
-
-                                                <!-- Dropdown Menu -->
-                                                <div x-show="open"
-                                                     x-cloak
-                                                     x-transition:enter="transition ease-out duration-100"
-                                                     x-transition:enter-start="transform opacity-0 scale-95"
-                                                     x-transition:enter-end="transform opacity-100 scale-100"
-                                                     x-transition:leave="transition ease-in duration-75"
-                                                     x-transition:leave-start="transform opacity-100 scale-100"
-                                                     x-transition:leave-end="transform opacity-0 scale-95"
-                                                     class="absolute left-0 z-50 mt-1 w-44 origin-top-left rounded-xl bg-white p-1.5 shadow-xl ring-1 ring-slate-900/10 focus:outline-none text-left"
-                                                     style="display: none;">
-                                                    
-                                                    <a href="{{ route('orders.show', $order) }}" class="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 rounded-lg transition">
-                                                        <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                                        <span>{{ __('View Details') }}</span>
-                                                    </a>
-
-                                                    <a href="{{ route('orders.edit', $order) }}" class="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-amber-50 hover:text-amber-700 rounded-lg transition">
-                                                        <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                                                        <span>{{ __('Edit Order') }}</span>
-                                                    </a>
-
-                                                    @if($order->project)
-                                                        <a href="{{ route('projects.show', $order->project) }}" class="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-indigo-700 hover:bg-indigo-50 rounded-lg transition">
-                                                            <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-                                                            <span>{{ __('Project Workspace') }}</span>
-                                                        </a>
-                                                    @endif
-
-                                                    <div class="my-1 border-t border-gray-100"></div>
-
-                                                    <form method="POST" action="{{ route('orders.destroy', $order) }}" onsubmit="return confirm('{{ __('Are you sure you want to delete this order?') }}');">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 rounded-lg transition text-left">
-                                                            <svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                                            <span>{{ __('Delete') }}</span>
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </td>
+                                        @include('orders.partials._actions', ['order' => $order])
                                         <td class="py-3 px-3 whitespace-nowrap">
                                             <a href="{{ route('orders.show', $order) }}" class="font-bold font-mono text-blue-700 hover:underline">
                                                 {{ $order->order_code }}
                                             </a>
-                                            <div class="text-2xs text-gray-400">{{ $order->order_date?->format('d M, Y') }}</div>
                                         </td>
                                         <td class="py-3 px-3 whitespace-nowrap">
-                                            <div class="font-bold text-gray-900">{{ $order->customer->company_name ?? $order->customer->name ?? '-' }}</div>
-                                            <div class="text-2xs font-mono text-emerald-700 flex items-center gap-1 mt-0.5">
-                                                <span>💬</span>
-                                                <a href="https://wa.me/{{ preg_replace('/\D/', '', $order->customer->whatsapp ?? $order->customer->phone ?? '') }}" target="_blank" class="hover:underline">
-                                                    {{ $order->customer->whatsapp ?? $order->customer->phone ?? '-' }}
-                                                </a>
-                                            </div>
+                                            <span class="px-2 py-0.5 rounded-full text-2xs font-bold {{ in_array($order->status, ['Delivered', 'Active', 'Delivery Ready']) ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800' }}">
+                                                {{ $order->status }}
+                                            </span>
                                         </td>
-                                        <td class="py-3 px-3">
-                                            @if(!empty($meta['domain']))
-                                                <a href="{{ $meta['domain'] }}" target="_blank" class="text-indigo-600 hover:underline text-2xs font-mono font-semibold block truncate max-w-[150px]">
-                                                    🌐 {{ $meta['domain'] }}
+                                        <td class="py-3 px-3 whitespace-nowrap font-mono">
+                                            @if($waNumber)
+                                                <a href="https://wa.me/{{ $waDigits }}" target="_blank" class="text-emerald-700 hover:underline inline-flex items-center gap-1 font-semibold">
+                                                    <span>💬</span>
+                                                    <span>{{ $waNumber }}</span>
                                                 </a>
                                             @else
                                                 <span class="text-gray-400">-</span>
                                             @endif
                                         </td>
                                         <td class="py-3 px-3 whitespace-nowrap">
-                                            <div class="font-semibold text-gray-900">{{ $meta['subscription_system'] ?? 'None' }}</div>
-                                            @if(!empty($meta['subscription_fee']))
-                                                <div class="text-2xs font-mono text-blue-700 font-bold">BDT {{ number_format(floatval($meta['subscription_fee'])) }}</div>
+                                            @if(!empty($meta['domain']))
+                                                <a href="{{ str_starts_with($meta['domain'], 'http') ? $meta['domain'] : 'https://' . $meta['domain'] }}" target="_blank" class="text-indigo-600 hover:underline text-2xs font-mono font-semibold block truncate max-w-[160px]">
+                                                    🌐 {{ $meta['domain'] }}
+                                                </a>
+                                            @else
+                                                <span class="text-gray-400">-</span>
                                             @endif
+                                        </td>
+                                        <td class="py-3 px-3 whitespace-nowrap font-mono text-gray-700">
+                                            {{ $meta['initial_next_due_date'] ?? '-' }}
                                         </td>
                                         <td class="py-3 px-3 whitespace-nowrap font-mono font-bold text-gray-900">
                                             {{ number_format($order->total_amount) }}
                                         </td>
-                                        <td class="py-3 px-3 whitespace-nowrap text-2xs font-mono text-emerald-700 font-semibold">
-                                            Paid: BDT {{ number_format($order->paid_amount) }}
-                                        </td>
                                         <td class="py-3 px-3 whitespace-nowrap font-mono font-bold {{ $order->due_amount > 0 ? 'text-rose-600' : 'text-emerald-600' }}">
-                                            BDT {{ number_format($order->due_amount) }}
+                                            {{ number_format($order->due_amount) }}
+                                        </td>
+                                        <td class="py-3 px-3 whitespace-nowrap font-semibold text-gray-900">
+                                            {{ $subLabel }}
+                                        </td>
+                                        <td class="py-3 px-3 whitespace-nowrap font-mono font-bold text-blue-700">
+                                            {{ !empty($meta['subscription_fee']) ? number_format(floatval($meta['subscription_fee'])) : '-' }}
+                                        </td>
+                                        <td class="py-3 px-3 whitespace-nowrap font-mono font-semibold text-amber-700">
+                                            {{ number_format(floatval($meta['monthly_due'] ?? 0)) }}
+                                        </td>
+                                        <td class="py-3 px-3 whitespace-nowrap font-mono font-semibold text-purple-700">
+                                            {{ number_format(floatval($meta['yearly_due'] ?? 0)) }}
+                                        </td>
+                                        <td class="py-3 px-3 whitespace-nowrap font-mono text-gray-700">
+                                            {{ $meta['next_renew_date'] ?? '-' }}
                                         </td>
                                         <td class="py-3 px-3 whitespace-nowrap">
-                                            @if(!empty($meta['client_admin_link']) || !empty($meta['official_admin_link']))
-                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 text-gray-700 border border-gray-200">
-                                                    🔐 Credentials Stored
-                                                </span>
-                                            @else
-                                                <span class="text-gray-400 text-2xs">-</span>
-                                            @endif
+                                            <span class="px-2 py-0.5 rounded-full text-2xs font-bold {{ $renewBadge }}">
+                                                {{ $renewSt }}
+                                            </span>
+                                        </td>
+                                        <td class="py-3 px-3 whitespace-nowrap font-semibold text-gray-800">
+                                            {{ $order->service_category ?? '-' }}
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="9" class="text-center py-8 text-gray-400">{{ __('No Software or Website Orders found.') }}</td>
+                                        <td colspan="15" class="text-center py-8 text-gray-400">{{ __('No Software or Website Orders found.') }}</td>
                                     </tr>
                                 @endforelse
                             </tbody>

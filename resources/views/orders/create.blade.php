@@ -189,11 +189,9 @@
                             <div x-show="orderType === 'creative'">
                                 <select name="service_category" :disabled="orderType !== 'creative'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500 focus:border-indigo-500">
                                     <optgroup label="Creative Services">
-                                        <option value="Video Edit">Video Edit</option>
-                                        <option value="Graphics Design">Graphics Design</option>
-                                        <option value="SMO & SMM">SMO & SMM</option>
-                                        <option value="Voice Recording">Voice Recording</option>
-                                        <option value="Others Work">Others Work</option>
+                                        @foreach(['Video Edit', 'Graphics Design', 'SMO & SMM', 'Voice Recording', 'Others Work'] as $cat)
+                                            <option value="{{ $cat }}" @selected(old('service_category') === $cat)>{{ $cat }}</option>
+                                        @endforeach
                                     </optgroup>
                                 </select>
                             </div>
@@ -202,12 +200,9 @@
                             <div x-show="orderType === 'ads'">
                                 <select name="service_category" :disabled="orderType !== 'ads'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500 focus:border-amber-500">
                                     <optgroup label="Ads Campaign">
-                                        <option value="Meta Ads">Meta Ads</option>
-                                        <option value="TikTok Ads">TikTok Ads</option>
-                                        <option value="YouTube Ads">YouTube Ads</option>
-                                        <option value="LinkedIn Ads">LinkedIn Ads</option>
-                                        <option value="Google Ads">Google Ads</option>
-                                        <option value="Others Ads">Others Ads</option>
+                                        @foreach(['Meta Ads', 'TikTok Ads', 'YouTube Ads', 'LinkedIn Ads', 'Google Ads', 'Others Ads'] as $cat)
+                                            <option value="{{ $cat }}" @selected(old('service_category') === $cat)>{{ $cat }}</option>
+                                        @endforeach
                                     </optgroup>
                                 </select>
                             </div>
@@ -216,18 +211,9 @@
                             <div x-show="orderType === 'web_software'">
                                 <select name="service_category" :disabled="orderType !== 'web_software'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500">
                                     <optgroup label="Soft & Web Develop">
-                                        <option value="ERP Solutions">ERP Solutions</option>
-                                        <option value="E-commerce Management">E-commerce Management</option>
-                                        <option value="Restaurant Management">Restaurant Management</option>
-                                        <option value="Travel Agency Web">Travel Agency Web</option>
-                                        <option value="Salon Management">Salon Management</option>
-                                        <option value="Cleaning Service Web">Cleaning Service Web</option>
-                                        <option value="Construction Web">Construction Web</option>
-                                        <option value="Company ERP">Company ERP</option>
-                                        <option value="School Management">School Management</option>
-                                        <option value="Hotel Management">Hotel Management</option>
-                                        <option value="APP Development">APP Development</option>
-                                        <option value="Custom Soft & Web">Custom Soft & Web</option>
+                                        @foreach(['ERP Solutions', 'E-commerce Management', 'Restaurant Management', 'Travel Agency Web', 'Salon Management', 'Cleaning Service Web', 'Construction Web', 'Company ERP', 'School Management', 'Hotel Management', 'APP Development', 'Custom Soft & Web'] as $cat)
+                                            <option value="{{ $cat }}" @selected(old('service_category') === $cat)>{{ $cat }}</option>
+                                        @endforeach
                                     </optgroup>
                                 </select>
                             </div>
@@ -241,57 +227,65 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Service Provider') }}</label>
-                                <input type="text" name="meta[service_provider]" :disabled="orderType !== 'creative'" placeholder="e.g. Mahfuz, Jahid Hasan" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
+                                <input type="text" name="meta[service_provider]" value="{{ old('meta.service_provider') }}" :disabled="orderType !== 'creative'" placeholder="e.g. Mahfuz, Jahid Hasan" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Starting Date') }}</label>
-                                <input type="date" name="meta[starting_date]" :disabled="orderType !== 'creative'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
+                                <input type="date" name="meta[starting_date]" value="{{ old('meta.starting_date') }}" :disabled="orderType !== 'creative'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Complete Date') }}</label>
-                                <input type="date" name="meta[complete_date]" :disabled="orderType !== 'creative'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
+                                <input type="date" name="meta[complete_date]" value="{{ old('meta.complete_date') }}" :disabled="orderType !== 'creative'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Why Not Delivery') }}</label>
-                                <input type="text" name="meta[why_not_delivery]" :disabled="orderType !== 'creative'" placeholder="e.g. Due Payment, Client Response Pending" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
+                                <input type="text" name="meta[why_not_delivery]" value="{{ old('meta.why_not_delivery') }}" :disabled="orderType !== 'creative'" placeholder="e.g. Due Payment, Client Response Pending" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Language') }}</label>
-                                <input type="text" name="meta[language]" :disabled="orderType !== 'creative'" placeholder="e.g. Bangla, Arabic, English" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
+                                <input type="text" name="meta[language]" value="{{ old('meta.language') }}" :disabled="orderType !== 'creative'" placeholder="e.g. Bangla, Arabic, English" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
                             </div>
 
                             <div>
-                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Script / Idea') }}</label>
-                                <input type="text" name="meta[script_idea]" :disabled="orderType !== 'creative'" placeholder="e.g. Confirmed, Client Provided" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
+                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Script Status') }}</label>
+                                <select name="meta[script_status]" :disabled="orderType !== 'creative'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
+                                    @foreach(['Not ready', 'Ready', 'Cl-Checking', 'Confirmed', 'No need'] as $opt)
+                                        <option value="{{ $opt }}" @selected(old('meta.script_status', 'Not ready') === $opt)>{{ $opt }}</option>
+                                    @endforeach
+                                </select>
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Script Code') }}</label>
-                                <input type="text" name="meta[script_code]" :disabled="orderType !== 'creative'" placeholder="e.g. SCR-901" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500 font-mono">
+                                <input type="text" name="meta[script_code]" value="{{ old('meta.script_code') }}" :disabled="orderType !== 'creative'" placeholder="e.g. SCR-901" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500 font-mono">
                             </div>
 
                             <div>
-                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Voice / Design') }}</label>
-                                <input type="text" name="meta[voice_design]" :disabled="orderType !== 'creative'" placeholder="e.g. Confirmed, Female VO" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
+                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Voice Status') }}</label>
+                                <select name="meta[voice_status]" :disabled="orderType !== 'creative'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
+                                    @foreach(['Not ready', 'Ready', 'Cl-Checking', 'Confirmed', 'No need'] as $opt)
+                                        <option value="{{ $opt }}" @selected(old('meta.voice_status', 'Not ready') === $opt)>{{ $opt }}</option>
+                                    @endforeach
+                                </select>
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Video Duration (Second)') }}</label>
-                                <input type="number" name="meta[second]" :disabled="orderType !== 'creative'" placeholder="e.g. 60" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500 font-mono">
+                                <input type="number" name="meta[second]" value="{{ old('meta.second') }}" :disabled="orderType !== 'creative'" placeholder="e.g. 60" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500 font-mono">
                             </div>
 
                             <div class="sm:col-span-2">
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Voice Link / Audio URL') }}</label>
-                                <input type="text" name="meta[voice_link]" :disabled="orderType !== 'creative'" placeholder="Google Drive audio link or URL" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
+                                <input type="text" name="meta[voice_link]" value="{{ old('meta.voice_link') }}" :disabled="orderType !== 'creative'" placeholder="Google Drive audio link or URL" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
                             </div>
 
                             <div class="sm:col-span-3">
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Reference Link / Asset Drive') }}</label>
-                                <input type="text" name="meta[reference_link]" :disabled="orderType !== 'creative'" placeholder="https://drive.google.com/..." class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
+                                <input type="text" name="meta[reference_link]" value="{{ old('meta.reference_link') }}" :disabled="orderType !== 'creative'" placeholder="https://drive.google.com/..." class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
                             </div>
                         </div>
 
@@ -377,12 +371,12 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                             <div class="sm:col-span-2">
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Ads Post Link') }}</label>
-                                <input type="text" name="meta[ads_post_link]" :disabled="orderType !== 'ads'" placeholder="https://facebook.com/post/..." class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500">
+                                <input type="text" name="meta[ads_post_link]" value="{{ old('meta.ads_post_link') }}" :disabled="orderType !== 'ads'" placeholder="https://facebook.com/post/..." class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500">
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Lifetime/ Daily Budget ($)') }}</label>
-                                <input type="number" step="0.01" name="meta[lifetime_daily_budget]" :disabled="orderType !== 'ads'" placeholder="e.g. 5.00 or 150.00" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500 font-mono font-bold">
+                                <input type="number" step="0.01" name="meta[lifetime_daily_budget]" value="{{ old('meta.lifetime_daily_budget') }}" :disabled="orderType !== 'ads'" placeholder="e.g. 5.00 or 150.00" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500 font-mono font-bold">
                             </div>
 
                             <div>
@@ -400,12 +394,12 @@
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Starting Date') }}</label>
-                                <input type="date" name="meta[starting_date]" :disabled="orderType !== 'ads'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500">
+                                <input type="date" name="meta[starting_date]" value="{{ old('meta.starting_date') }}" :disabled="orderType !== 'ads'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500">
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('End Date') }}</label>
-                                <input type="date" name="meta[end_date]" :disabled="orderType !== 'ads'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500">
+                                <input type="date" name="meta[end_date]" value="{{ old('meta.end_date') }}" :disabled="orderType !== 'ads'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-amber-500">
                             </div>
 
                             <div>
@@ -435,18 +429,39 @@
                             </div>
                         </div>
 
-                        <!-- Ads BDT Budget -->
-                        <div class="p-4 bg-amber-50/50 rounded-xl border border-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-4">
-                            <div class="w-full sm:w-1/2">
-                                <label class="block text-2xs font-semibold text-gray-700 uppercase mb-1">{{ __('Total Amount (BDT)') }} <span class="text-rose-500">*</span></label>
-                                <input type="number" step="0.01" x-model.number="adsTotalAmount" placeholder="0.00" class="w-full text-sm font-bold font-mono rounded-lg border-gray-300 focus:ring-amber-500">
-                            </div>
-                            <div class="w-full sm:w-1/2 p-3 bg-white rounded-xl border border-amber-200 flex items-center justify-between">
+                        <!-- Ads BDT Budget (Auto Full Paid) -->
+                        <div class="p-4 bg-amber-50/50 rounded-xl border border-amber-200 space-y-3 mt-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
                                 <div>
-                                    <div class="text-2xs font-bold text-gray-500 uppercase">{{ __('Total Dollar ($ Budget)') }}</div>
-                                    <div class="text-[10px] text-gray-400">{{ __('Auto-calculated (BDT ÷ 150)') }}</div>
+                                    <label class="block text-2xs font-semibold text-gray-700 uppercase mb-1">{{ __('Total Amount (BDT)') }} <span class="text-rose-500">*</span></label>
+                                    <input type="number" step="0.01" x-model.number="adsTotalAmount" placeholder="0.00" class="w-full text-sm font-bold font-mono rounded-lg border-gray-300 focus:ring-amber-500">
                                 </div>
-                                <div class="text-lg font-black text-amber-700 font-mono" x-text="'$' + (adsTotalAmount > 0 ? (adsTotalAmount / 150).toFixed(2) : '0.00')"></div>
+                                <div>
+                                    <label class="block text-2xs font-semibold text-gray-700 uppercase mb-1">{{ __('Payment Method (Auto Receipt)') }}</label>
+                                    <select name="ads_payment_method" :disabled="orderType !== 'ads'" class="w-full text-sm font-semibold rounded-lg border-gray-300 focus:ring-amber-500">
+                                        @foreach(['Cash' => '💵 Cash', 'Bank Transfer' => '🏦 Bank Transfer', 'bKash' => '📱 bKash', 'Nagad' => '📱 Nagad', 'Rocket' => '📱 Rocket'] as $mVal => $mLabel)
+                                            <option value="{{ $mVal }}" @selected(old('ads_payment_method', 'Cash') === $mVal)>{{ $mLabel }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="p-3 bg-white rounded-xl border border-amber-200 flex items-center justify-between">
+                                    <div>
+                                        <div class="text-2xs font-bold text-gray-500 uppercase">{{ __('Total Dollar ($ Budget)') }}</div>
+                                        <div class="text-[10px] text-gray-400">{{ __('Auto-calculated (BDT ÷ 150)') }}</div>
+                                    </div>
+                                    <div class="text-lg font-black text-amber-700 font-mono" x-text="'$' + (adsTotalAmount > 0 ? (adsTotalAmount / 150).toFixed(2) : '0.00')"></div>
+                                </div>
+                            </div>
+
+                            <!-- Live Full-Paid Bar -->
+                            <div class="flex flex-wrap items-center justify-between p-2.5 bg-white rounded-xl border border-amber-200 text-xs gap-3">
+                                <div class="flex items-center gap-4">
+                                    <span class="text-gray-600">{{ __('Total Amount:') }} <strong class="text-amber-900 font-mono font-bold" x-text="'BDT ' + (parseFloat(adsTotalAmount) || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})"></strong></span>
+                                    <span class="text-gray-600">{{ __('Paid Amount (Auto Receipt):') }} <strong class="text-emerald-700 font-mono font-bold" x-text="'BDT ' + (parseFloat(adsTotalAmount) || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})"></strong></span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-600">{{ __('Due:') }} <strong class="text-emerald-600 font-mono font-bold">BDT 0.00 ({{ __('Full Paid') }})</strong></span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -459,84 +474,81 @@
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Model') }}</label>
                                 <select name="meta[model]" :disabled="orderType !== 'web_software'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500 font-medium">
-                                    <option value="Agile Model">Agile Model</option>
-                                    <option value="Waterfall Model">Waterfall Model</option>
+                                    <option value="Agile Model" @selected(old('meta.model', 'Agile Model') === 'Agile Model')>Agile Model</option>
+                                    <option value="Waterfall Model" @selected(old('meta.model') === 'Waterfall Model')>Waterfall Model</option>
                                 </select>
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Working Priority') }}</label>
                                 <select name="meta[working_priority]" :disabled="orderType !== 'web_software'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500">
-                                    <option value="Normal">Normal</option>
-                                    <option value="High">High</option>
-                                    <option value="Urgent">Urgent</option>
+                                    <option value="Normal" @selected(old('meta.working_priority', 'Normal') === 'Normal')>Normal</option>
+                                    <option value="High" @selected(old('meta.working_priority') === 'High')>High</option>
+                                    <option value="Urgent" @selected(old('meta.working_priority') === 'Urgent')>Urgent</option>
                                 </select>
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Subscription System') }}</label>
                                 <select name="meta[subscription_system]" :disabled="orderType !== 'web_software'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500">
-                                    <option value="One-Time Payment">One-Time Payment</option>
-                                    <option value="Monthly Subscription">Monthly Subscription</option>
-                                    <option value="Yearly Subscription">Yearly Subscription</option>
+                                    @foreach(['One-Time Payment', 'Monthly Subscription', 'Yearly Subscription'] as $subOpt)
+                                        <option value="{{ $subOpt }}" @selected(old('meta.subscription_system', 'One-Time Payment') === $subOpt)>{{ $subOpt }}</option>
+                                    @endforeach
                                 </select>
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Subscription / Renew Fee') }}</label>
-                                <input type="number" step="0.01" name="meta[subscription_fee]" :disabled="orderType !== 'web_software'" placeholder="e.g. 2000" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500 font-mono">
+                                <input type="number" step="0.01" name="meta[subscription_fee]" value="{{ old('meta.subscription_fee') }}" :disabled="orderType !== 'web_software'" placeholder="e.g. 2000" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500 font-mono">
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Monthly Due (BDT)') }}</label>
-                                <input type="number" step="0.01" name="meta[monthly_due]" :disabled="orderType !== 'web_software'" placeholder="0.00" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500 font-mono">
+                                <input type="number" step="0.01" name="meta[monthly_due]" value="{{ old('meta.monthly_due') }}" :disabled="orderType !== 'web_software'" placeholder="0.00" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500 font-mono">
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Yearly Due (BDT)') }}</label>
-                                <input type="number" step="0.01" name="meta[yearly_due]" :disabled="orderType !== 'web_software'" placeholder="0.00" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500 font-mono">
+                                <input type="number" step="0.01" name="meta[yearly_due]" value="{{ old('meta.yearly_due') }}" :disabled="orderType !== 'web_software'" placeholder="0.00" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500 font-mono">
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Next Renew Payment Date') }}</label>
-                                <input type="date" name="meta[next_renew_date]" :disabled="orderType !== 'web_software'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500">
+                                <input type="date" name="meta[next_renew_date]" value="{{ old('meta.next_renew_date') }}" :disabled="orderType !== 'web_software'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500">
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Renew Status') }}</label>
                                 <select name="meta[renew_status]" :disabled="orderType !== 'web_software'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500">
-                                    <option value="Not Required">Not Required</option>
-                                    <option value="Active">Active</option>
-                                    <option value="Upcoming">Upcoming</option>
-                                    <option value="Due">Due</option>
-                                    <option value="Expired">Expired</option>
-                                    <option value="Cancelled">Cancelled</option>
+                                    @foreach(['Not Required', 'Active', 'Upcoming', 'Due', 'Expired', 'Cancelled'] as $rOpt)
+                                        <option value="{{ $rOpt }}" @selected(old('meta.renew_status', 'Not Required') === $rOpt)>{{ $rOpt }}</option>
+                                    @endforeach
                                 </select>
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Purchase Date') }}</label>
-                                <input type="date" name="meta[purchase_date]" :disabled="orderType !== 'web_software'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500">
+                                <input type="date" name="meta[purchase_date]" value="{{ old('meta.purchase_date') }}" :disabled="orderType !== 'web_software'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500">
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Complete Date') }}</label>
-                                <input type="date" name="meta[complete_date]" :disabled="orderType !== 'web_software'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500">
+                                <input type="date" name="meta[complete_date]" value="{{ old('meta.complete_date') }}" :disabled="orderType !== 'web_software'" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500">
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Developed Assign') }}</label>
-                                <input type="text" name="meta[developed_assign]" :disabled="orderType !== 'web_software'" placeholder="Developer Name" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500">
+                                <input type="text" name="meta[developed_assign]" value="{{ old('meta.developed_assign') }}" :disabled="orderType !== 'web_software'" placeholder="Developer Name" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500">
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Customize Assign') }}</label>
-                                <input type="text" name="meta[customize_assign]" :disabled="orderType !== 'web_software'" placeholder="Customizer / PM Name" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500">
+                                <input type="text" name="meta[customize_assign]" value="{{ old('meta.customize_assign') }}" :disabled="orderType !== 'web_software'" placeholder="Customizer / PM Name" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500">
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Domain / Live URL') }}</label>
-                                <input type="text" name="meta[domain]" :disabled="orderType !== 'web_software'" placeholder="https://clientdomain.com" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500">
+                                <input type="text" name="meta[domain]" value="{{ old('meta.domain') }}" :disabled="orderType !== 'web_software'" placeholder="https://clientdomain.com" class="w-full text-sm rounded-lg border-gray-300 focus:ring-blue-500">
                             </div>
                         </div>
 
@@ -611,7 +623,7 @@
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <label class="text-2xs font-semibold text-gray-700 uppercase whitespace-nowrap">{{ __('Initial Next Due Pay Date') }}:</label>
-                                    <input type="date" name="meta[initial_next_due_date]" :disabled="orderType !== 'web_software'" class="text-xs rounded-lg border-gray-300 focus:ring-blue-500 py-1 px-2 font-mono">
+                                    <input type="date" name="meta[initial_next_due_date]" value="{{ old('meta.initial_next_due_date') }}" :disabled="orderType !== 'web_software'" class="text-xs rounded-lg border-gray-300 focus:ring-blue-500 py-1 px-2 font-mono">
                                 </div>
                             </div>
                         </div>
@@ -624,33 +636,33 @@
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                 <div>
                                     <label class="block text-2xs font-semibold text-gray-600 uppercase mb-1">{{ __('Official Admin Link') }}</label>
-                                    <input type="text" name="meta[official_admin_link]" :disabled="orderType !== 'web_software'" placeholder="https://crm.../admin" class="w-full text-xs font-mono rounded-lg border-gray-300">
+                                    <input type="text" name="meta[official_admin_link]" value="{{ old('meta.official_admin_link') }}" :disabled="orderType !== 'web_software'" placeholder="https://crm.../admin" class="w-full text-xs font-mono rounded-lg border-gray-300">
                                 </div>
                                 <div>
                                     <label class="block text-2xs font-semibold text-gray-600 uppercase mb-1">{{ __('Official User ID') }}</label>
-                                    <input type="text" name="meta[official_user_id]" :disabled="orderType !== 'web_software'" placeholder="admin_user" class="w-full text-xs font-mono rounded-lg border-gray-300">
+                                    <input type="text" name="meta[official_user_id]" value="{{ old('meta.official_user_id') }}" :disabled="orderType !== 'web_software'" placeholder="admin_user" class="w-full text-xs font-mono rounded-lg border-gray-300">
                                 </div>
                                 <div>
                                     <label class="block text-2xs font-semibold text-gray-600 uppercase mb-1">{{ __('Official Password') }}</label>
-                                    <input type="text" name="meta[official_password]" :disabled="orderType !== 'web_software'" placeholder="Secret password" class="w-full text-xs font-mono rounded-lg border-gray-300">
+                                    <input type="text" name="meta[official_password]" value="{{ old('meta.official_password') }}" :disabled="orderType !== 'web_software'" placeholder="Secret password" class="w-full text-xs font-mono rounded-lg border-gray-300">
                                 </div>
 
                                 <div>
                                     <label class="block text-2xs font-semibold text-gray-600 uppercase mb-1">{{ __('Client Admin Link') }}</label>
-                                    <input type="text" name="meta[client_admin_link]" :disabled="orderType !== 'web_software'" placeholder="https://client.../wp-admin" class="w-full text-xs font-mono rounded-lg border-gray-300">
+                                    <input type="text" name="meta[client_admin_link]" value="{{ old('meta.client_admin_link') }}" :disabled="orderType !== 'web_software'" placeholder="https://client.../wp-admin" class="w-full text-xs font-mono rounded-lg border-gray-300">
                                 </div>
                                 <div>
                                     <label class="block text-2xs font-semibold text-gray-600 uppercase mb-1">{{ __('Client User ID') }}</label>
-                                    <input type="text" name="meta[client_user_id]" :disabled="orderType !== 'web_software'" placeholder="client_admin" class="w-full text-xs font-mono rounded-lg border-gray-300">
+                                    <input type="text" name="meta[client_user_id]" value="{{ old('meta.client_user_id') }}" :disabled="orderType !== 'web_software'" placeholder="client_admin" class="w-full text-xs font-mono rounded-lg border-gray-300">
                                 </div>
                                 <div>
                                     <label class="block text-2xs font-semibold text-gray-600 uppercase mb-1">{{ __('Client Password') }}</label>
-                                    <input type="text" name="meta[client_password]" :disabled="orderType !== 'web_software'" placeholder="Client secret password" class="w-full text-xs font-mono rounded-lg border-gray-300">
+                                    <input type="text" name="meta[client_password]" value="{{ old('meta.client_password') }}" :disabled="orderType !== 'web_software'" placeholder="Client secret password" class="w-full text-xs font-mono rounded-lg border-gray-300">
                                 </div>
 
                                 <div class="sm:col-span-3">
                                     <label class="block text-2xs font-semibold text-gray-600 uppercase mb-1">{{ __('Client Others User ID & Password') }}</label>
-                                    <input type="text" name="meta[client_other_credentials]" :disabled="orderType !== 'web_software'" placeholder="cPanel, DB, Hosting or extra staff credentials..." class="w-full text-xs font-mono rounded-lg border-gray-300">
+                                    <input type="text" name="meta[client_other_credentials]" value="{{ old('meta.client_other_credentials') }}" :disabled="orderType !== 'web_software'" placeholder="cPanel, DB, Hosting or extra staff credentials..." class="w-full text-xs font-mono rounded-lg border-gray-300">
                                 </div>
                             </div>
                         </div>
@@ -667,12 +679,12 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Order Date') }} <span class="text-rose-500">*</span></label>
-                            <input type="date" name="order_date" required value="{{ date('Y-m-d') }}" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
+                            <input type="date" name="order_date" required value="{{ old('order_date', date('Y-m-d')) }}" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
                         </div>
 
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Expected Delivery Date') }}</label>
-                            <input type="date" name="expected_delivery_date" value="{{ date('Y-m-d', strtotime('+15 days')) }}" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
+                            <input type="date" name="expected_delivery_date" value="{{ old('expected_delivery_date', date('Y-m-d', strtotime('+15 days'))) }}" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
                         </div>
 
                         <div>
@@ -710,7 +722,7 @@
                             <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Sales Person') }}</label>
                             <select name="sales_person_id" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
                                 @foreach($users as $user)
-                                    <option value="{{ $user->id }}" {{ auth()->id() == $user->id ? 'selected' : '' }}>
+                                    <option value="{{ $user->id }}" @selected(old('sales_person_id', auth()->id()) == $user->id)>
                                         {{ $user->name }}
                                     </option>
                                 @endforeach
@@ -722,7 +734,7 @@
                             <select name="project_manager_id" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">
                                 <option value="">{{ __('Assign PM Later') }}</option>
                                 @foreach($users as $user)
-                                    <option value="{{ $user->id }}">
+                                    <option value="{{ $user->id }}" @selected(old('project_manager_id') == $user->id)>
                                         {{ $user->name }}
                                     </option>
                                 @endforeach
@@ -732,7 +744,7 @@
 
                     <div class="pt-2">
                         <label class="inline-flex items-center gap-2 cursor-pointer p-3 bg-indigo-50/60 rounded-xl border border-indigo-200 w-full hover:bg-indigo-50 transition">
-                            <input type="checkbox" name="create_project" value="1" checked class="rounded border-indigo-300 text-indigo-600 focus:ring-indigo-500">
+                            <input type="checkbox" name="create_project" value="1" @checked(old('_token') !== null ? (bool) old('create_project') : true) class="rounded border-indigo-300 text-indigo-600 focus:ring-indigo-500">
                             <div class="text-xs">
                                 <span class="font-bold text-indigo-900 block">{{ __('Automatically initialize client project workspace') }}</span>
                                 <span class="text-indigo-700">{{ __('Creates project tracking record linked to this order for tasks and milestones.') }}</span>
@@ -742,7 +754,7 @@
 
                     <div>
                         <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">{{ __('Order Notes & Specifications') }}</label>
-                        <textarea name="notes" rows="2" placeholder="{{ __('Client terms, scope notes, special instructions...') }}" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500"></textarea>
+                        <textarea name="notes" rows="2" placeholder="{{ __('Client terms, scope notes, special instructions...') }}" class="w-full text-sm rounded-lg border-gray-300 focus:ring-indigo-500">{{ old('notes') }}</textarea>
                     </div>
                 </div>
 
@@ -764,11 +776,17 @@
         function orderForm() {
             const allCustomers = @json($customers);
             const preselected = @json($preselectedCustomer);
+            @php
+                $oldOrderType = old('order_type', $orderType ?? 'creative');
+                $defaultPaymentRow = [['payment_date' => date('Y-m-d'), 'amount' => '', 'payment_method' => 'Cash']];
+                $oldCreativePayments = array_values(old('creative_payments', $defaultPaymentRow));
+                $oldSoftPayments = array_values(old('soft_payments', $defaultPaymentRow));
+            @endphp
 
             return {
-                orderType: '{{ $orderType ?? "creative" }}',
-                orderTitle: '{{ old("title", $preselectedQuotation?->title ?? "") }}',
-                serviceCategory: 'Video Edit',
+                orderType: @json($oldOrderType),
+                orderTitle: @json(old('title', $preselectedQuotation?->title ?? '')),
+                serviceCategory: @json(old('service_category', 'Video Edit')),
                 
                 // Customer live search (AJAX across all Customers & Leads)
                 initialCustomers: allCustomers,
@@ -781,10 +799,8 @@
                 searchAbortController: null,
 
                 // Creative amounts
-                creativeTotal: 0,
-                creativePayments: [
-                    { payment_date: '{{ date("Y-m-d") }}', amount: '', payment_method: 'Cash' }
-                ],
+                creativeTotal: {{ $oldOrderType === 'creative' ? floatval(old('total_amount', 0)) : 0 }},
+                creativePayments: @json($oldCreativePayments),
                 addCreativePayment() {
                     this.creativePayments.push({
                         payment_date: '{{ date("Y-m-d") }}',
@@ -804,12 +820,12 @@
 
                 // Ads amounts
                 adsDailyCost: 0,
-                adsTotalDays: 0,
+                adsTotalDays: {{ is_numeric(old('meta.total_days')) ? floatval(old('meta.total_days')) : 0 }},
                 adsTotalDollar: 0,
-                adsTotalAmount: 0,
+                adsTotalAmount: {{ $oldOrderType === 'ads' ? floatval(old('total_amount', 0)) : 0 }},
                 adsPaidAmount: 0,
-                adsPreviousDollar: 0,
-                adsRunningDollar: 0,
+                adsPreviousDollar: {{ floatval(old('meta.previous_dollar', 0)) }},
+                adsRunningDollar: {{ floatval(old('meta.running_dollar', 0)) }},
                 adsTotalDollarCost() {
                     const running = parseFloat(this.adsRunningDollar) || 0;
                     const previous = parseFloat(this.adsPreviousDollar) || 0;
@@ -822,10 +838,8 @@
                 },
 
                 // Soft amounts
-                softTotal: 0,
-                softPayments: [
-                    { payment_date: '{{ date("Y-m-d") }}', amount: '', payment_method: 'Cash' }
-                ],
+                softTotal: {{ $oldOrderType === 'web_software' ? floatval(old('total_amount', 0)) : 0 }},
+                softPayments: @json($oldSoftPayments),
                 addSoftPayment() {
                     this.softPayments.push({
                         payment_date: '{{ date("Y-m-d") }}',
@@ -912,7 +926,7 @@
                         return this.creativeTotalPaid();
                     }
                     if (this.orderType === 'ads') {
-                        return 0;
+                        return parseFloat(this.adsTotalAmount) || 0;
                     }
                     if (this.orderType === 'web_software') {
                         return this.softTotalPaid();

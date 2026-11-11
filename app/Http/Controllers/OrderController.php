@@ -126,7 +126,9 @@ class OrderController extends Controller
         $preselectedQuotation = $request->filled('quotation_id') ? Quotation::with(['lead', 'customer', 'items'])->find($request->input('quotation_id')) : null;
         $preselectedCustomer = null;
 
-        if ($request->filled('customer_id')) {
+        if ($oldClient = $this->resolveOldClientOption()) {
+            $preselectedCustomer = $oldClient;
+        } elseif ($request->filled('customer_id')) {
             $cust = Customer::find($request->input('customer_id'));
             $preselectedCustomer = $cust ? $this->formatCustomerOption($cust) : null;
         } elseif ($preselectedQuotation?->customer) {
@@ -143,22 +145,7 @@ class OrderController extends Controller
             }
         }
 
-        // Initial recent active customers and unconverted leads for immediate dropdown preview
-        $customersList = Customer::where('status', 'active')
-            ->select('id', 'customer_code', 'name', 'company_name', 'phone', 'whatsapp', 'email')
-            ->latest('id')
-            ->limit(15)
-            ->get()
-            ->map(fn ($c) => $this->formatCustomerOption($c));
-
-        $leadsList = Lead::whereNull('customer_id')
-            ->select('id', 'lead_code', 'token_id', 'name', 'company_name', 'phone', 'whatsapp', 'email')
-            ->latest('id')
-            ->limit(15)
-            ->get()
-            ->map(fn ($l) => $this->formatLeadOption($l));
-
-        $customers = $customersList->concat($leadsList)->values();
+        $customers = $this->getRecentClientOptions();
 
         $users = User::where('status', 'active')->orderBy('name')->get();
         $serviceCategories = Setting::get('service_categories', [
@@ -261,12 +248,48 @@ class OrderController extends Controller
         ];
     }
 
-    /**
-     * Store a newly created order.
-     */
-    public function store(Request $request): RedirectResponse
+    private function getRecentClientOptions()
     {
-        // Auto-convert lead to customer if a lead was selected in the Client selection dropdown
+        $customersList = Customer::where('status', 'active')
+            ->select('id', 'customer_code', 'name', 'company_name', 'phone', 'whatsapp', 'email')
+            ->latest('id')
+            ->limit(15)
+            ->get()
+            ->map(fn ($c) => $this->formatCustomerOption($c));
+
+        $leadsList = Lead::whereNull('customer_id')
+            ->select('id', 'lead_code', 'token_id', 'name', 'company_name', 'phone', 'whatsapp', 'email')
+            ->latest('id')
+            ->limit(15)
+            ->get()
+            ->map(fn ($l) => $this->formatLeadOption($l));
+
+        return $customersList->concat($leadsList)->values();
+    }
+
+    private function resolveOldClientOption(): ?array
+    {
+        $oldCustomerId = old('customer_id');
+        if (!$oldCustomerId) {
+            return null;
+        }
+
+        if (is_string($oldCustomerId) && str_starts_with($oldCustomerId, 'lead_')) {
+            $leadId = intval(str_replace('lead_', '', $oldCustomerId));
+            $lead = Lead::find($leadId);
+            return $lead ? $this->formatLeadOption($lead) : null;
+        }
+
+        if (is_numeric($oldCustomerId)) {
+            $cust = Customer::find(intval($oldCustomerId));
+            return $cust ? $this->formatCustomerOption($cust) : null;
+        }
+
+        return null;
+    }
+
+    private function resolveClientSelection(Request $request): void
+    {
         $customerId = $request->input('customer_id');
         if (is_string($customerId) && str_starts_with($customerId, 'lead_')) {
             $leadId = intval(str_replace('lead_', '', $customerId));
@@ -278,6 +301,15 @@ class OrderController extends Controller
             $customer = LeadService::convertToCustomer($lead, auth()->id());
             $request->merge(['customer_id' => $customer->id]);
         }
+    }
+
+    /**
+     * Store a newly created order.
+     */
+    public function store(Request $request): RedirectResponse
+    {
+        // Auto-convert lead to customer if a lead was selected in the Client selection dropdown
+        $this->resolveClientSelection($request);
 
         $request->validate([
             'customer_id' => ['required', 'exists:customers,id'],
@@ -309,14 +341,22 @@ class OrderController extends Controller
 
         $validPayments = [];
         $totalPaid = 0;
-        if (is_array($paymentsInput) && !empty($paymentsInput)) {
+        if ($orderType === 'ads' && $total > 0) {
+            $validPayments[] = [
+                'amount' => $total,
+                'payment_date' => $request->input('order_date', now()->toDateString()),
+                'payment_method' => $this->normalizePaymentMethod($request->input('ads_payment_method', 'Cash')),
+                'notes' => "Full Ads Campaign payment for Order {$orderCode}",
+            ];
+            $totalPaid = $total;
+        } elseif (is_array($paymentsInput) && !empty($paymentsInput)) {
             foreach ($paymentsInput as $p) {
                 $pAmt = floatval($p['amount'] ?? 0);
                 if ($pAmt > 0) {
                     $validPayments[] = [
                         'amount' => $pAmt,
                         'payment_date' => $p['payment_date'] ?? now()->toDateString(),
-                        'payment_method' => $p['payment_method'] ?? 'Cash',
+                        'payment_method' => $this->normalizePaymentMethod($p['payment_method'] ?? 'Cash'),
                         'notes' => $p['notes'] ?? null,
                     ];
                     $totalPaid += $pAmt;
@@ -406,7 +446,7 @@ class OrderController extends Controller
             OrderService::createProjectFromOrder($order, $request->input('project_manager_id'));
         }
 
-        return redirect()->route('orders.show', $order)
+        return redirect()->route('orders.index')
             ->with('success', "Order {$order->order_code} created successfully.");
     }
 
@@ -450,11 +490,36 @@ class OrderController extends Controller
      */
     public function edit(Order $order): View
     {
-        $customers = Customer::where('status', 'active')->orderBy('name')->get();
+        $order->load(['customer', 'clientPayments']);
+
+        $selectedCustomer = $this->resolveOldClientOption()
+            ?? ($order->customer ? $this->formatCustomerOption($order->customer) : null);
+        $customers = $this->getRecentClientOptions();
         $users = User::where('status', 'active')->orderBy('name')->get();
         $serviceCategories = Setting::get('service_categories', []);
 
-        return view('orders.edit', compact('order', 'customers', 'users', 'serviceCategories'));
+        $hasReceipts = $order->clientPayments->isNotEmpty();
+        $receiptPaidTotal = $hasReceipts ? floatval($order->clientPayments->sum('amount')) : floatval($order->paid_amount);
+
+        return view('orders.edit', compact(
+            'order',
+            'selectedCustomer',
+            'customers',
+            'users',
+            'serviceCategories',
+            'hasReceipts',
+            'receiptPaidTotal'
+        ));
+    }
+
+    private function normalizePaymentMethod(?string $method): string
+    {
+        $method = trim((string) $method);
+        if ($method === 'Bank') {
+            return 'Bank Transfer';
+        }
+        $allowed = ['Cash', 'Bank Transfer', 'bKash', 'Nagad', 'Rocket', 'Card', 'Cheque', 'Other'];
+        return in_array($method, $allowed, true) ? $method : 'Cash';
     }
 
     /**
@@ -462,23 +527,92 @@ class OrderController extends Controller
      */
     public function update(Request $request, Order $order): RedirectResponse
     {
-        $request->validate([
+        $this->resolveClientSelection($request);
+
+        $validated = $request->validate([
+            'customer_id' => ['required', 'exists:customers,id'],
+            'order_type' => ['required', 'in:creative,ads,web_software'],
             'title' => ['required', 'string', 'max:255'],
-            'service_category' => ['required', 'string'],
+            'service_category' => ['required', 'string', 'max:100'],
             'total_amount' => ['required', 'numeric', 'min:0'],
             'paid_amount' => ['nullable', 'numeric', 'min:0'],
             'order_date' => ['required', 'date'],
             'expected_delivery_date' => ['nullable', 'date'],
+            'sales_person_id' => ['nullable', 'exists:users,id'],
+            'project_manager_id' => ['nullable', 'exists:users,id'],
             'status' => ['required', 'string', 'max:50'],
+            'notes' => ['nullable', 'string'],
+            'meta' => ['nullable', 'array'],
         ]);
 
-        $total = floatval($request->input('total_amount'));
-        $paid = floatval($request->input('paid_amount', 0));
+        $orderType = $validated['order_type'];
+        $total = floatval($validated['total_amount']);
+
+        // Never overwrite actual payment receipts total with a manually typed number
+        $receiptTotal = floatval($order->clientPayments()->sum('amount'));
+        $hasReceipts = $order->clientPayments()->exists();
+        if ($orderType === 'ads') {
+            // Sync paid_amount to existing receipts first; any remaining total gets an auto receipt below
+            $paid = $receiptTotal;
+        } else {
+            $paid = $hasReceipts
+                ? $receiptTotal
+                : floatval($validated['paid_amount'] ?? $order->paid_amount);
+        }
         $due = max(0, $total - $paid);
 
-        $order->update(array_merge($request->all(), [
+        $incomingMeta = $request->input('meta', []);
+        $meta = array_merge($order->meta ?? [], is_array($incomingMeta) ? $incomingMeta : []);
+
+        if ($orderType === 'ads') {
+            $totalDollar = $total > 0 ? round($total / 150, 2) : 0;
+            $previousDollar = floatval($meta['previous_dollar'] ?? 0);
+            $runningDollar = floatval($meta['running_dollar'] ?? 0);
+            $totalDollarCost = round($runningDollar - $previousDollar, 2);
+            $dollarDue = round($totalDollar - $totalDollarCost, 2);
+
+            $meta['total_dollar'] = number_format($totalDollar, 2, '.', '');
+            $meta['total_dollar_cost'] = number_format($totalDollarCost, 2, '.', '');
+            $meta['dollar_due'] = number_format($dollarDue, 2, '.', '');
+        }
+
+        $startDate = !empty($meta['starting_date']) ? $meta['starting_date'] : $order->start_date;
+        $expectedDelivery = $request->filled('expected_delivery_date')
+            ? $validated['expected_delivery_date']
+            : (!empty($meta['end_date']) ? $meta['end_date'] : $order->expected_delivery_date);
+
+        $order->update([
+            'customer_id' => $validated['customer_id'],
+            'order_type' => $orderType,
+            'title' => $validated['title'],
+            'service_category' => $validated['service_category'],
+            'total_amount' => $total,
+            'paid_amount' => $paid,
             'due_amount' => $due,
-        ]));
+            'order_date' => $validated['order_date'],
+            'start_date' => $startDate,
+            'expected_delivery_date' => $expectedDelivery,
+            'sales_person_id' => $validated['sales_person_id'] ?? null,
+            'project_manager_id' => $validated['project_manager_id'] ?? null,
+            'status' => $validated['status'],
+            'notes' => $validated['notes'] ?? null,
+            'meta' => $meta,
+        ]);
+
+        if ($orderType === 'ads' && $total > $receiptTotal) {
+            $diff = round($total - $receiptTotal, 2);
+            if ($diff > 0) {
+                $financeService = app(\App\Services\FinanceService::class);
+                $financeService->recordClientPayment([
+                    'customer_id' => $order->customer_id,
+                    'order_id' => $order->id,
+                    'amount' => $diff,
+                    'payment_date' => $validated['order_date'],
+                    'payment_method' => $this->normalizePaymentMethod($request->input('ads_payment_method', 'Cash')),
+                    'notes' => "Auto Ads Campaign settlement for Order {$order->order_code}",
+                ]);
+            }
+        }
 
         ActivityLog::log(
             action: 'order_updated',
