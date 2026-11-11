@@ -67,7 +67,7 @@
                         <div class="p-4 rounded-xl bg-emerald-50/70 border border-emerald-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-sm">
-                                    <span x-text="selectedCustomer.name.charAt(0)"></span>
+                                    <span x-text="(selectedCustomer.name || '?').charAt(0)"></span>
                                 </div>
                                 <div>
                                     <div class="flex items-center gap-2">
@@ -81,7 +81,9 @@
                                         <template x-if="selectedCustomer.company_name">
                                             <span x-text="selectedCustomer.company_name + ' &bull;'"></span>
                                         </template>
-                                        <span class="font-mono font-semibold" x-text="'📞 ' + selectedCustomer.phone"></span>
+                                        <template x-if="selectedCustomer.phone">
+                                            <span class="font-mono font-semibold" x-text="'📞 ' + selectedCustomer.phone"></span>
+                                        </template>
                                         <template x-if="selectedCustomer.whatsapp">
                                             <span class="inline-flex items-center gap-1 font-mono font-bold text-emerald-700">
                                                 <span>💬 WhatsApp:</span>
@@ -104,11 +106,14 @@
                                 type="text" 
                                 x-model="searchQuery" 
                                 @focus="isOpen = true"
-                                @input="isOpen = true"
-                                placeholder="{{ __('Type Client WhatsApp Number (e.g. 966..., 017...) or Name to search...') }}"
-                                class="w-full text-sm pl-10 pr-4 py-2.5 rounded-xl border-gray-300 focus:border-emerald-500 focus:ring-emerald-500 shadow-2xs font-mono"
+                                @input="isOpen = true; onSearchInput()"
+                                placeholder="{{ __('Type Client WhatsApp Number, Phone, Lead ID/Token, or Name to search...') }}"
+                                class="w-full text-sm pl-10 pr-24 py-2.5 rounded-xl border-gray-300 focus:border-emerald-500 focus:ring-emerald-500 shadow-2xs font-mono"
                             >
                             <svg class="w-5 h-5 text-emerald-600 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                            <span x-show="isSearching" x-cloak class="absolute right-3 top-3 text-xs font-semibold text-emerald-600">
+                                {{ __('Searching...') }}
+                            </span>
                         </div>
 
                         <!-- Dropdown Results -->
@@ -125,14 +130,17 @@
                                     <div class="text-right">
                                         <div class="text-xs font-mono font-bold text-emerald-700 flex items-center gap-1 justify-end">
                                             <span>💬</span>
-                                            <span x-text="cust.whatsapp ? cust.whatsapp : cust.phone"></span>
+                                            <span x-text="cust.whatsapp ? cust.whatsapp : (cust.phone || '-')"></span>
                                         </div>
-                                        <div class="text-[10px] text-gray-400 font-mono" x-text="'📞 ' + cust.phone"></div>
+                                        <div class="text-[10px] text-gray-400 font-mono" x-text="cust.phone ? ('📞 ' + cust.phone) : ''"></div>
                                     </div>
                                 </div>
                             </template>
-                            <div x-show="filteredCustomers.length === 0" class="p-4 text-center text-xs text-gray-400">
-                                {{ __('No matching client found for this WhatsApp number or name.') }}
+                            <div x-show="isSearching && filteredCustomers.length === 0" class="p-4 text-center text-xs text-emerald-600 font-medium">
+                                {{ __('Searching database...') }}
+                            </div>
+                            <div x-show="!isSearching && filteredCustomers.length === 0" class="p-4 text-center text-xs text-gray-400">
+                                {{ __('No matching client found for this WhatsApp number, code, or name.') }}
                             </div>
                         </div>
                     </div>
@@ -762,11 +770,15 @@
                 orderTitle: '{{ old("title", $preselectedQuotation?->title ?? "") }}',
                 serviceCategory: 'Video Edit',
                 
-                // Customer live search
-                customers: allCustomers,
+                // Customer live search (AJAX across all Customers & Leads)
+                initialCustomers: allCustomers,
+                searchResults: allCustomers,
                 selectedCustomer: preselected || null,
                 searchQuery: '',
                 isOpen: false,
+                isSearching: false,
+                searchTimer: null,
+                searchAbortController: null,
 
                 // Creative amounts
                 creativeTotal: 0,
@@ -832,34 +844,60 @@
                 },
 
                 get filteredCustomers() {
-                    if (!this.searchQuery) return this.customers.slice(0, 10);
-                    const q = this.searchQuery.toLowerCase().trim();
-                    return this.customers.filter(c => {
-                        const name = (c.name || '').toLowerCase();
-                        const company = (c.company_name || '').toLowerCase();
-                        const phone = (c.phone || '').toLowerCase();
-                        const whatsapp = (c.whatsapp || '').toLowerCase();
-                        return name.includes(q) || company.includes(q) || phone.includes(q) || whatsapp.includes(q);
-                    }).slice(0, 15);
+                    if (!this.searchQuery.trim()) {
+                        return this.initialCustomers.slice(0, 15);
+                    }
+                    return this.searchResults;
+                },
+
+                onSearchInput() {
+                    const q = this.searchQuery.trim();
+                    if (this.searchTimer) clearTimeout(this.searchTimer);
+                    if (this.searchAbortController) {
+                        this.searchAbortController.abort();
+                    }
+
+                    if (!q) {
+                        this.searchResults = this.initialCustomers;
+                        this.isSearching = false;
+                        return;
+                    }
+
+                    this.isSearching = true;
+                    this.searchTimer = setTimeout(async () => {
+                        this.searchAbortController = new AbortController();
+                        try {
+                            const url = `{{ route('orders.search-clients') }}?q=${encodeURIComponent(q)}`;
+                            const res = await fetch(url, {
+                                headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                                signal: this.searchAbortController.signal
+                            });
+                            if (!res.ok) throw new Error('Search failed');
+                            const data = await res.json();
+                            this.searchResults = data.results || [];
+                        } catch (err) {
+                            if (err.name !== 'AbortError') {
+                                this.searchResults = [];
+                            }
+                        } finally {
+                            this.isSearching = false;
+                        }
+                    }, 220);
                 },
 
                 selectCustomer(customer) {
                     this.selectedCustomer = customer;
                     this.isOpen = false;
                     this.searchQuery = '';
+                    this.searchResults = this.initialCustomers;
+                    this.isSearching = false;
                 },
 
                 clearCustomer() {
                     this.selectedCustomer = null;
                     this.searchQuery = '';
-                },
-
-                softTotalPaid() {
-                    let sum = 0;
-                    for (let i = 1; i <= 7; i++) {
-                        sum += parseFloat(this.softPay[i] || 0);
-                    }
-                    return sum;
+                    this.searchResults = this.initialCustomers;
+                    this.isSearching = false;
                 },
 
                 currentTotal() {

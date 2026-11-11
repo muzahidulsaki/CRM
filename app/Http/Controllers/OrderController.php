@@ -11,6 +11,8 @@ use App\Models\Setting;
 use App\Models\User;
 use App\Services\LeadService;
 use App\Services\OrderService;
+use App\Services\PhoneHelper;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -125,68 +127,36 @@ class OrderController extends Controller
         $preselectedCustomer = null;
 
         if ($request->filled('customer_id')) {
-            $preselectedCustomer = Customer::find($request->input('customer_id'));
+            $cust = Customer::find($request->input('customer_id'));
+            $preselectedCustomer = $cust ? $this->formatCustomerOption($cust) : null;
         } elseif ($preselectedQuotation?->customer) {
-            $preselectedCustomer = $preselectedQuotation->customer;
+            $preselectedCustomer = $this->formatCustomerOption($preselectedQuotation->customer);
         } elseif ($request->filled('lead_id')) {
             $lead = Lead::find($request->input('lead_id'));
             if ($lead) {
                 if ($lead->customer_id) {
-                    $preselectedCustomer = Customer::find($lead->customer_id);
+                    $cust = Customer::find($lead->customer_id);
+                    $preselectedCustomer = $cust ? $this->formatCustomerOption($cust) : null;
                 } else {
-                    $preselectedCustomer = [
-                        'id' => 'lead_' . $lead->id,
-                        'type' => 'lead',
-                        'customer_code' => $lead->lead_code,
-                        'name' => $lead->name,
-                        'company_name' => $lead->company_name,
-                        'phone' => $lead->phone,
-                        'whatsapp' => $lead->whatsapp,
-                        'email' => $lead->email,
-                        'badge' => 'Lead (' . $lead->lead_code . ')',
-                    ];
+                    $preselectedCustomer = $this->formatLeadOption($lead);
                 }
             }
         }
 
-        // Fetch active customers
+        // Initial recent active customers and unconverted leads for immediate dropdown preview
         $customersList = Customer::where('status', 'active')
             ->select('id', 'customer_code', 'name', 'company_name', 'phone', 'whatsapp', 'email')
-            ->orderBy('name')
-            ->get()
-            ->map(function ($c) {
-                return [
-                    'id' => $c->id,
-                    'type' => 'customer',
-                    'customer_code' => $c->customer_code,
-                    'name' => $c->name,
-                    'company_name' => $c->company_name,
-                    'phone' => $c->phone,
-                    'whatsapp' => $c->whatsapp,
-                    'email' => $c->email,
-                    'badge' => 'Client',
-                ];
-            });
-
-        // Also fetch unconverted Leads so they can be selected directly by WhatsApp/phone
-        $leadsList = Lead::whereNull('customer_id')
-            ->select('id', 'lead_code', 'name', 'company_name', 'phone', 'whatsapp', 'email')
             ->latest('id')
-            ->limit(100)
+            ->limit(15)
             ->get()
-            ->map(function ($l) {
-                return [
-                    'id' => 'lead_' . $l->id,
-                    'type' => 'lead',
-                    'customer_code' => $l->lead_code,
-                    'name' => $l->name,
-                    'company_name' => $l->company_name,
-                    'phone' => $l->phone,
-                    'whatsapp' => $l->whatsapp,
-                    'email' => $l->email,
-                    'badge' => 'Lead (' . $l->lead_code . ')',
-                ];
-            });
+            ->map(fn ($c) => $this->formatCustomerOption($c));
+
+        $leadsList = Lead::whereNull('customer_id')
+            ->select('id', 'lead_code', 'token_id', 'name', 'company_name', 'phone', 'whatsapp', 'email')
+            ->latest('id')
+            ->limit(15)
+            ->get()
+            ->map(fn ($l) => $this->formatLeadOption($l));
 
         $customers = $customersList->concat($leadsList)->values();
 
@@ -205,6 +175,90 @@ class OrderController extends Controller
         $orderType = $request->input('type', 'creative');
 
         return view('orders.create', compact('preselectedQuotation', 'preselectedCustomer', 'customers', 'users', 'serviceCategories', 'orderType'));
+    }
+
+    /**
+     * Live AJAX search across all active Customers and unconverted Leads.
+     */
+    public function searchClients(Request $request): JsonResponse
+    {
+        $q = trim((string) $request->input('q', ''));
+
+        $customerQuery = Customer::where('status', 'active')
+            ->select('id', 'customer_code', 'name', 'company_name', 'phone', 'whatsapp', 'email');
+
+        $leadQuery = Lead::whereNull('customer_id')
+            ->select('id', 'lead_code', 'token_id', 'name', 'company_name', 'phone', 'whatsapp', 'email');
+
+        if ($q !== '') {
+            $this->applyClientSearch($customerQuery, $q, ['customer_code']);
+            $this->applyClientSearch($leadQuery, $q, ['lead_code', 'token_id']);
+        }
+
+        $customers = $customerQuery->latest('id')->limit(20)->get()->map(fn ($c) => $this->formatCustomerOption($c));
+        $leads = $leadQuery->latest('id')->limit(30)->get()->map(fn ($l) => $this->formatLeadOption($l));
+
+        return response()->json([
+            'results' => $customers->concat($leads)->values(),
+        ]);
+    }
+
+    private function applyClientSearch($query, string $q, array $codeColumns): void
+    {
+        $digits = preg_replace('/\D/', '', $q);
+        $normalized = $digits !== '' ? PhoneHelper::normalize($q) : null;
+
+        $query->where(function ($sub) use ($q, $digits, $normalized, $codeColumns) {
+            $sub->where('name', 'like', "%{$q}%")
+                ->orWhere('company_name', 'like', "%{$q}%")
+                ->orWhere('email', 'like', "%{$q}%")
+                ->orWhere('phone', 'like', "%{$q}%")
+                ->orWhere('whatsapp', 'like', "%{$q}%");
+
+            foreach ($codeColumns as $col) {
+                $sub->orWhere($col, 'like', "%{$q}%");
+            }
+
+            if ($digits !== '') {
+                $sub->orWhere('normalized_phone', 'like', "%{$digits}%")
+                    ->orWhere('normalized_whatsapp', 'like', "%{$digits}%");
+            }
+            if ($normalized && $normalized !== $digits) {
+                $sub->orWhere('normalized_phone', 'like', "%{$normalized}%")
+                    ->orWhere('normalized_whatsapp', 'like', "%{$normalized}%");
+            }
+        });
+    }
+
+    private function formatCustomerOption(Customer $c): array
+    {
+        return [
+            'id' => $c->id,
+            'type' => 'customer',
+            'customer_code' => $c->customer_code,
+            'name' => (!empty($c->name) && $c->name !== '-') ? $c->name : ($c->company_name ?: $c->customer_code),
+            'company_name' => $c->company_name,
+            'phone' => $c->phone,
+            'whatsapp' => $c->whatsapp,
+            'email' => $c->email,
+            'badge' => 'Client',
+        ];
+    }
+
+    private function formatLeadOption(Lead $l): array
+    {
+        return [
+            'id' => 'lead_' . $l->id,
+            'type' => 'lead',
+            'customer_code' => $l->lead_code,
+            'token_id' => $l->token_id,
+            'name' => (!empty($l->name) && $l->name !== '-') ? $l->name : ($l->company_name ?: $l->lead_code),
+            'company_name' => $l->company_name,
+            'phone' => $l->phone,
+            'whatsapp' => $l->whatsapp,
+            'email' => $l->email,
+            'badge' => 'Lead (' . $l->lead_code . ($l->token_id ? ' / ' . $l->token_id : '') . ')',
+        ];
     }
 
     /**

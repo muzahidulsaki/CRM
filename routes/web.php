@@ -80,6 +80,7 @@ Route::middleware(['auth', 'verified', 'staff'])->group(function () {
     // Phase 3: Orders, Projects & Task Management
     // ==========================================
     // Orders
+    Route::get('/orders/search-clients', [\App\Http\Controllers\OrderController::class, 'searchClients'])->name('orders.search-clients');
     Route::post('/orders/{order}/initialize-project', [\App\Http\Controllers\OrderController::class, 'initializeProject'])->name('orders.initialize-project');
     Route::post('/orders/{order}/payments', [\App\Http\Controllers\OrderController::class, 'addPayment'])->name('orders.add-payment');
     Route::patch('/orders/{order}/status', [\App\Http\Controllers\OrderController::class, 'updateStatus'])->name('orders.update-status');
